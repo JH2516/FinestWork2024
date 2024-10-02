@@ -60,10 +60,11 @@ public class Generator_Map : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             GameObject wall = Instantiate(pref_Wall, transform);
+            wall.transform.position = new Vector2(areaCoordX, areaCoordY);
             wall.transform.rotation = Quaternion.Euler(0, 0, areaRotateZ);
             wall.transform.localScale = walls[i].wallScale;
             wall.transform.Translate(walls[i].wallCoord);
-            Debug.Log(walls[i].wallCoord);
+            Debug.Log($"After_{i} : {walls[i].wallCoord}");
         }
     }
 
@@ -94,7 +95,7 @@ public class Generator_Map : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Gizmos.DrawWireCube(walls[i].wallCoord, walls[i].wallScale);
-            walls[i].wallCoord += areaCoord;
+            Debug.Log($"Before_{i} : {walls[i].wallCoord}");
         }
 
         Gizmos.matrix = originalMatrix;
