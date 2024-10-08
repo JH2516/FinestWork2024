@@ -7,13 +7,14 @@ public class FadeInBack : MonoBehaviour
 {
     float progress;
     public float fadeInTime;
+    public float fadeInAccel;
     public Image fader;
     public GameObject frontTitle;
 
     void Update()
     {
         progress += Time.deltaTime;
-        fader.color = new Color(1, 1, 1, 1 - progress / fadeInTime);
+        fader.color = new Color(1, 1, 1, 1 - Mathf.Pow(progress / fadeInTime, fadeInAccel));
         if (progress > fadeInTime)
         {
             frontTitle.SetActive(false);
