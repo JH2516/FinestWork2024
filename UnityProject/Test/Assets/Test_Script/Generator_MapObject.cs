@@ -1,4 +1,4 @@
-/* Generator_MapObject [2024.10.09 Ver_1.0]
+/* Generator_MapObject [2024.10.09 Ver_1.1]
  * 
  * <Description>
  * 기능 : 맵 내부 오브젝트 배치 및 생성 도구
@@ -7,9 +7,15 @@
  * 1. Set_Objects에 오브젝트 등록
  * 2. "오브젝트 불러오기" Button 누르기 (Generator_MapObject 재선택 시 자동 로드)
  * 3. "오브젝트 선택" Box 내부에 오브젝트 선택
- * 4. "오브젝트 생성" Button 누르기 or 에디터 내 'A' Key를 눌러 Object 생성
+ * 4. "오브젝트 생성" Button 누르기
  * 
  * @. 생성된 Object는 "All_MapObjects" 내부에 위치함
+ * @. 아래의 단축기로 Object 선택 및 생성 가능
+ * 
+ * 단축키:
+ * A: Object 생성
+ * S: 이전 Object 선택
+ * D: 다음 Object 선택
  * 
  * <Required>
  * 1. Hierarchy 내 "All_MapObjects" GameObject 존재
@@ -21,7 +27,7 @@
  * 
  * - Set_Objects에 오브젝트 미등록 시 (Null or 일부 누락 시)
  * - 유효하지 않은 Object 선택 시
- * - Object 생성 전 Object 선택 시 (예상)
+ * - Object 생성 전 유효하지 않은 Object 선택 시 (예상)
  * - 이 외 (필요 시 보완 예정)
  */
 
@@ -49,14 +55,14 @@ public static class Get_DateNow
 public class Editor_Generator_MapObject : Editor
 {
     private Texture2D[]             icon;
-    private int?                    type_Icon;
+    private int                     type_Icon;
 
     public void OnEnable()
     {
         Generator_MapObject generator = (Generator_MapObject)target;
         generator.Init();
         icon = generator.GetObjectIcon();
-        type_Icon = null;
+        type_Icon = 0;
     }
 
     public override void OnInspectorGUI()
@@ -95,7 +101,7 @@ public class Editor_Generator_MapObject : Editor
             icon = generator.GetObjectIcon();
 
             if (GUILayout.Button("오브젝트 생성", buttonStyle))
-            generator.Make_MapObject(type_Icon ?? 0);
+            generator.Make_MapObject(type_Icon);
         }
         
 
@@ -107,9 +113,27 @@ public class Editor_Generator_MapObject : Editor
         Generator_MapObject generator = (Generator_MapObject)target;
         Event e = Event.current;
 
-        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.A)
+        if (e.type == EventType.KeyDown)
         {
-            generator.Make_MapObject(type_Icon ?? 0);
+            try
+            {
+                switch (e.keyCode)
+                {
+                    case KeyCode.A:
+                        generator.Make_MapObject(type_Icon); break;
+                    case KeyCode.S:
+                        type_Icon = (type_Icon == 0) ? icon.Length - 1 : --type_Icon;
+                        generator.Select_MapObject(type_Icon); break;
+                    case KeyCode.D:
+                        type_Icon = (type_Icon == icon.Length - 1) ? 0 : ++type_Icon;
+                        generator.Select_MapObject(type_Icon); break;
+                }
+            }
+            catch (NullReferenceException ex)
+            {
+                Debug.LogError($"오류 : Set Objects를 모두 등록하십시오.  [{DateNow()}]");
+            }
+            
             e.Use();
         }
     }
@@ -162,7 +186,7 @@ public class Generator_MapObject : MonoBehaviour
         return icons;
     }
 
-    public int? Select_MapObject(int type)
+    public int Select_MapObject(int type)
     {
         try
         {
@@ -173,7 +197,7 @@ public class Generator_MapObject : MonoBehaviour
         {
             Debug.LogError($"오류 : 유효하지 않은 Object입니다. [{DateNow()}]");
         }
-        return null;
+        return 0;
     }
 
     public void Make_MapObject(int type)
