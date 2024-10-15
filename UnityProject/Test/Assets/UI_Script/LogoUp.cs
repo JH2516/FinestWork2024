@@ -12,11 +12,13 @@ public class LogoUp : MonoBehaviour
     float progress;
     Vector3 originPositon;
     public FadeInBack screenFader;
+    LogoUp killSelf;
 
     private void Awake()
     {
         rect = GetComponent<RectTransform>();
         originPositon = rect.localPosition;
+        killSelf = GetComponent<LogoUp>();
     }
 
     void Update()
@@ -26,7 +28,8 @@ public class LogoUp : MonoBehaviour
         if (progress >= upTime)
         {
             screenFader.enabled = true;
-            gameObject.SetActive(false);
+            rect.localPosition = new Vector3(originPositon.x, originPositon.y + upDistant, 0);
+            killSelf.enabled = false;
         }
     }
 }
