@@ -6,6 +6,7 @@ public class ApplicationExiter : MonoBehaviour
 {
     private void Start()
     {
+        Debug.Log("Game Quit");
         Application.Quit();
     }
 }
