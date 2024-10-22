@@ -2502,7 +2502,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   yUpLimit: -64
-  yDownLimit: 96
+  yDownLimit: 92
   accelSlow: 0.2
   dragSpeed: 0.9
 --- !u!114 &790582811
