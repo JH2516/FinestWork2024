@@ -33,6 +33,8 @@ public class Test_Player : MonoBehaviour
 
     public GameObject test_Obj;
 
+    LayerMask               target_Layermask;
+
 
     private void Awake()
     {
@@ -41,6 +43,7 @@ public class Test_Player : MonoBehaviour
         mainCamera = Camera.main;
         moveVec = Test_Init.Get_MoveVecs();
         rotate = Test_Init.Get_Rotation();
+        target_Layermask = LayerMask.GetMask("Target");
     }
 
     private void Reset()
@@ -59,7 +62,9 @@ public class Test_Player : MonoBehaviour
         Player_Rotate();
         Player_Flip();
 
-        //Check_Dot();
+        Player_Attack();
+
+        Check_Dot();
     }
 
     /// <summary> 플레이어 이동 </summary>
@@ -73,6 +78,13 @@ public class Test_Player : MonoBehaviour
     {
         if (!isMove) return;
         obj_FOV.transform.rotation = setRotate;
+    }
+
+    void Player_Attack()
+    {
+        if (!Input.GetKey(KeyCode.A)) return;
+
+
     }
 
     /// <summary> 플레이어 이미지 소스 좌우반전 </summary>
@@ -111,23 +123,33 @@ public class Test_Player : MonoBehaviour
         */
 
 
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, Range_radius + 3);
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, Range_radius, target_Layermask);
+        //Debug.Log(hitColliders.Length);
 
         foreach (Collider2D item in hitColliders)
         {
             Vector2 targetVec = item.transform.position - transform.position;
 
-            float dot = Vector2.Dot(transform.right, targetVec.normalized);
+            float dot = Vector2.Dot(setMoveVec, targetVec.normalized);
             //Debug.Log(dot);
 
             float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
-            //Debug.Log(theta);
+            Debug.Log(theta);
 
             float distance = Vector2.Distance(targetVec, transform.position);
-            Debug.Log($"{dot}, {theta}, {distance}");
+            //Debug.Log($"{dot}, {theta}, {distance}");
 
             item.gameObject.GetComponent<SpriteRenderer>().color =
                 (theta < Range_halfAngle && distance < Range_radius) ? new Color(1, 1, 1, Range_Alpha) : Color.white;
+
+            if(theta < Range_halfAngle)
+            {
+                item.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+            }
+            else
+            {
+                item.gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+            }
             
         }
     }
