@@ -21,4 +21,22 @@ public class Test_Init : MonoBehaviour
 
         return vecs;
     }
+
+    /// <summary> 회전 모음 불러오기 </summary>
+    public static Quaternion[] Get_Rotation()
+    {
+        Quaternion[] rotate = new Quaternion[9];
+
+        rotate[0] = Quaternion.Euler(0, 0, 45 * 3);
+        rotate[1] = Quaternion.Euler(0, 0, 45 * 2);
+        rotate[2] = Quaternion.Euler(0, 0, 45 * 1);
+        rotate[3] = Quaternion.Euler(0, 0, 45 * 4);
+        rotate[4] = Quaternion.Euler(0, 0, 45 * 0);
+        rotate[5] = Quaternion.Euler(0, 0, 45 * 0);
+        rotate[6] = Quaternion.Euler(0, 0, 45 * 5);
+        rotate[7] = Quaternion.Euler(0, 0, 45 * 6);
+        rotate[8] = Quaternion.Euler(0, 0, 45 * 7);
+
+        return rotate;
+    }
 }
