@@ -6,9 +6,10 @@ using UnityEngine.EventSystems;
 
 public class ListScroll : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    public float yUpLimit;
-    public float yDownLimit;
-    float preY;
+    public bool isX;
+    public float startLimit;
+    public float endLimit;
+    float preCoordValue;
     float accel;
     public float accelSlow;
     public float dragSpeed;
@@ -29,7 +30,7 @@ public class ListScroll : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
             accel += accelSlow * direction;
             if ((accelPositive && accel > 0) || (!accelPositive && accel < 0))
             {
-                rect.localPosition = new Vector2(rect.localPosition.x, Mathf.Clamp(rect.localPosition.y + accel * dragSpeed, yUpLimit, yDownLimit));
+                UpdateNewPosition();
             }
             else
             {
@@ -43,7 +44,7 @@ public class ListScroll : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
         naturalMove = false;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, Input.mousePosition, null, out Vector2 localPoint))
         {
-            preY = localPoint.y;
+            preCoordValue = isX ? localPoint.x : localPoint.y;
         }
     }
 
@@ -51,10 +52,9 @@ public class ListScroll : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
     {
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rect, Input.mousePosition, null, out Vector2 localPoint))
         {
-            accel = localPoint.y - preY;
-            Debug.Log(accel);
-            rect.localPosition = new Vector2(rect.localPosition.x, Mathf.Clamp(rect.localPosition.y + accel * dragSpeed, yUpLimit, yDownLimit));
-            preY = localPoint.y;
+            accel = isX ? localPoint.x - preCoordValue : localPoint.y - preCoordValue;
+            UpdateNewPosition();
+            preCoordValue = isX ? localPoint.x : localPoint.y;
         }
     }
 
@@ -62,5 +62,21 @@ public class ListScroll : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDr
     {
         accelPositive = accel > 0;
         naturalMove = true;
-    }    
+    }
+
+    private void UpdateNewPosition()
+    {
+        Vector2 newPosition = rect.localPosition;
+        float delta = accel * dragSpeed;
+        if (isX)
+        {
+            newPosition.x = Mathf.Clamp(newPosition.x + delta, startLimit, endLimit);
+        }
+        else
+        {
+            newPosition.y = Mathf.Clamp(newPosition.y + delta, startLimit, endLimit);
+        }
+
+        rect.localPosition = newPosition;
+    }
 }

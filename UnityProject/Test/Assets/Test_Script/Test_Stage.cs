@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
 
 public class Test_Stage : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class Test_Stage : MonoBehaviour
         isGamePlay = true;
         player_HP = 100;
         player_HPBar.fillAmount = 1;
+        Debug.Log(StageLoader.Stage);
     }
 
     private void Update()
@@ -45,6 +47,7 @@ public class Test_Stage : MonoBehaviour
     public void Button_Pause() =>       Game_Pause();
     public void Button_Resume() =>      Game_Resume();
     public void Button_Restart() =>     Game_Restart();
+    public void Button_Exit() =>        Game_Exit();
 
 
     public void Game_Pause()
@@ -62,5 +65,10 @@ public class Test_Stage : MonoBehaviour
     public void Game_Restart()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void Game_Exit()
+    {
+        SceneManager.LoadScene("Stage");
     }
 }
