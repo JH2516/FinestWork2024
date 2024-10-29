@@ -13,7 +13,10 @@ public class Test_Player : MonoBehaviour
     public GameObject       obj_FOV;
 
     public bool             isMove;
+    public bool             isFire;
     public bool             isDetected;
+
+    public float            time_Fire;
 
     public Color            Color_nonDetected = new Color(0, 1, 0, 0.5f);
     public Color            Color_Detected = new Color(1, 0, 0, 0.5f);
@@ -35,11 +38,16 @@ public class Test_Player : MonoBehaviour
 
     LayerMask               target_Layermask;
 
+    List<GameObject> List_FireInFOV;
+
 
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
 
+        time_Fire = 0;
+        isFire = false;
+        List_FireInFOV = new List<GameObject>();
         mainCamera = Camera.main;
         moveVec = Test_Init.Get_MoveVecs();
         rotate = Test_Init.Get_Rotation();
@@ -58,19 +66,28 @@ public class Test_Player : MonoBehaviour
 
     private void Update()
     {
+        Get_Input();
+        Timing();
+
         Player_Move();
         Player_Rotate();
         Player_Flip();
 
         Player_Attack();
 
-        Check_Dot();
+        Check_Fire();
+    }
+
+    void Get_Input()
+    {
+        if (Input.GetKey(KeyCode.A)) isFire = true;
     }
 
     /// <summary> 플레이어 이동 </summary>
     void Player_Move()
     {
         if (!isMove) return;
+        if (isFire) return;
         transform.Translate(setMoveVec * 3f * Time.deltaTime);
     }
 
@@ -82,9 +99,31 @@ public class Test_Player : MonoBehaviour
 
     void Player_Attack()
     {
-        if (!Input.GetKey(KeyCode.A)) return;
+        if (!isFire) return;
 
+        foreach (var item in List_FireInFOV)
+        {
+            item.gameObject.SetActive(false);
+        }
+    }
 
+    void Timing()
+    {
+        if (time_Fire > 1f)
+        {
+            time_Fire = 0f;
+            isFire = false;
+        }
+
+        if (isFire)
+        {
+            Timing_Fire(); return;
+        }
+    }
+
+    void Timing_Fire()
+    {
+        time_Fire += Time.deltaTime;
     }
 
     /// <summary> 플레이어 이미지 소스 좌우반전 </summary>
@@ -105,28 +144,13 @@ public class Test_Player : MonoBehaviour
     public void Set_Rotation(int type) => setRotate = rotate[type];
 
 
-    void Check_Dot()
+    void Check_Fire()
     {
-        /*
-        Vector2 targetVec = test_Obj.transform.position - transform.position;
+        List_FireInFOV.Clear();
 
-        float dot = Vector2.Dot(transform.right, targetVec.normalized);
-        //Debug.Log(dot);
+        Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, target_Layermask);
 
-        float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
-        //Debug.Log(theta);
-
-        float distance = Vector2.Distance(targetVec, transform.position);
-        Debug.Log($"{dot}, {theta}, {distance}");
-
-        isDetected = (theta < Range_halfAngle && distance < Range_radius) ? true : false;
-        */
-
-
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, Range_radius, target_Layermask);
-        //Debug.Log(hitColliders.Length);
-
-        foreach (Collider2D item in hitColliders)
+        foreach (Collider2D item in hit)
         {
             Vector2 targetVec = item.transform.position - transform.position;
 
@@ -134,7 +158,7 @@ public class Test_Player : MonoBehaviour
             //Debug.Log(dot);
 
             float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
-            Debug.Log(theta);
+            //Debug.Log(theta);
 
             float distance = Vector2.Distance(targetVec, transform.position);
             //Debug.Log($"{dot}, {theta}, {distance}");
@@ -144,35 +168,22 @@ public class Test_Player : MonoBehaviour
 
             if(theta < Range_halfAngle)
             {
-                item.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+                item.gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
+                List_FireInFOV.Add(item.gameObject);
             }
             else
             {
-                item.gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+                item.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
             }
-            
         }
     }
 
-    /*
-    /// <summary> 플레이어 회전 </summary>
-    void Player_Rotate()
-    {
-        joyStickPos = joyStick.transform.position;
-
-        Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 dis = mousePos - joyStickPos;
-        float degree = Mathf.Atan2(dis.y, dis.x) * Mathf.Rad2Deg;
-
-        player.transform.rotation = Quaternion.Euler(0, 0, degree);
-    }
-    */
-
     private void OnDrawGizmos()
     {
-        Handles.color = (isDetected) ? Color_Detected : Color_nonDetected;
+        Handles.color = (isFire) ? Color_Detected : Color_nonDetected;
 
-        Handles.DrawSolidArc(transform.position, transform.forward, transform.right, Range_halfAngle, Range_radius);
-        Handles.DrawSolidArc(transform.position, transform.forward, transform.right, -Range_halfAngle, Range_radius);
+        if (!isMove) return;
+        Handles.DrawSolidArc(transform.position, transform.forward, setMoveVec, Range_halfAngle, Range_radius);
+        Handles.DrawSolidArc(transform.position, transform.forward, setMoveVec, -Range_halfAngle, Range_radius);
     }
 }
