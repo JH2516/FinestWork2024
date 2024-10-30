@@ -17,9 +17,13 @@ public class Test_Stage : MonoBehaviour
     bool                    isGamePlay;
     float                   player_HP;
 
+    [SerializeField]
+    bool                    isGameOver;
+
     private void Start()
     {
         isGamePlay = true;
+        isGameOver = false;
         player_HP = 100;
         player_HPBar.fillAmount = 1;
         Debug.Log(StageLoader.Stage);
@@ -28,8 +32,14 @@ public class Test_Stage : MonoBehaviour
     private void Update()
     {
         if (!isGamePlay) return;
-        player_HP -= Time.deltaTime * 2;
+        player_HP -= Time.deltaTime * 30;
         player_HPBar.fillAmount = player_HP / 100f;
+
+        if (player_HP <= 0)
+        {
+            isGameOver = true;
+            isGamePlay = false;
+        }
     }
 
 

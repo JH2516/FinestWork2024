@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using static UnityEngine.UI.Image;
+using static UnityEditor.Progress;
 
 public class Test_Player : MonoBehaviour
 {
@@ -18,27 +19,46 @@ public class Test_Player : MonoBehaviour
 
     public float            time_Fire;
 
-    public Color            Color_nonDetected = new Color(0, 1, 0, 0.5f);
-    public Color            Color_Detected = new Color(1, 0, 0, 0.5f);
+    
     public Vector2[]        moveVec;
     public Vector2          setMoveVec;
 
     public Quaternion[]     rotate;
     public Quaternion       setRotate;
 
+    [Header("Detect Draw")]
+    public Color Color_nonDetected = new Color(0, 1, 0, 0.5f);
+    public Color Color_Detected = new Color(1, 0, 0, 0.5f);
+    [Range(0, 1)] [SerializeField]
+    private float Range_Alpha = 0.5f;
+
+
     [Range(0, 90)] [SerializeField]
     private float Range_halfAngle = 20;
     [Range(0, 20)] [SerializeField]
     private float Range_radius = 5;
 
-    [Range(0, 1)] [SerializeField]
-    private float Range_Alpha = 0.5f;
+    [Header("Detect Interaction")]
+    [Range(0, 90)] [SerializeField]
+    private float interaction_halfAngle = 20;
+    [Range(0, 20)] [SerializeField]
+    private float interaction_Radius = 5;
+
+    [Header("Detect Fire")]
+    [Range(0, 90)] [SerializeField]
+    private float fire_halfAngle = 20;
+    [Range(0, 20)] [SerializeField]
+    private float fire_Radius = 5;
+
+    
 
     public GameObject test_Obj;
 
-    LayerMask               target_Layermask;
+    LayerMask               layer_Fire;
+    LayerMask               layer_Interaction;
 
     List<GameObject> List_FireInFOV;
+    List<GameObject> List_InteractionInFOV;
 
 
     private void Awake()
@@ -48,10 +68,12 @@ public class Test_Player : MonoBehaviour
         time_Fire = 0;
         isFire = false;
         List_FireInFOV = new List<GameObject>();
+        List_InteractionInFOV = new List<GameObject>();
         mainCamera = Camera.main;
         moveVec = Test_Init.Get_MoveVecs();
         rotate = Test_Init.Get_Rotation();
-        target_Layermask = LayerMask.GetMask("Target");
+        layer_Fire = LayerMask.GetMask("Fire");
+        layer_Interaction = LayerMask.GetMask("Interaction");
     }
 
     private void Reset()
@@ -76,6 +98,7 @@ public class Test_Player : MonoBehaviour
         Player_Attack();
 
         Check_Fire();
+        Check_Interaction();
     }
 
     void Get_Input()
@@ -109,7 +132,7 @@ public class Test_Player : MonoBehaviour
 
     void Timing()
     {
-        if (time_Fire > 1f)
+        if (time_Fire > 1f && !Input.GetKey(KeyCode.A))
         {
             time_Fire = 0f;
             isFire = false;
@@ -148,42 +171,65 @@ public class Test_Player : MonoBehaviour
     {
         List_FireInFOV.Clear();
 
-        Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, target_Layermask);
+        Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Fire);
 
         foreach (Collider2D item in hit)
         {
-            Vector2 targetVec = item.transform.position - transform.position;
-
-            float dot = Vector2.Dot(setMoveVec, targetVec.normalized);
-            //Debug.Log(dot);
-
-            float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
-            //Debug.Log(theta);
-
-            float distance = Vector2.Distance(targetVec, transform.position);
-            //Debug.Log($"{dot}, {theta}, {distance}");
+            //float theta = Get_DotTheta(item);
+            bool dotInside = Check_DotInside(item, Range_halfAngle);
 
             item.gameObject.GetComponent<SpriteRenderer>().color =
-                (theta < Range_halfAngle && distance < Range_radius) ? new Color(1, 1, 1, Range_Alpha) : Color.white;
+            dotInside ? Color.blue : Color.red;
 
-            if(theta < Range_halfAngle)
-            {
-                item.gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
-                List_FireInFOV.Add(item.gameObject);
-            }
-            else
-            {
-                item.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
-            }
+            if (dotInside)  List_FireInFOV.Add(item.gameObject);
         }
+    }
+
+    void Check_Interaction()
+    {
+        List_InteractionInFOV.Clear();
+
+        Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Interaction);
+
+        foreach (Collider2D item in hit)
+        {
+            //float theta = Get_DotTheta(item);
+            bool dotInside = Check_DotInside(item, Range_halfAngle);
+
+            item.gameObject.GetComponent<SpriteRenderer>().color =
+            dotInside ? Color.blue : Color.red;
+
+            if (dotInside) List_InteractionInFOV.Add(item.gameObject);
+        }
+    }
+
+    float Get_DotTheta(Collider2D hitObj)
+    {
+        Vector2 targetVec = hitObj.transform.position - transform.position;
+
+        float dot = Vector2.Dot(obj_FOV.transform.right, targetVec.normalized);
+        float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
+
+        return theta;
+    }
+
+    bool Check_DotInside(Collider2D hitObj, float half_Range)
+    {
+        //float theta = Get_DotTheta(hitObj);
+
+        Vector2 targetVec = hitObj.transform.position - transform.position;
+
+        float dot = Vector2.Dot(obj_FOV.transform.right, targetVec.normalized);
+        float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
+
+        return theta < half_Range;
     }
 
     private void OnDrawGizmos()
     {
         Handles.color = (isFire) ? Color_Detected : Color_nonDetected;
 
-        if (!isMove) return;
-        Handles.DrawSolidArc(transform.position, transform.forward, setMoveVec, Range_halfAngle, Range_radius);
-        Handles.DrawSolidArc(transform.position, transform.forward, setMoveVec, -Range_halfAngle, Range_radius);
+        Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, Range_halfAngle, Range_radius);
+        Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, -Range_halfAngle, Range_radius);
     }
 }
