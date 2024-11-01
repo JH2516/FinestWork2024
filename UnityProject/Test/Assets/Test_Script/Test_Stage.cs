@@ -11,6 +11,7 @@ public class Test_Stage : MonoBehaviour
     public Test_Player      player;
 
     public GameObject       Panel_Pause;
+    public GameObject       Panel_GameOver;
     public Image            player_HPBar;
 
 
@@ -27,12 +28,15 @@ public class Test_Stage : MonoBehaviour
         player_HP = 100;
         player_HPBar.fillAmount = 1;
         Debug.Log(StageLoader.Stage);
+
+        Panel_Pause.SetActive(false);
+        Panel_GameOver.SetActive(false);
     }
 
     private void Update()
     {
         if (!isGamePlay) return;
-        player_HP -= Time.deltaTime * 30;
+        player_HP -= Time.deltaTime * 2;
         player_HPBar.fillAmount = player_HP / 100f;
 
         if (player_HP <= 0)
@@ -80,5 +84,15 @@ public class Test_Stage : MonoBehaviour
     public void Game_Exit()
     {
         SceneManager.LoadScene("Stage");
+    }
+
+    public void GameOver_BackDraft()
+    {
+        isGamePlay = false;
+        isGameOver = true;
+        player_HP = 0;
+        player_HPBar.fillAmount = 0;
+
+        Panel_GameOver.SetActive(true);
     }
 }

@@ -12,6 +12,7 @@ public class Test_Player : MonoBehaviour
     public SpriteRenderer   sr;
 
     public GameObject       obj_FOV;
+    public GameObject       obj_Attack;
 
     public bool             isMove;
     public bool             isFire;
@@ -25,6 +26,8 @@ public class Test_Player : MonoBehaviour
 
     public Quaternion[]     rotate;
     public Quaternion       setRotate;
+
+    Interactor          target_Interactor;
 
     [Header("Detect Draw")]
     public Color Color_nonDetected = new Color(0, 1, 0, 0.5f);
@@ -98,12 +101,17 @@ public class Test_Player : MonoBehaviour
         Player_Attack();
 
         Check_Fire();
-        Check_Interaction();
+        //Check_Interaction();
     }
 
     void Get_Input()
     {
         if (Input.GetKey(KeyCode.A)) isFire = true;
+
+        if (Input.GetKeyDown(KeyCode.Q) && target_Interactor != null)
+        {
+            target_Interactor.Start_Interact();
+        }
     }
 
     /// <summary> 플레이어 이동 </summary>
@@ -118,11 +126,17 @@ public class Test_Player : MonoBehaviour
     {
         if (!isMove) return;
         obj_FOV.transform.rotation = setRotate;
+        obj_Attack.transform.rotation = setRotate;
     }
 
     void Player_Attack()
     {
-        if (!isFire) return;
+        if (!isFire)
+        {
+            obj_Attack.SetActive(false);
+            return;
+        }
+        obj_Attack.SetActive(true);
 
         foreach (var item in List_FireInFOV)
         {
@@ -178,8 +192,8 @@ public class Test_Player : MonoBehaviour
             //float theta = Get_DotTheta(item);
             bool dotInside = Check_DotInside(item, Range_halfAngle);
 
-            item.gameObject.GetComponent<SpriteRenderer>().color =
-            dotInside ? Color.blue : Color.red;
+            //item.gameObject.GetComponent<SpriteRenderer>().color =
+            //dotInside ? Color.blue : Color.red;
 
             if (dotInside)  List_FireInFOV.Add(item.gameObject);
         }
@@ -231,5 +245,26 @@ public class Test_Player : MonoBehaviour
 
         Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, Range_halfAngle, Range_radius);
         Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, -Range_halfAngle, Range_radius);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (target_Interactor != null) return;
+        if (!collision.CompareTag("Interactor")) return;
+
+        Interactor obj = collision.GetComponent<Interactor>();
+        obj.Show_Interact();
+        target_Interactor = obj;
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (!collision.CompareTag("Interactor")) return;
+
+        Interactor obj = collision.GetComponent<Interactor>();
+        obj.Hide_Interact();
+
+        if (target_Interactor == obj)
+        target_Interactor = null;
     }
 }
