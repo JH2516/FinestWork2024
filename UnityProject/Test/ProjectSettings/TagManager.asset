@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ItemList
   - Interactor
+  - DarkedRoom
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - Fire
   - Interaction
   - Warning_BackDraft
-  - 
+  - Darked
   - 
   - 
   - 
@@ -46,6 +47,6 @@ TagManager:
   - name: Mask_PlayersSight
     uniqueID: 411324259
     locked: 0
-  - name: 222
+  - name: Darked
     uniqueID: 2192219527
     locked: 0

@@ -6,9 +6,9 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 
-public class Test_Stage : MonoBehaviour
+public class StageManager : MonoBehaviour
 {
-    public Test_Player      player;
+    public Player           player;
 
     public GameObject       Panel_Pause;
     public GameObject       Panel_GameOver;
@@ -16,10 +16,15 @@ public class Test_Stage : MonoBehaviour
 
 
     bool                    isGamePlay;
-    float                   player_HP;
+    private float                   player_HP;
 
     [SerializeField]
     bool                    isGameOver;
+
+    public float Player_HP => player_HP;
+
+    [Range(1, 10) ,SerializeField]
+    private float decreaseHP = 2f;
 
     private void Start()
     {
@@ -36,7 +41,7 @@ public class Test_Stage : MonoBehaviour
     private void Update()
     {
         if (!isGamePlay) return;
-        player_HP -= Time.deltaTime * 2;
+        player_HP -= Time.deltaTime * decreaseHP;
         player_HPBar.fillAmount = player_HP / 100f;
 
         if (player_HP <= 0)
@@ -46,6 +51,12 @@ public class Test_Stage : MonoBehaviour
         }
     }
 
+
+    public void Player_RecoveryHP(float fillHP)
+    {
+        player_HPBar.fillAmount = fillHP;
+        player_HP = fillHP * 100;
+    }
 
 
 
@@ -63,6 +74,22 @@ public class Test_Stage : MonoBehaviour
     public void Button_Restart() =>     Game_Restart();
     public void Button_Exit() =>        Game_Exit();
 
+
+    public void State_InDarkedRoom(Collider2D room)
+    {
+        decreaseHP = 5;
+
+        room.gameObject.GetComponent<SpriteMask>().enabled = true;
+        room.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    public void State_OutDarkedRoom(Collider2D room)
+    {
+        decreaseHP = 2;
+
+        room.gameObject.GetComponent<SpriteMask>().enabled = false;
+        room.gameObject.GetComponent<SpriteRenderer>().enabled = true;
+    }
 
     public void Game_Pause()
     {

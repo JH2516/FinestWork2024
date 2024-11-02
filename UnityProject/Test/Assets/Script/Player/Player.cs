@@ -2,56 +2,66 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using static UnityEngine.UI.Image;
-using static UnityEditor.Progress;
 
-public class Test_Player : MonoBehaviour
+public class Player : MonoBehaviour
 {
-    public Camera           mainCamera;
+    public  Camera          mainCamera;
 
-    public SpriteRenderer   sr;
+    public  StageManager    stageManager;
 
-    public GameObject       obj_FOV;
-    public GameObject       obj_Attack;
+    public  SpriteRenderer  sr;
+    public  SpriteRenderer  sr_Darked;
 
-    public bool             isMove;
-    public bool             isFire;
-    public bool             isDetected;
+    public  GameObject      obj_FOV;
+    public  GameObject      obj_Attack;
 
-    public float            time_Fire;
+    public  bool            isMove;
+    public  bool            isFire;
+    public  bool            isDetected;
+
+    public  float           time_Fire;
 
     
-    public Vector2[]        moveVec;
-    public Vector2          setMoveVec;
+    public  Vector2[]       moveVec;
+    public  Vector2         setMoveVec;
 
-    public Quaternion[]     rotate;
-    public Quaternion       setRotate;
+    public  Quaternion[]    rotate;
+    public  Quaternion      setRotate;
 
-    Interactor          target_Interactor;
+    private Interactor      target_Interactor;
+
+    [Header("Darkness")]
+    [Range(0, 1), SerializeField]
+    private float           range_Darkness;
+    [Range(0, 1), SerializeField]
+    private float           range_DarknessInRoom;
 
     [Header("Detect Draw")]
-    public Color Color_nonDetected = new Color(0, 1, 0, 0.5f);
-    public Color Color_Detected = new Color(1, 0, 0, 0.5f);
-    [Range(0, 1)] [SerializeField]
-    private float Range_Alpha = 0.5f;
+    public  Color           Color_nonDetected = new Color(0, 1, 0, 0.5f);
+    public  Color           Color_Detected = new Color(1, 0, 0, 0.5f);
+    [Range(0, 1)]
+    [SerializeField]
+    private float           Range_Alpha = 0.5f;
 
 
-    [Range(0, 90)] [SerializeField]
-    private float Range_halfAngle = 20;
-    [Range(0, 20)] [SerializeField]
-    private float Range_radius = 5;
+    [Range(0, 90)]
+    public  float           Range_halfAngle = 20;
+    [Range(0, 20)]
+    public  float           Range_radius = 5;
 
     [Header("Detect Interaction")]
-    [Range(0, 90)] [SerializeField]
-    private float interaction_halfAngle = 20;
-    [Range(0, 20)] [SerializeField]
-    private float interaction_Radius = 5;
+    [Range(0, 90), SerializeField]
+    private float           interaction_halfAngle = 20;
+    [Range(0, 20), SerializeField]
+    private float           interaction_Radius = 5;
 
     [Header("Detect Fire")]
-    [Range(0, 90)] [SerializeField]
-    private float fire_halfAngle = 20;
-    [Range(0, 20)] [SerializeField]
-    private float fire_Radius = 5;
+    [Range(0, 90)]
+    [SerializeField]
+    private float           fire_halfAngle = 20;
+    [Range(0, 20)]
+    [SerializeField]
+    private float           fire_Radius = 5;
 
     
 
@@ -60,23 +70,27 @@ public class Test_Player : MonoBehaviour
     LayerMask               layer_Fire;
     LayerMask               layer_Interaction;
 
-    List<GameObject> List_FireInFOV;
-    List<GameObject> List_InteractionInFOV;
+    List<GameObject>        List_FireInFOV;
+    List<GameObject>        List_InteractionInFOV;
 
 
     private void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
 
-        time_Fire = 0;
-        isFire = false;
         List_FireInFOV = new List<GameObject>();
         List_InteractionInFOV = new List<GameObject>();
-        mainCamera = Camera.main;
-        moveVec = Test_Init.Get_MoveVecs();
-        rotate = Test_Init.Get_Rotation();
+
         layer_Fire = LayerMask.GetMask("Fire");
         layer_Interaction = LayerMask.GetMask("Interaction");
+
+        mainCamera = Camera.main;
+
+        moveVec = Test_Init.Get_MoveVecs();
+        rotate = Test_Init.Get_Rotation();
+
+        isFire = false;
+        time_Fire = 0;
     }
 
     private void Reset()
@@ -85,6 +99,8 @@ public class Test_Player : MonoBehaviour
 
         Color_nonDetected = new Color(0, 1, 0, 0.5f);
         Color_Detected = new Color(1, 0, 0, 0.5f);
+
+        sr_Darked.color = new Color(0, 0, 0, range_Darkness);
 
         isDetected = false;
     }
@@ -249,6 +265,14 @@ public class Test_Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision.CompareTag("DarkedRoom"))
+        {
+            Debug.Log("DarkedRoom");
+            sr_Darked.color = new Color(0, 0, 0, range_DarknessInRoom);
+            obj_FOV.transform.localScale = new Vector2(45, 15);
+            stageManager.State_InDarkedRoom(collision);
+        }
+
         if (target_Interactor != null) return;
         if (!collision.CompareTag("Interactor")) return;
 
@@ -259,6 +283,13 @@ public class Test_Player : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if (collision.CompareTag("DarkedRoom"))
+        {
+            sr_Darked.color = new Color(0, 0, 0, range_Darkness);
+            obj_FOV.transform.localScale = new Vector2(15, 15);
+            stageManager.State_OutDarkedRoom(collision);
+        }
+
         if (!collision.CompareTag("Interactor")) return;
 
         Interactor obj = collision.GetComponent<Interactor>();

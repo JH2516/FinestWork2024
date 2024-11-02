@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class Interactor_BackDraft : Interactor
 {
+    [Header("Show Warning")]
     [SerializeField]
-    private GameObject obj_Warning;
+    private GameObject      obj_Warning;
     [SerializeField]
-    private GameObject pos_Warning;
-
+    private GameObject      pos_Warning;
     [SerializeField]
-    private Transform pos_WarningUI;
+    private Transform       pos_WarningUI;
 
     protected override void Awake()
     {
         base.Awake();
-        show_Interaction.time_Interact = 1f;
+        //show_Interaction.time_Interact = 1f;
         obj_Warning.SetActive(false);
         pos_Warning.SetActive(false);
     }

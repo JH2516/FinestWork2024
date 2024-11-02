@@ -4,28 +4,42 @@ using UnityEngine;
 
 public class Interactor : MonoBehaviour
 {
+    [Header("Set_Interaction")]
     [SerializeField]
-    private GameObject      prefab_Interaction;
+    private     GameObject      prefab_Interaction;
     [SerializeField]
-    private Transform       parent_Interaction;
+    private     Transform       parent_Interaction;
 
+    [Header("Set_Interaction")]
     [SerializeField]
-    private Test_Player     obj_Player;
-    [SerializeField]
-    protected Test_Stage      stageManager;
-    private float           Time_Interaction;
-    protected bool isInteraction;
+    private     float           timeSec_Interaction;
 
-    protected UIInteract show_Interaction;
+    private     Player          obj_Player;
+    protected   StageManager    stageManager;
+
+    private     float           Time_Interaction;
+    protected   bool            isInteraction;
+
+    protected   UIInteract      show_Interaction;
 
     protected virtual void Awake()
     {
-        parent_Interaction = GameObject.Find("InGame_Canvas").transform.Find("Interactions");
-        stageManager = GameObject.Find("StageManager").GetComponent<Test_Stage>();
+        Init_Conmpnent();
+        Init_Interact();
+    }
 
+    protected void Init_Conmpnent()
+    {
+        parent_Interaction = GameObject.Find("InGame_Canvas").transform.Find("Interactions");
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+    }
+
+    protected virtual void Init_Interact()
+    {
         show_Interaction =
         Instantiate(prefab_Interaction, parent_Interaction).GetComponent<UIInteract>();
         show_Interaction.gameObject.SetActive(false);
+        show_Interaction.time_Interact = timeSec_Interaction;
 
         isInteraction = false;
     }

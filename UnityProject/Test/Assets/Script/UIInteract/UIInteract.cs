@@ -6,16 +6,19 @@ using TMPro;
 
 public class UIInteract : MonoBehaviour
 {
-    protected GameObject obj_Interactor;
-    protected Vector2 pos_Interact;
-    protected RectTransform rectTransform;
+    public      StageManager stageManager;
+
+    protected   GameObject      obj_Interactor;
+    protected   Vector2         pos_Interact;
+    protected   RectTransform   rectTransform;
 
     [SerializeField]
-    protected Image guage;
+    protected   Image           guage;
     [SerializeField]
-    private TextMeshProUGUI text;
-    protected bool getRequested;
-    protected float amount_Up;
+    private     TextMeshProUGUI text;
+    protected   bool            getRequested;
+    protected   float           amount_Up;
+    private     bool            isRecoveryHP;
 
     public float time_Interact;
 
@@ -25,7 +28,10 @@ public class UIInteract : MonoBehaviour
 
     public void Init()
     {
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+
         getRequested = false;
+        isRecoveryHP = false;
         guage.fillAmount = 0;
         amount_Up = 1 / time_Interact;
 
@@ -62,6 +68,8 @@ public class UIInteract : MonoBehaviour
         if (!getRequested) return;
 
         guage.fillAmount += Time.deltaTime * amount_Up;
+        if (isRecoveryHP) stageManager.Player_RecoveryHP(guage.fillAmount);
+
     }
 
     protected virtual void Gauge_Check()
@@ -70,9 +78,13 @@ public class UIInteract : MonoBehaviour
         obj_Interactor.GetComponent<Interactor>().Done_Interact();
     }
 
-    public virtual void Request_Start()
+    public void Request_Start(bool isRecoveryHP = false, float start_Guage = 0)
     {
         getRequested = true;
+
+        this.isRecoveryHP = isRecoveryHP;
+        guage.fillAmount = start_Guage / 100;
+
         guage.gameObject.SetActive(true);
         text.gameObject.SetActive(false);
     }
