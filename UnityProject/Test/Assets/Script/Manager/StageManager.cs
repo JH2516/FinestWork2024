@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 
@@ -13,6 +14,8 @@ public class StageManager : MonoBehaviour
     public GameObject       Panel_Pause;
     public GameObject       Panel_GameOver;
     public Image            player_HPBar;
+
+    public Light2D          light_Global;
 
 
     bool                    isGamePlay;
@@ -78,17 +81,19 @@ public class StageManager : MonoBehaviour
     public void State_InDarkedRoom(Collider2D room)
     {
         decreaseHP = 5;
+        light_Global.intensity = 0.015f;
 
-        room.gameObject.GetComponent<SpriteMask>().enabled = true;
-        room.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        room.GetComponent<SpriteMask>().enabled = true;
+        room.GetComponent<SpriteRenderer>().enabled = false;
     }
 
     public void State_OutDarkedRoom(Collider2D room)
     {
         decreaseHP = 2;
+        light_Global.intensity = 0.05f;
 
-        room.gameObject.GetComponent<SpriteMask>().enabled = false;
-        room.gameObject.GetComponent<SpriteRenderer>().enabled = true;
+        room.GetComponent<SpriteMask>().enabled = false;
+        room.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     public void Game_Pause()

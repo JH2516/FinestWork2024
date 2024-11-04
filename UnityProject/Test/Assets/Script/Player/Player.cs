@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEditor;
+using static UnityEditor.Progress;
 
 public class Player : MonoBehaviour
 {
@@ -10,14 +12,19 @@ public class Player : MonoBehaviour
     public  StageManager    stageManager;
 
     public  SpriteRenderer  sr;
-    public  SpriteRenderer  sr_Darked;
+
+    public  SpriteMask      sMask;
 
     public  GameObject      obj_FOV;
     public  GameObject      obj_Attack;
 
+    public  Light2D         light_PlayerFOV;
+
     public  bool            isMove;
     public  bool            isFire;
     public  bool            isDetected;
+    public  bool            isInteract;
+    public  byte            count_Interact;
 
     public  float           time_Fire;
 
@@ -71,7 +78,7 @@ public class Player : MonoBehaviour
     LayerMask               layer_Interaction;
 
     List<GameObject>        List_FireInFOV;
-    List<GameObject>        List_InteractionInFOV;
+    List<Interactor>        List_Interactor;
 
 
     private void Awake()
@@ -79,7 +86,7 @@ public class Player : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
 
         List_FireInFOV = new List<GameObject>();
-        List_InteractionInFOV = new List<GameObject>();
+        List_Interactor = new List<Interactor>();
 
         layer_Fire = LayerMask.GetMask("Fire");
         layer_Interaction = LayerMask.GetMask("Interaction");
@@ -90,7 +97,10 @@ public class Player : MonoBehaviour
         rotate = Test_Init.Get_Rotation();
 
         isFire = false;
+        isInteract = false;
+        count_Interact = 0;
         time_Fire = 0;
+        Set_LightFOV(45, 60);
     }
 
     private void Reset()
@@ -99,8 +109,6 @@ public class Player : MonoBehaviour
 
         Color_nonDetected = new Color(0, 1, 0, 0.5f);
         Color_Detected = new Color(1, 0, 0, 0.5f);
-
-        sr_Darked.color = new Color(0, 0, 0, range_Darkness);
 
         isDetected = false;
     }
@@ -124,9 +132,10 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.A)) isFire = true;
 
-        if (Input.GetKeyDown(KeyCode.Q) && target_Interactor != null)
+        if (Input.GetKeyDown(KeyCode.Q) && isInteract)
         {
-            target_Interactor.Start_Interact();
+            foreach (var interactor in List_Interactor)
+            interactor.Start_Interact();
         }
     }
 
@@ -183,6 +192,7 @@ public class Player : MonoBehaviour
     void Player_Flip()
     {
         if (!isMove) return;
+
         if (setMoveVec.x < 0) sr.flipX = true;
         if (setMoveVec.x > 0) sr.flipX = false;
     }
@@ -217,7 +227,7 @@ public class Player : MonoBehaviour
 
     void Check_Interaction()
     {
-        List_InteractionInFOV.Clear();
+        //List_InteractionInFOV.Clear();
 
         Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Interaction);
 
@@ -229,7 +239,7 @@ public class Player : MonoBehaviour
             item.gameObject.GetComponent<SpriteRenderer>().color =
             dotInside ? Color.blue : Color.red;
 
-            if (dotInside) List_InteractionInFOV.Add(item.gameObject);
+            //if (dotInside) List_InteractionInFOV.Add(item.gameObject);
         }
     }
 
@@ -255,6 +265,12 @@ public class Player : MonoBehaviour
         return theta < half_Range;
     }
 
+    private void Set_LightFOV(float inner, float outer)
+    {
+        light_PlayerFOV.pointLightInnerAngle = inner;
+        light_PlayerFOV.pointLightOuterAngle = outer;
+    }
+
     private void OnDrawGizmos()
     {
         Handles.color = (isFire) ? Color_Detected : Color_nonDetected;
@@ -263,39 +279,61 @@ public class Player : MonoBehaviour
         Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, -Range_halfAngle, Range_radius);
     }
 
+    private void InDarkedRoom(Collider2D room)
+    {
+        stageManager.State_InDarkedRoom(room);
+        Set_LightFOV(15f, 20f);
+    }
+
+    private void OutDarkedRoom(Collider2D room)
+    {
+        stageManager.State_OutDarkedRoom(room);
+        Set_LightFOV(45f, 60f);
+    }
+
+    private void InInteract(Collider2D interact)
+    {
+        Interactor obj = interact.GetComponent<Interactor>();
+        List_Interactor.Add(obj);
+        obj.Show_Interact();
+
+        count_Interact++;
+        isInteract = true;
+    }
+
+    private void OutInteract(Collider2D interact)
+    {
+        Interactor obj = interact.GetComponent<Interactor>();
+        List_Interactor.Remove(obj);
+        obj.Hide_Interact();
+
+        count_Interact--;
+        if (count_Interact == 0) isInteract = false;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("DarkedRoom"))
         {
-            Debug.Log("DarkedRoom");
-            sr_Darked.color = new Color(0, 0, 0, range_DarknessInRoom);
-            obj_FOV.transform.localScale = new Vector2(45, 15);
-            stageManager.State_InDarkedRoom(collision);
+            InDarkedRoom(collision); return;
         }
 
-        if (target_Interactor != null) return;
-        if (!collision.CompareTag("Interactor")) return;
-
-        Interactor obj = collision.GetComponent<Interactor>();
-        obj.Show_Interact();
-        target_Interactor = obj;
+        if (collision.CompareTag("Interactor"))
+        {
+            InInteract(collision); return;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("DarkedRoom"))
         {
-            sr_Darked.color = new Color(0, 0, 0, range_Darkness);
-            obj_FOV.transform.localScale = new Vector2(15, 15);
-            stageManager.State_OutDarkedRoom(collision);
+            OutDarkedRoom(collision); return;
         }
 
-        if (!collision.CompareTag("Interactor")) return;
-
-        Interactor obj = collision.GetComponent<Interactor>();
-        obj.Hide_Interact();
-
-        if (target_Interactor == obj)
-        target_Interactor = null;
+        if (collision.CompareTag("Interactor"))
+        {
+            OutInteract(collision); return;
+        }
     }
 }

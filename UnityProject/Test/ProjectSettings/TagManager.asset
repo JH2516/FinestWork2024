@@ -44,9 +44,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Mask_PlayersSight
-    uniqueID: 411324259
-    locked: 0
   - name: Darked
     uniqueID: 2192219527
+    locked: 0
+  - name: Mask_PlayersSight
+    uniqueID: 411324259
     locked: 0
