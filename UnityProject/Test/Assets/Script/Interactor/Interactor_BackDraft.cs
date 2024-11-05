@@ -25,20 +25,23 @@ public class Interactor_BackDraft : Interactor
 
     protected override void Awake()
     {
+        Init_UIInteraction("UIInteract_BackDraft");
+        Init_BackDraft();
         base.Awake();
-        //show_Interaction.time_Interact = 1f;
-        obj_Warning.SetActive(false);
-        pos_Warning.SetActive(false);
-        obj_Fires.SetActive(false);
     }
 
     private void OnEnable()
+    {
+        Init_BackDraft();
+        light_InRoom.intensity = 0.1f;
+    }
+
+    private void Init_BackDraft()
     {
         obj_Warning.SetActive(false);
         pos_Warning.SetActive(false);
         obj_Fires.SetActive(false);
         door.SetActive(true);
-        light_InRoom.intensity = 0.1f;
     }
 
     private void Update()
@@ -61,7 +64,7 @@ public class Interactor_BackDraft : Interactor
 
     public override void Done_Interact()
     {
-        stageManager.GameOver_BackDraft();
+        stageManager.GameOver();
     }
 
     public void Break_BackDraft()

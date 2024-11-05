@@ -15,7 +15,7 @@ public class UIInteract : MonoBehaviour
     [SerializeField]
     protected   Image           guage;
     [SerializeField]
-    private     TextMeshProUGUI text;
+    protected   TextMeshProUGUI text;
     protected   bool            getRequested;
     protected   float           amount_Up;
     private     bool            isRecoveryHP;

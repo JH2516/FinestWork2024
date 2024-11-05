@@ -4,5 +4,9 @@ using UnityEngine;
 
 public class Interactor_Survivor : Interactor
 {
-
+    protected override void Awake()
+    {
+        Init_UIInteraction("UIInteract_Survivora");
+        base.Awake();
+    }
 }

@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Interactor_Recovery : Interactor
 {
+    protected override void Awake()
+    {
+        Init_UIInteraction("UIInteract_Recovery");
+        base.Awake();
+    }
+
     public override void Start_Interact()
     {
         if (isInteraction) return;

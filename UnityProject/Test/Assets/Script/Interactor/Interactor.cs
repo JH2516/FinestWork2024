@@ -48,12 +48,18 @@ public class Interactor : MonoBehaviour
         isInteraction = false;
     }
 
-    private void OnEnable()
+    protected void Init_UIInteraction(string namePrefab)
+    {
+        if (prefab_Interaction == null)
+        prefab_Interaction = Resources.Load<GameObject>($"Prefab/{namePrefab}");
+    }
+
+    protected virtual void OnEnable()
     {
         isInteraction = false;
     }
 
-    public void Show_Interact()
+    public virtual void Show_Interact()
     {
         isInteraction = false;
 
@@ -62,7 +68,7 @@ public class Interactor : MonoBehaviour
         show_Interaction.gameObject.SetActive(true);
     }
 
-    public void Hide_Interact()
+    public virtual void Hide_Interact()
     {
         show_Interaction.gameObject.SetActive(false);
     }

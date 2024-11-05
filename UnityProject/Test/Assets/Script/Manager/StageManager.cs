@@ -62,11 +62,10 @@ public class StageManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isGamePlay) return;
+        if (isGameOver) return;
 
         Set_decreaseHP();
         Check_PlayerHP();
-        Check_isGameOver();
     }
 
     private void Set_decreaseHP()
@@ -78,20 +77,7 @@ public class StageManager : MonoBehaviour
 
     private void Check_PlayerHP()
     {
-        if (player_HP <= 0)
-        {
-            isGameOver = true;
-            isGamePlay = false;
-        }
-    }
-
-    private void Check_isGameOver()
-    {
-        if (isGameOver)
-        {
-            Panel_GameOver.SetActive(true);
-            Time.timeScale = 0;
-        }
+        if (player_HP <= 0) GameOver();
     }
 
 
@@ -157,7 +143,7 @@ public class StageManager : MonoBehaviour
         SceneManager.LoadScene("Stage");
     }
 
-    public void GameOver_BackDraft()
+    public void GameOver()
     {
         isGamePlay = false;
         isGameOver = true;
@@ -165,10 +151,5 @@ public class StageManager : MonoBehaviour
         player_HPBar.fillAmount = 0;
 
         Panel_GameOver.SetActive(true);
-    }
-
-    public void GameOver_Collapse()
-    {
-
     }
 }
