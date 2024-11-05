@@ -4,14 +4,10 @@ using UnityEngine;
 
 public class Interactor_Recovery : Interactor
 {
-    //protected override void Awake()
-    //{
-    //    base.Awake();
-    //    show_Interaction.time_Interact = 2f;
-    //}
-
     public override void Start_Interact()
     {
+        if (isInteraction) return;
+
         show_Interaction.Request_Start(true, stageManager.Player_HP);
         isInteraction = true;
     }
@@ -19,5 +15,6 @@ public class Interactor_Recovery : Interactor
     public override void Done_Interact()
     {
         show_Interaction.Init();
+        isInteraction = false;
     }
 }

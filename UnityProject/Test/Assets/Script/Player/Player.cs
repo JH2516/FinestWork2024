@@ -7,17 +7,19 @@ using static UnityEditor.Progress;
 
 public class Player : MonoBehaviour
 {
+    [Header("Component")]
     public  Camera          mainCamera;
-
     public  StageManager    stageManager;
 
     public  SpriteRenderer  sr;
-
     public  SpriteMask      sMask;
 
+    [Header("PlayerFOV")]
     public  GameObject      obj_FOV;
     public  GameObject      obj_Attack;
 
+    [Header("Light")]
+    public  Light2D         light_PlayerAround;
     public  Light2D         light_PlayerFOV;
 
     public  bool            isMove;
@@ -83,24 +85,52 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        sr = GetComponent<SpriteRenderer>();
+        Init_Argument();
+        Init_Conmpnent();
+        Init_Layer();
+        Init_Light();
+        Init_List();
+        Init_Transform();
+    }
 
+    private void Init_Conmpnent()
+    {
+        mainCamera = Camera.main;
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+        sr = GetComponent<SpriteRenderer>();
+    }
+
+    private void Init_List()
+    {
         List_FireInFOV = new List<GameObject>();
         List_Interactor = new List<Interactor>();
+    }
 
+    private void Init_Layer()
+    {
         layer_Fire = LayerMask.GetMask("Fire");
         layer_Interaction = LayerMask.GetMask("Interaction");
+    }
 
-        mainCamera = Camera.main;
-
+    private void Init_Transform()
+    {
         moveVec = Test_Init.Get_MoveVecs();
         rotate = Test_Init.Get_Rotation();
+    }
 
+    private void Init_Argument()
+    {
         isFire = false;
         isInteract = false;
         count_Interact = 0;
         time_Fire = 0;
-        Set_LightFOV(45, 60);
+    }
+
+    private void Init_Light()
+    {
+        Set_LightAroundIntensity(0.5f);
+        Set_LightAroundRadius(2f, 7f);
+        Set_LightFOVAngle(45f, 60f);
     }
 
     private void Reset()
@@ -115,6 +145,8 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (!stageManager.IsGamePlay) return;
+
         Get_Input();
         Timing();
 
@@ -225,33 +257,33 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Check_Interaction()
-    {
-        //List_InteractionInFOV.Clear();
+    //void Check_Interaction()
+    //{
+    //    //List_InteractionInFOV.Clear();
 
-        Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Interaction);
+    //    Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Interaction);
 
-        foreach (Collider2D item in hit)
-        {
-            //float theta = Get_DotTheta(item);
-            bool dotInside = Check_DotInside(item, Range_halfAngle);
+    //    foreach (Collider2D item in hit)
+    //    {
+    //        //float theta = Get_DotTheta(item);
+    //        bool dotInside = Check_DotInside(item, Range_halfAngle);
 
-            item.gameObject.GetComponent<SpriteRenderer>().color =
-            dotInside ? Color.blue : Color.red;
+    //        item.gameObject.GetComponent<SpriteRenderer>().color =
+    //        dotInside ? Color.blue : Color.red;
 
-            //if (dotInside) List_InteractionInFOV.Add(item.gameObject);
-        }
-    }
+    //        //if (dotInside) List_InteractionInFOV.Add(item.gameObject);
+    //    }
+    //}
 
-    float Get_DotTheta(Collider2D hitObj)
-    {
-        Vector2 targetVec = hitObj.transform.position - transform.position;
+    //float Get_DotTheta(Collider2D hitObj)
+    //{
+    //    Vector2 targetVec = hitObj.transform.position - transform.position;
 
-        float dot = Vector2.Dot(obj_FOV.transform.right, targetVec.normalized);
-        float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
+    //    float dot = Vector2.Dot(obj_FOV.transform.right, targetVec.normalized);
+    //    float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
 
-        return theta;
-    }
+    //    return theta;
+    //}
 
     bool Check_DotInside(Collider2D hitObj, float half_Range)
     {
@@ -265,10 +297,19 @@ public class Player : MonoBehaviour
         return theta < half_Range;
     }
 
-    private void Set_LightFOV(float inner, float outer)
+    private void Set_LightFOVAngle(float inner, float outer)
     {
         light_PlayerFOV.pointLightInnerAngle = inner;
         light_PlayerFOV.pointLightOuterAngle = outer;
+    }
+
+    private void Set_LightAroundIntensity(float intensity)
+    => light_PlayerAround.intensity = intensity;
+
+    private void Set_LightAroundRadius(float inner = 0f, float outer = 5f)
+    {
+        light_PlayerAround.pointLightInnerRadius = inner;
+        light_PlayerAround.pointLightOuterRadius = outer;
     }
 
     private void OnDrawGizmos()
@@ -282,13 +323,17 @@ public class Player : MonoBehaviour
     private void InDarkedRoom(Collider2D room)
     {
         stageManager.State_InDarkedRoom(room);
-        Set_LightFOV(15f, 20f);
+        Set_LightAroundIntensity(0.25f);
+        Set_LightAroundRadius(0f, 5f);
+        Set_LightFOVAngle(15f, 20f);
     }
 
     private void OutDarkedRoom(Collider2D room)
     {
         stageManager.State_OutDarkedRoom(room);
-        Set_LightFOV(45f, 60f);
+        Set_LightAroundIntensity(0.5f);
+        Set_LightAroundRadius(2f, 7f);
+        Set_LightFOVAngle(45f, 60f);
     }
 
     private void InInteract(Collider2D interact)

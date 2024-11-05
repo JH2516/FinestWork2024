@@ -1,26 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
 using UnityEngine;
 
 public class Interactor : MonoBehaviour
 {
-    [Header("Set_Interaction")]
+    // Setting Component
+    [Header("UI")]
     [SerializeField]
     private     GameObject      prefab_Interaction;
-    [SerializeField]
-    private     Transform       parent_Interaction;
 
-    [Header("Set_Interaction")]
+    [Header("Time")]
     [SerializeField]
     private     float           timeSec_Interaction;
 
-    private     Player          obj_Player;
-    protected   StageManager    stageManager;
 
-    private     float           Time_Interaction;
+    // Get Component
+    protected   StageManager    stageManager;
+    protected   UIInteract      show_Interaction;
+    private     Transform       parent_Interaction;
+
+
+    // Check
     protected   bool            isInteraction;
 
-    protected   UIInteract      show_Interaction;
 
     protected virtual void Awake()
     {
@@ -38,6 +41,7 @@ public class Interactor : MonoBehaviour
     {
         show_Interaction =
         Instantiate(prefab_Interaction, parent_Interaction).GetComponent<UIInteract>();
+
         show_Interaction.gameObject.SetActive(false);
         show_Interaction.time_Interact = timeSec_Interaction;
 
@@ -51,7 +55,9 @@ public class Interactor : MonoBehaviour
 
     public void Show_Interact()
     {
-        show_Interaction.Set_Interactor(this.gameObject);
+        isInteraction = false;
+
+        show_Interaction.Set_Interactor(gameObject);
         show_Interaction.Set_Position(transform.position);
         show_Interaction.gameObject.SetActive(true);
     }
@@ -63,6 +69,8 @@ public class Interactor : MonoBehaviour
 
     public virtual void Start_Interact()
     {
+        if (isInteraction) return;
+
         show_Interaction.Request_Start();
         isInteraction = true;
     }

@@ -6,7 +6,7 @@ using TMPro;
 
 public class UIInteract : MonoBehaviour
 {
-    public      StageManager stageManager;
+    public      StageManager    stageManager;
 
     protected   GameObject      obj_Interactor;
     protected   Vector2         pos_Interact;
@@ -68,7 +68,7 @@ public class UIInteract : MonoBehaviour
         if (!getRequested) return;
 
         guage.fillAmount += Time.deltaTime * amount_Up;
-        if (isRecoveryHP) stageManager.Player_RecoveryHP(guage.fillAmount);
+        if (isRecoveryHP) stageManager.Player_RemoteHP(guage.fillAmount);
 
     }
 
@@ -76,6 +76,8 @@ public class UIInteract : MonoBehaviour
     {
         if (guage.fillAmount >= 1f)
         obj_Interactor.GetComponent<Interactor>().Done_Interact();
+
+        stageManager.Set_RecoveryHP(false);
     }
 
     public void Request_Start(bool isRecoveryHP = false, float start_Guage = 0)
@@ -84,6 +86,8 @@ public class UIInteract : MonoBehaviour
 
         this.isRecoveryHP = isRecoveryHP;
         guage.fillAmount = start_Guage / 100;
+
+        stageManager.Set_RecoveryHP(true);
 
         guage.gameObject.SetActive(true);
         text.gameObject.SetActive(false);

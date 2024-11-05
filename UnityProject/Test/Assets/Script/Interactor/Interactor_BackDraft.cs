@@ -1,16 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Rendering.Universal;
 using UnityEngine;
 
 public class Interactor_BackDraft : Interactor
 {
-    [Header("Show Warning")]
+    [Header("BackDraft")]
     [SerializeField]
     private GameObject      obj_Warning;
     [SerializeField]
     private GameObject      pos_Warning;
     [SerializeField]
     private Transform       pos_WarningUI;
+    [SerializeField]
+    private BoxCollider2D   trigger_Interact;
+
+    [Header("Fire InRoom")]
+    [SerializeField]
+    private GameObject      obj_Fires;
+
+    [Header("Room Option")]
+    public  GameObject      door;
+    public  Light2D         light_InRoom;
 
     protected override void Awake()
     {
@@ -18,18 +29,22 @@ public class Interactor_BackDraft : Interactor
         //show_Interaction.time_Interact = 1f;
         obj_Warning.SetActive(false);
         pos_Warning.SetActive(false);
+        obj_Fires.SetActive(false);
     }
 
     private void OnEnable()
     {
         obj_Warning.SetActive(false);
         pos_Warning.SetActive(false);
+        obj_Fires.SetActive(false);
+        door.SetActive(true);
+        light_InRoom.intensity = 0.1f;
     }
 
     private void Update()
     {
         if (!isInteraction) return;
-        if (!pos_Warning.activeSelf) base.Done_Interact();
+        if (!pos_Warning.activeSelf) Break_BackDraft();
     }
 
     public override void Start_Interact()
@@ -39,11 +54,20 @@ public class Interactor_BackDraft : Interactor
         show_Interaction.Set_Position(pos_WarningUI.position);
         obj_Warning.SetActive(true);
         pos_Warning.SetActive(true);
+        obj_Fires.SetActive(true);
+        door.SetActive(false);
+        light_InRoom.intensity = 3f;
     }
 
     public override void Done_Interact()
     {
         stageManager.GameOver_BackDraft();
-        base.Done_Interact();
+    }
+
+    public void Break_BackDraft()
+    {
+        show_Interaction.gameObject.SetActive(false);
+        obj_Warning.SetActive(false);
+        trigger_Interact.enabled = false;
     }
 }
