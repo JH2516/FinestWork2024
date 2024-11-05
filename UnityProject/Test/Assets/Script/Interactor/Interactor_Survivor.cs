@@ -6,7 +6,7 @@ public class Interactor_Survivor : Interactor
 {
     protected override void Awake()
     {
-        Init_UIInteraction("UIInteract_Survivora");
+        Init_UIInteraction("UIInteract_Survivor");
         base.Awake();
     }
 }

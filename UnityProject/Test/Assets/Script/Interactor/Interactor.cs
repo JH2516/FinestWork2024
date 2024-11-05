@@ -8,7 +8,7 @@ public class Interactor : MonoBehaviour
     // Setting Component
     [Header("UI")]
     [SerializeField]
-    private     GameObject      prefab_Interaction;
+    protected   GameObject      prefab_Interaction;
 
     [Header("Time")]
     [SerializeField]
