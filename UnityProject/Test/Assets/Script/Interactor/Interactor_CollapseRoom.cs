@@ -16,6 +16,8 @@ public class Interactor_CollapseRoom : Interactor
 
     private bool            isCollapsed;
 
+    public float            Time_Collapse => time_Collapse;
+
 
 
     protected override void Awake()
@@ -30,6 +32,8 @@ public class Interactor_CollapseRoom : Interactor
         if (time_Collapse == 0) time_Collapse = 10;
 
         isCollapsed = false;
+
+        Invoke("Waiting_Collapse", time_Collapse - 5f);
     }
 
     private void Update()
@@ -48,9 +52,6 @@ public class Interactor_CollapseRoom : Interactor
 
     private void Check_Collapse()
     {
-        Debug.Log(time_Collapse);
-        Debug.Log(time_Collapse <= 0f);
-
         if (time_Collapse <= 0f)
         Start_Collapse();
     }
@@ -64,6 +65,8 @@ public class Interactor_CollapseRoom : Interactor
         stageManager.GameOver();
 
         text_Collapse.enabled = false;
+
+        stageManager.player.warning_Collapse = false;
     }
 
     public override void Show_Interact()
@@ -76,5 +79,10 @@ public class Interactor_CollapseRoom : Interactor
     {
         base.Hide_Interact();
         isPlayerInside = false;
+    }
+
+    private void Waiting_Collapse()
+    {
+        stageManager.player.warning_Collapse = true;
     }
 }

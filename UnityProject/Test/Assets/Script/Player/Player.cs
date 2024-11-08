@@ -72,6 +72,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float           fire_Radius = 5;
 
+    public  bool            warning_Collapse;
     
 
     public GameObject test_Obj;
@@ -114,14 +115,15 @@ public class Player : MonoBehaviour
 
     private void Init_Transform()
     {
-        moveVec = Test_Init.Get_MoveVecs();
-        rotate = Test_Init.Get_Rotation();
+        moveVec = Init_PlayerTransform.Get_MoveVecs();
+        rotate = Init_PlayerTransform.Get_Rotation();
     }
 
     private void Init_Argument()
     {
         isFire = false;
         isInteract = false;
+        warning_Collapse = false;
         count_Interact = 0;
         time_Fire = 0;
     }
@@ -130,7 +132,6 @@ public class Player : MonoBehaviour
     {
         Set_LightAroundIntensity(0.5f);
         Set_LightAroundRadius(2f, 7f);
-        Set_LightFOVAngle(45f, 60f);
     }
 
     private void Reset()
@@ -160,6 +161,22 @@ public class Player : MonoBehaviour
         //Check_Interaction();
     }
 
+    private void FixedUpdate()
+    {
+        if (!warning_Collapse) return;
+        Warning_Collapse();
+    }
+
+
+    /// <summary> 붕괴 위험, 화면 흔들림 출현 </summary>
+    public void Warning_Collapse()
+    {
+        Vector3 effect = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), -10);
+        mainCamera.transform.position = transform.position + effect;
+    }
+
+
+    /// <summary> 입력 키 검사 </summary>
     void Get_Input()
     {
         if (Input.GetKey(KeyCode.A)) isFire = true;
@@ -179,6 +196,7 @@ public class Player : MonoBehaviour
         transform.Translate(setMoveVec * 3f * Time.deltaTime);
     }
 
+    /// <summary> 플레이어 회전 </summary>
     void Player_Rotate()
     {
         if (!isMove) return;
@@ -186,6 +204,7 @@ public class Player : MonoBehaviour
         obj_Attack.transform.rotation = setRotate;
     }
 
+    /// <summary> 플레이어 소화기 분사 </summary>
     void Player_Attack()
     {
         if (!isFire)
@@ -201,6 +220,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary> 시간 갱신 </summary>
     void Timing()
     {
         if (time_Fire > 1f && !Input.GetKey(KeyCode.A))
@@ -215,6 +235,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary> 소화기 분사 시간 갱신 </summary>
     void Timing_Fire()
     {
         time_Fire += Time.deltaTime;
@@ -235,7 +256,7 @@ public class Player : MonoBehaviour
     /// <summary> 플레이어 이동 여부 지정 </summary>
     public void Set_isMove(bool move) => isMove = move;
 
-
+    /// <summary> 플레이어 회전 지정 </summary>
     public void Set_Rotation(int type) => setRotate = rotate[type];
 
 
@@ -297,15 +318,33 @@ public class Player : MonoBehaviour
         return theta < half_Range;
     }
 
+
+    /// <summary> 플레이어 전방 시야각 설정 </summary>
     private void Set_LightFOVAngle(float inner, float outer)
     {
         light_PlayerFOV.pointLightInnerAngle = inner;
         light_PlayerFOV.pointLightOuterAngle = outer;
     }
 
+    /// <summary> 플레이어 전방 시야각 일정 배율 증가 </summary>
+    private void Set_IncreaseLightFOVAngle(float increase = 3f)
+    {
+        light_PlayerFOV.pointLightInnerAngle *= increase;
+        light_PlayerFOV.pointLightOuterAngle *= increase;
+    }
+
+    /// <summary> 플레이어 전방 시야각 일정 배율 감소 </summary>
+    private void Set_DecreaseLightFOVAngle(float decrease = 3f)
+    {
+        light_PlayerFOV.pointLightInnerAngle /= decrease;
+        light_PlayerFOV.pointLightOuterAngle /= decrease;
+    }
+
+    /// <summary> 플레이어 주변 밝기 수치 설정 </summary>
     private void Set_LightAroundIntensity(float intensity)
     => light_PlayerAround.intensity = intensity;
 
+    /// <summary> 플레이어 주변 밝기 반경 설정 </summary>
     private void Set_LightAroundRadius(float inner = 0f, float outer = 5f)
     {
         light_PlayerAround.pointLightInnerRadius = inner;
@@ -320,22 +359,25 @@ public class Player : MonoBehaviour
         Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, -Range_halfAngle, Range_radius);
     }
 
+    /// <summary> 플레이어의 어두운 방 입장 </summary>
     private void InDarkedRoom(Collider2D room)
     {
         stageManager.State_InDarkedRoom(room);
         Set_LightAroundIntensity(0.25f);
         Set_LightAroundRadius(0f, 5f);
-        Set_LightFOVAngle(15f, 20f);
+        Set_DecreaseLightFOVAngle();
     }
 
+    /// <summary> 플레이어의 어두운 방 퇴장 </summary>
     private void OutDarkedRoom(Collider2D room)
     {
         stageManager.State_OutDarkedRoom(room);
         Set_LightAroundIntensity(0.5f);
         Set_LightAroundRadius(2f, 7f);
-        Set_LightFOVAngle(45f, 60f);
+        Set_IncreaseLightFOVAngle();
     }
 
+    /// <summary> 플레이어의 상호작용 대상에 접근 </summary>
     private void InInteract(Collider2D interact)
     {
         Interactor obj = interact.GetComponent<Interactor>();
@@ -346,6 +388,7 @@ public class Player : MonoBehaviour
         isInteract = true;
     }
 
+    /// <summary> 플레이어의 상호작용 대상으로부터 나가기 </summary>
     private void OutInteract(Collider2D interact)
     {
         Interactor obj = interact.GetComponent<Interactor>();
@@ -355,6 +398,9 @@ public class Player : MonoBehaviour
         count_Interact--;
         if (count_Interact == 0) isInteract = false;
     }
+
+
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

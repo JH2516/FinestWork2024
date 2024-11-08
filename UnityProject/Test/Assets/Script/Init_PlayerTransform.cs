@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Test_Init : MonoBehaviour
+public class Init_PlayerTransform : MonoBehaviour
 {
     /// <summary> 이동 벡터 모음 불러오기 </summary>
     public static Vector2[] Get_MoveVecs()

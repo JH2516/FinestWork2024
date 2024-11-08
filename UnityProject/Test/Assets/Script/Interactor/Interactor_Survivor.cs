@@ -9,4 +9,10 @@ public class Interactor_Survivor : Interactor
         Init_UIInteraction("UIInteract_Survivor");
         base.Awake();
     }
+
+    public override void Done_Interact()
+    {
+        stageManager.Save_Survivor(gameObject);
+        base.Done_Interact();
+    }
 }
