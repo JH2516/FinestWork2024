@@ -13,6 +13,7 @@ public class StageManager : MonoBehaviour
     public  GameObject      Panel_Pause;
     public  GameObject      Panel_GameOver;
     public  Image           player_HPBar;
+    public  SurviverUpdate  surviver_Text;
 
     [Header("Light")]
     public  Light2D         light_Global;
@@ -83,6 +84,7 @@ public class StageManager : MonoBehaviour
         List_Survivors.Add(survivor.gameObject);
 
         survivors = List_Survivors.Count;
+        surviver_Text.SetSurviverNumber(survivors);
     }
 
     /// <summary> 초기화 : UI </summary>
@@ -134,6 +136,7 @@ public class StageManager : MonoBehaviour
     {
         List_Survivors.Remove(survivor);
         survivors--;
+        surviver_Text.SetSurviverNumber(survivors);
     }
 
 
