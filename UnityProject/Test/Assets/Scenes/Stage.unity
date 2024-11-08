@@ -1830,7 +1830,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 1132528308}
         m_TargetAssemblyTypeName: StageLoader, Assembly-CSharp
-        m_MethodName: SetStageNumber
+        m_MethodName: SetItemID
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
