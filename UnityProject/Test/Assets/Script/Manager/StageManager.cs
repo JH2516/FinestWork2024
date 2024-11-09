@@ -6,14 +6,19 @@ using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
+using TMPro;
 
 public class StageManager : MonoBehaviour
 {
     [Header("UI")]
     public  GameObject      Panel_Pause;
     public  GameObject      Panel_GameOver;
+    public  GameObject      ui_PlayerExtendHPBar;
     public  Image           player_HPBar;
-    public  SurviverUpdate  surviver_Text;
+    public  Image           Player_ExtendHPBar;
+    public  Image           backGround_HPBar;
+    public  Image           backGround_ExtendHPBar;
+    public  TextMeshProUGUI text_survivorRemain;
 
     [Header("Light")]
     public  Light2D         light_Global;
@@ -23,7 +28,7 @@ public class StageManager : MonoBehaviour
 
     [Header("Game Option")]
     [Range(1, 10), SerializeField]
-    private float           decreaseHP = 2f;
+    private float           decreaseHP = 3f;
 
     [Header("All Survivors")]
     [SerializeField]
@@ -39,11 +44,14 @@ public class StageManager : MonoBehaviour
     private bool            isGamePlay;
     private bool            isGameOver;
     private bool            isRecoveryHP;
-    private float           player_HP;
+    public float           player_HP;
+    private float           player_HPMax;
+
     [SerializeField]
     private int             survivors;
 
     public  float           Player_HP   =>  player_HP;
+    public  float           Player_HPMax => player_HPMax;
     public  bool            IsGamePlay  =>  isGamePlay;
 
     private void Awake()
@@ -52,11 +60,11 @@ public class StageManager : MonoBehaviour
         Init_Player();
         Init_Survivors();
         Init_UI();
+
+        Active_StageBoost();
+
         Debug.Log("Stage" + StageLoader.Stage);
         Debug.Log("Item" + StageLoader.Item);
-
-
-
     }
 
     /// <summary> 초기화 : 변수 </summary>
@@ -72,7 +80,9 @@ public class StageManager : MonoBehaviour
     private void Init_Player()
     {
         player_HP = 100;
+        player_HPMax = 100;
         player_HPBar.fillAmount = 1;
+        Player_ExtendHPBar.fillAmount = 1;
     }
 
     /// <summary> 초기화 : 생존자들 </summary>
@@ -84,7 +94,7 @@ public class StageManager : MonoBehaviour
         List_Survivors.Add(survivor.gameObject);
 
         survivors = List_Survivors.Count;
-        surviver_Text.SetSurviverNumber(survivors);
+        text_survivorRemain.text = survivors.ToString();
     }
 
     /// <summary> 초기화 : UI </summary>
@@ -92,6 +102,19 @@ public class StageManager : MonoBehaviour
     {
         Panel_Pause.SetActive(false);
         Panel_GameOver.SetActive(false);
+        backGround_HPBar.enabled = true;
+        backGround_ExtendHPBar.enabled = false;
+        ui_PlayerExtendHPBar.SetActive(false);
+    }
+
+    private void Active_StageBoost()
+    {
+        switch (StageLoader.Item)
+        {
+            case 0: Boost_SaveAllSurvivor();                break;
+            case 1: Boost_IncreaseHPAmount();               break;
+            case 2: Boost_IncreasePlayerLightFOVAngle();    break;
+        }
     }
 
     private void Update()
@@ -107,7 +130,8 @@ public class StageManager : MonoBehaviour
     {
         if (isRecoveryHP) return;
         player_HP -= Time.deltaTime * decreaseHP;
-        player_HPBar.fillAmount = player_HP / 100f;
+        player_HPBar.fillAmount = player_HP / 100;
+        Player_ExtendHPBar.fillAmount = player_HP / 150;
     }
 
     /// <summary> 플레이어 산소량 검사 </summary>
@@ -119,8 +143,9 @@ public class StageManager : MonoBehaviour
     /// <summary> 플레이어 산소량 갱신 </summary>
     public void Player_RemoteHP(float fillHP)
     {
-        player_HPBar.fillAmount = fillHP;
-        player_HP = fillHP * 100;
+        player_HPBar.fillAmount = fillHP * (player_HPMax / 100);
+        Player_ExtendHPBar.fillAmount = fillHP;
+        player_HP = fillHP * player_HPMax;
     }
 
     /// <summary> 플레이어 산소 회복 설정 </summary>
@@ -136,7 +161,7 @@ public class StageManager : MonoBehaviour
     {
         List_Survivors.Remove(survivor);
         survivors--;
-        surviver_Text.SetSurviverNumber(survivors);
+        text_survivorRemain.text = survivors.ToString();
     }
 
 
@@ -144,16 +169,31 @@ public class StageManager : MonoBehaviour
     /// <summary> 부스트 : 모든 생존자 구출 </summary>
     public void Boost_SaveAllSurvivor()
     {
+        foreach (GameObject survivor in List_Survivors)
+            survivor.SetActive(false);
+
         List_Survivors.Clear();
         survivors = 0;
+        text_survivorRemain.text = survivors.ToString();
     }
 
     /// <summary> 부스트 : 플레이어 산소 감소 (50%) </summary>
-    public void Boost_decreaseHPHalfOff()
+    public void Boost_IncreaseHPAmount()
     {
-        decreaseHP /= 2;
+        player_HP = 150;
+        player_HPMax = 150;
+        backGround_HPBar.enabled = false;
+        backGround_ExtendHPBar.enabled = true;
+        ui_PlayerExtendHPBar.SetActive(true);
     }
 
+    public void Boost_IncreasePlayerLightFOVAngle()
+    {
+        player.Set_LightFOVAngle(60f, 90f);
+        player.Set_LightFOVRadius(8f);
+        player.Set_LightAroundRadius(2f, 8f);
+        player.change_FOVAngleRange = 1.5f;
+    }
 
 
     /// <summary> 상태 : 안개가 가득찬 방 입장 </summary>

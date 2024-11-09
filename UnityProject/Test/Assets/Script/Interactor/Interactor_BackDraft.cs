@@ -21,7 +21,6 @@ public class Interactor_BackDraft : Interactor
 
     [Header("Room Option")]
     public  GameObject      door;
-    public  Light2D         light_InRoom;
 
     protected override void Awake()
     {
@@ -33,7 +32,6 @@ public class Interactor_BackDraft : Interactor
     private void OnEnable()
     {
         Init_BackDraft();
-        light_InRoom.intensity = 0.1f;
     }
 
     private void Init_BackDraft()
@@ -59,7 +57,6 @@ public class Interactor_BackDraft : Interactor
         pos_Warning.SetActive(true);
         obj_Fires.SetActive(true);
         door.SetActive(false);
-        light_InRoom.intensity = 3f;
     }
 
     public override void Done_Interact()

@@ -13,6 +13,8 @@ public class Interactor_CollapseRoom : Interactor
     private bool            isPlayerInside;
     [SerializeField]
     private GameObject      obj_Collapse;
+    [SerializeField]
+    private Transform       pos_UIInteract;
 
     private bool            isCollapsed;
 
@@ -71,7 +73,12 @@ public class Interactor_CollapseRoom : Interactor
 
     public override void Show_Interact()
     {
-        base.Show_Interact();
+        isInteraction = false;
+
+        show_Interaction.Set_Interactor(gameObject);
+        show_Interaction.Set_Position(pos_UIInteract.position);
+        show_Interaction.gameObject.SetActive(true);
+
         isPlayerInside = true;
     }
 

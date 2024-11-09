@@ -73,6 +73,8 @@ public class Player : MonoBehaviour
     private float           fire_Radius = 5;
 
     public  bool            warning_Collapse;
+
+    public  float           change_FOVAngleRange;
     
 
     public GameObject test_Obj;
@@ -80,7 +82,7 @@ public class Player : MonoBehaviour
     LayerMask               layer_Fire;
     LayerMask               layer_Interaction;
 
-    List<GameObject>        List_FireInFOV;
+    public List<Fire>        List_FireInFOV;
     List<Interactor>        List_Interactor;
 
 
@@ -103,7 +105,7 @@ public class Player : MonoBehaviour
 
     private void Init_List()
     {
-        List_FireInFOV = new List<GameObject>();
+        List_FireInFOV = new List<Fire>();
         List_Interactor = new List<Interactor>();
     }
 
@@ -126,12 +128,13 @@ public class Player : MonoBehaviour
         warning_Collapse = false;
         count_Interact = 0;
         time_Fire = 0;
+        change_FOVAngleRange = 2f;
     }
 
     private void Init_Light()
     {
         Set_LightAroundIntensity(0.5f);
-        Set_LightAroundRadius(2f, 7f);
+        Set_LightAroundRadius(2f, 5f);
     }
 
     private void Reset()
@@ -212,11 +215,18 @@ public class Player : MonoBehaviour
             obj_Attack.SetActive(false);
             return;
         }
-        obj_Attack.SetActive(true);
-
-        foreach (var item in List_FireInFOV)
+        else
         {
-            item.gameObject.SetActive(false);
+            obj_Attack.SetActive(true);
+
+            foreach (var item in List_FireInFOV)
+            {
+                if (item.gameObject.activeSelf == false) continue;
+                item.isExtinguish = true;
+
+                if (item.GetComponent<Fire>().isBackdraft)
+                item.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -227,6 +237,11 @@ public class Player : MonoBehaviour
         {
             time_Fire = 0f;
             isFire = false;
+
+            foreach (var item in List_FireInFOV)
+            {
+                item.isExtinguish = false;
+            }
         }
 
         if (isFire)
@@ -274,7 +289,7 @@ public class Player : MonoBehaviour
             //item.gameObject.GetComponent<SpriteRenderer>().color =
             //dotInside ? Color.blue : Color.red;
 
-            if (dotInside)  List_FireInFOV.Add(item.gameObject);
+            if (dotInside)  List_FireInFOV.Add(item.GetComponent<Fire>());
         }
     }
 
@@ -320,35 +335,65 @@ public class Player : MonoBehaviour
 
 
     /// <summary> 플레이어 전방 시야각 설정 </summary>
-    private void Set_LightFOVAngle(float inner, float outer)
+    public void Set_LightFOVAngle(float inner, float outer)
     {
         light_PlayerFOV.pointLightInnerAngle = inner;
         light_PlayerFOV.pointLightOuterAngle = outer;
     }
 
+    /// <summary> 플레이어 전방 시야 거리 설정 </summary>
+    public void Set_LightFOVRadius(float raduis)
+    {
+        light_PlayerFOV.pointLightOuterRadius = raduis;
+    }
+
     /// <summary> 플레이어 전방 시야각 일정 배율 증가 </summary>
-    private void Set_IncreaseLightFOVAngle(float increase = 3f)
+    private void Set_IncreaseLightFOVAngle(float increase = 2f)
     {
         light_PlayerFOV.pointLightInnerAngle *= increase;
         light_PlayerFOV.pointLightOuterAngle *= increase;
     }
 
     /// <summary> 플레이어 전방 시야각 일정 배율 감소 </summary>
-    private void Set_DecreaseLightFOVAngle(float decrease = 3f)
+    private void Set_DecreaseLightFOVAngle(float decrease = 2f)
     {
         light_PlayerFOV.pointLightInnerAngle /= decrease;
         light_PlayerFOV.pointLightOuterAngle /= decrease;
     }
 
+    /// <summary> 플레이어 전방 시야각 일정 배율 증가 </summary>
+    private void Set_IncreaseLightFOVRaduis(float increase = 2f)
+    {
+        light_PlayerFOV.pointLightOuterRadius *= increase;
+    }
+
+    /// <summary> 플레이어 전방 시야각 일정 배율 감소 </summary>
+    private void Set_DecreaseLightFOVRaduis(float decrease = 2f)
+    {
+        light_PlayerFOV.pointLightOuterRadius /= decrease;
+    }
+
     /// <summary> 플레이어 주변 밝기 수치 설정 </summary>
-    private void Set_LightAroundIntensity(float intensity)
+    public void Set_LightAroundIntensity(float intensity)
     => light_PlayerAround.intensity = intensity;
 
     /// <summary> 플레이어 주변 밝기 반경 설정 </summary>
-    private void Set_LightAroundRadius(float inner = 0f, float outer = 5f)
+    public void Set_LightAroundRadius(float inner = 0f, float outer = 5f)
     {
         light_PlayerAround.pointLightInnerRadius = inner;
         light_PlayerAround.pointLightOuterRadius = outer;
+    }
+
+    /// <summary> 플레이어 전방 시야각 일정 배율 증가 </summary>
+    private void Set_IncreaseLightAroundRaduis(float increase = 2f)
+    {
+        light_PlayerAround.pointLightOuterRadius *= increase;
+    }
+
+    /// <summary> 플레이어 전방 시야각 일정 배율 감소 </summary>
+    private void Set_DecreaseLightAroundRaduis(float decrease = 2f)
+    {
+        light_PlayerAround.pointLightOuterRadius /= decrease;
     }
 
     private void OnDrawGizmos()
@@ -364,8 +409,10 @@ public class Player : MonoBehaviour
     {
         stageManager.State_InDarkedRoom(room);
         Set_LightAroundIntensity(0.25f);
-        Set_LightAroundRadius(0f, 5f);
-        Set_DecreaseLightFOVAngle();
+        //Set_LightAroundRadius(0f, 5f);
+        Set_DecreaseLightAroundRaduis(change_FOVAngleRange);
+        Set_DecreaseLightFOVAngle(change_FOVAngleRange);
+        Set_DecreaseLightFOVRaduis();
     }
 
     /// <summary> 플레이어의 어두운 방 퇴장 </summary>
@@ -373,8 +420,10 @@ public class Player : MonoBehaviour
     {
         stageManager.State_OutDarkedRoom(room);
         Set_LightAroundIntensity(0.5f);
-        Set_LightAroundRadius(2f, 7f);
-        Set_IncreaseLightFOVAngle();
+        //Set_LightAroundRadius(2f, 7f);
+        Set_IncreaseLightAroundRaduis(change_FOVAngleRange);
+        Set_IncreaseLightFOVAngle(change_FOVAngleRange);
+        Set_IncreaseLightFOVRaduis();
     }
 
     /// <summary> 플레이어의 상호작용 대상에 접근 </summary>

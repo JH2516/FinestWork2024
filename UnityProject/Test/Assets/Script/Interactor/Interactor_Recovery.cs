@@ -14,7 +14,7 @@ public class Interactor_Recovery : Interactor
     {
         if (isInteraction) return;
 
-        show_Interaction.Request_Start(true, stageManager.Player_HP);
+        show_Interaction.Request_Start(true, stageManager.Player_HP / stageManager.Player_HPMax * 100);
         isInteraction = true;
     }
 

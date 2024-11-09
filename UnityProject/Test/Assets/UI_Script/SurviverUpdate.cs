@@ -5,7 +5,7 @@ using TMPro;
 
 public class SurviverUpdate : MonoBehaviour
 {
-    TextMeshProUGUI text;
+    public TextMeshProUGUI text;
 
     private void Awake()
     {
