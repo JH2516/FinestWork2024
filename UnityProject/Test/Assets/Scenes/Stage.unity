@@ -2527,7 +2527,7 @@ GameObject:
   - component: {fileID: 1132528304}
   - component: {fileID: 1132528306}
   - component: {fileID: 1132528305}
-  - component: {fileID: 1132528307}
+  - component: {fileID: 1132528309}
   - component: {fileID: 1132528308}
   m_Layer: 5
   m_Name: StageList
@@ -2600,23 +2600,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1132528303}
   m_CullTransparentMesh: 1
---- !u!114 &1132528307
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1132528303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fd97362cfe13f546ad1d519811bd592, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isX: 1
-  startLimit: -412
-  endLimit: 412
-  accelSlow: 0.2
-  dragSpeed: 0.8
 --- !u!114 &1132528308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2629,6 +2612,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c0351364422f10438194363fbddef15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1132528309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132528303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e57b8ea971006a1448b856d628af079e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isX: 1
+  startLimit: -412
+  endLimit: 412
+  fixSpeed: 15
+  dragSpeed: 0.8
+  fixPoint:
+  - -408
+  - -204
+  - 0
+  - 204
+  - 408
 --- !u!1 &1137272865
 GameObject:
   m_ObjectHideFlags: 0
