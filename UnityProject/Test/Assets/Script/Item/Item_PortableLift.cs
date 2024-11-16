@@ -6,14 +6,28 @@ public class Item_PortableLift: Item
 {
     public static Item_PortableLift item;
 
-
-    private void Awake()
+    protected override void Init()
     {
+        base.Init();
+
         item = this;
     }
 
     public override bool Use_Item()
     {
-        return false;
+        if (!Check_isPossableUseItem()) return false;
+
+        player.SetActive_UsingPortableLift(true);
+
+        return true;
+    }
+
+    private bool Check_isPossableUseItem()
+    {
+        if (!player.isRemoveCollapse)       return false;
+        if (player.using_PortableLift)      return false;
+        if (player.target_Collapse == null) return false;
+
+        return true;
     }
 }

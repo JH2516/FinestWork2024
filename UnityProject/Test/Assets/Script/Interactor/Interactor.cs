@@ -21,6 +21,7 @@ public class Interactor : MonoBehaviour
     protected   UIInteract      show_Interaction;
     private     Transform       parent_Interaction;
 
+    public      UIInteract      UIInteraction => show_Interaction;
 
     // Check
     protected   bool            isInteraction;

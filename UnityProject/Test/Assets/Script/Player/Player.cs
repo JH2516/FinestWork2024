@@ -29,6 +29,7 @@ public class Player : MonoBehaviour
     public  bool            isFire;
     public  bool            isDetected;
     public  bool            isInteract;
+    public  bool            isRemoveCollapse;
 
     public  byte            count_Interact;
     public  float           time_Fire;
@@ -78,6 +79,7 @@ public class Player : MonoBehaviour
     public  bool            warning_Collapse;
     public  bool            detect_Collapse;
     public  bool            using_CollapseAlarm;
+    public  bool            using_PortableLift;
 
     public  float           change_FOVAngleRange;
 
@@ -90,6 +92,8 @@ public class Player : MonoBehaviour
 
     public  GameObject      navigator_CollapseRoom;
     public  Transform       transform_CollapseRoom;
+
+    public  GameObject      target_Collapse;
 
 
     private void Awake()
@@ -140,7 +144,10 @@ public class Player : MonoBehaviour
         count_Interact = 0;
         time_Fire = 0;
         change_FOVAngleRange = 2f;
+        isRemoveCollapse = false;
+
         using_CollapseAlarm = false;
+        using_PortableLift = false;
     }
 
     private void Init_Light()
@@ -231,6 +238,18 @@ public class Player : MonoBehaviour
         using_CollapseAlarm = false;
     }
 
+    /// <summary> 붕괴물 제거 작업 활성화 여부 </summary>
+    public void SetActive_RemoveCollapse(bool isActive)
+    {
+        isRemoveCollapse = isActive;
+    }
+
+    /// <summary> 휴대용 리프트 활성화 여부 </summary>
+    public void SetActive_UsingPortableLift(bool isActive)
+    {
+        using_PortableLift = isActive;
+    }
+
 
     /// <summary> 입력 키 검사 </summary>
     void Get_Input()
@@ -248,6 +267,14 @@ public class Player : MonoBehaviour
             if (stageManager.UseItem_CollapseAlarm())
             transform_CollapseRoom.
             GetComponent<Interactor_CollapseRoom>().SetActive_UseCollapseAlarm(true);
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            if (stageManager.UseItem_PortableLift())
+            target_Collapse.
+            GetComponent<Interactor_Collapse>().UIInteraction.Modify_GuageAmountUpPerSecond(4f);
+            
         }
     }
 

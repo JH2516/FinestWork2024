@@ -62,6 +62,14 @@ public class Interactor_CollapseRoom : Interactor
         text_Collapse.text = $"Collapse\n{time_Collapse:N2}";
 
         if (isUsedCollapseAlarm)
+        Timing_RemainCollapseRoom();
+    }
+
+    private void Timing_RemainCollapseRoom()
+    {
+        if (time_Collapse <= 5f)
+        text_RemainCollapse.color = Color.red;
+
         text_RemainCollapse.text = $"{time_Collapse:N2}";
     }
 

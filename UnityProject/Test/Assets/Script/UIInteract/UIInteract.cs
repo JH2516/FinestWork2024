@@ -80,6 +80,11 @@ public class UIInteract : MonoBehaviour
         stageManager.Set_RecoveryHP(false);
     }
 
+    public void Modify_GuageAmountUpPerSecond(float amountValue)
+    {
+        amount_Up = 1 / amountValue;
+    }
+
     public void Request_Start(bool isRecoveryHP = false, float start_Guage = 0)
     {
         getRequested = true;

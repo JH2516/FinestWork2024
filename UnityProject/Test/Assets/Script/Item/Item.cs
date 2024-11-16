@@ -14,7 +14,7 @@ public class Item : MonoBehaviour
     protected virtual void Init()
     {
         stageManager    = StageManager.stageManager;
-        player          = Player.player;
+        player          = stageManager.player;
     }
 
     public virtual bool Use_Item()

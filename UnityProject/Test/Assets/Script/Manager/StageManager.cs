@@ -100,7 +100,7 @@ public class StageManager : MonoBehaviour
 
         item_CollapseAlarm.Init_Item();
         //item_PistolNozzle.Init_Item();
-        //item_PortableLift.Init_Item();
+        item_PortableLift.Init_Item();
     }
 
     /// <summary> 초기화 : 플레이어 속성 </summary>
