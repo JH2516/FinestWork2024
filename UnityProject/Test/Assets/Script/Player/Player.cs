@@ -4,15 +4,16 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEditor;
 using static UnityEditor.Progress;
+using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
+    public  static  Player  player;
+
     [Header("Component")]
     public  Camera          mainCamera;
     public  StageManager    stageManager;
-
     public  SpriteRenderer  sr;
-    public  SpriteMask      sMask;
 
     [Header("PlayerFOV")]
     public  GameObject      obj_FOV;
@@ -22,18 +23,20 @@ public class Player : MonoBehaviour
     public  Light2D         light_PlayerAround;
     public  Light2D         light_PlayerFOV;
 
+
+    [Header("Player State")]
     public  bool            isMove;
     public  bool            isFire;
     public  bool            isDetected;
     public  bool            isInteract;
-    public  byte            count_Interact;
 
+    public  byte            count_Interact;
     public  float           time_Fire;
 
-    
+
+    [Header("Player Transform")]
     public  Vector2[]       moveVec;
     public  Vector2         setMoveVec;
-
     public  Quaternion[]    rotate;
     public  Quaternion      setRotate;
 
@@ -73,21 +76,26 @@ public class Player : MonoBehaviour
     private float           fire_Radius = 5;
 
     public  bool            warning_Collapse;
+    public  bool            detect_Collapse;
+    public  bool            using_CollapseAlarm;
 
     public  float           change_FOVAngleRange;
-    
 
-    public GameObject test_Obj;
-
-    LayerMask               layer_Fire;
-    LayerMask               layer_Interaction;
+    private LayerMask       layer_Collapse;
+    private LayerMask       layer_Fire;
+    private LayerMask       layer_Interaction;
 
     public List<Fire>        List_FireInFOV;
     List<Interactor>        List_Interactor;
 
+    public  GameObject      navigator_CollapseRoom;
+    public  Transform       transform_CollapseRoom;
+
 
     private void Awake()
     {
+        if (player == null) player = this;
+
         Init_Argument();
         Init_Conmpnent();
         Init_Layer();
@@ -101,6 +109,8 @@ public class Player : MonoBehaviour
         mainCamera = Camera.main;
         stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
         sr = GetComponent<SpriteRenderer>();
+
+        navigator_CollapseRoom.SetActive(false);
     }
 
     private void Init_List()
@@ -111,6 +121,7 @@ public class Player : MonoBehaviour
 
     private void Init_Layer()
     {
+        layer_Collapse = LayerMask.GetMask("Collapse");
         layer_Fire = LayerMask.GetMask("Fire");
         layer_Interaction = LayerMask.GetMask("Interaction");
     }
@@ -129,6 +140,7 @@ public class Player : MonoBehaviour
         count_Interact = 0;
         time_Fire = 0;
         change_FOVAngleRange = 2f;
+        using_CollapseAlarm = false;
     }
 
     private void Init_Light()
@@ -161,21 +173,62 @@ public class Player : MonoBehaviour
         Player_Attack();
 
         Check_Fire();
+        Check_Collapse();
         //Check_Interaction();
     }
 
     private void FixedUpdate()
     {
-        if (!warning_Collapse) return;
         Warning_Collapse();
+        Detect_FirstCollapse();
+        Navigate_CollapseRoom();
     }
 
 
     /// <summary> 붕괴 위험, 화면 흔들림 출현 </summary>
     public void Warning_Collapse()
     {
+        if (!warning_Collapse) return;
+
         Vector3 effect = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), -10);
         mainCamera.transform.position = transform.position + effect;
+    }
+
+    /// <summary> 초기 붕괴물 근처 감지 시 화면 흔들림 출현 </summary>
+    public void Detect_FirstCollapse()
+    {
+        if (!detect_Collapse) return;
+
+        Vector3 effect = new Vector3(Random.Range(-0.05f, 0.05f), Random.Range(-0.05f, 0.05f), -10);
+        mainCamera.transform.position = transform.position + effect;
+    }
+
+    /// <summary> 붕괴물 경보기 사용 시 내비게이트 기능 출현 </summary>
+    public void Navigate_CollapseRoom()
+    {
+        if (!using_CollapseAlarm) return;
+
+        Vector3 direction = transform_CollapseRoom.position - transform.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        navigator_CollapseRoom.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+    }
+
+    //public void SetTarget_CollapseRoomForNavigate(Transform collapseRoom)
+    //=> transform_CollapseRoom = collapseRoom;
+
+    /// <summary> 붕괴물 경보기 내비게이트 활성화 </summary>
+    public void Active_NavigateToCollapseRoom()
+    {
+        navigator_CollapseRoom.SetActive(true);
+        using_CollapseAlarm = true;
+    }
+
+    /// <summary> 붕괴물 경보기 내비게이트 비활성화 </summary>
+    public void InActive_NavigateToCollapseRoom()
+    {
+        navigator_CollapseRoom.SetActive(false);
+        using_CollapseAlarm = false;
     }
 
 
@@ -188,6 +241,13 @@ public class Player : MonoBehaviour
         {
             foreach (var interactor in List_Interactor)
             interactor.Start_Interact();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            if (stageManager.UseItem_CollapseAlarm())
+            transform_CollapseRoom.
+            GetComponent<Interactor_CollapseRoom>().SetActive_UseCollapseAlarm(true);
         }
     }
 
@@ -291,6 +351,29 @@ public class Player : MonoBehaviour
 
             if (dotInside)  List_FireInFOV.Add(item.GetComponent<Fire>());
         }
+    }
+
+
+    private void Check_Collapse()
+    {
+        Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Collapse);
+        foreach (Collider2D item in hit)
+        {
+            Interactor_Collapse collapse = item.GetComponent<Interactor_Collapse>();
+            if (!collapse.isPlayerDetect)
+            {
+                collapse.isPlayerDetect = true;
+                StartCoroutine("Detect_Collapse");
+            }
+        }
+    }
+
+    private IEnumerator Detect_Collapse()
+    {
+        detect_Collapse = true;
+        yield return new WaitForSeconds(5f);
+
+        detect_Collapse = false;
     }
 
     //void Check_Interaction()

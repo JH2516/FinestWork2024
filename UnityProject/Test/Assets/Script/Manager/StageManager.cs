@@ -10,15 +10,19 @@ using TMPro;
 
 public class StageManager : MonoBehaviour
 {
+    public  static  StageManager    stageManager;
+
     [Header("UI")]
     public  GameObject      Panel_Pause;
     public  GameObject      Panel_GameOver;
     public  GameObject      ui_PlayerExtendHPBar;
+    public  GameObject      ui_RemainCollapseRoom;
     public  Image           player_HPBar;
     public  Image           Player_ExtendHPBar;
     public  Image           backGround_HPBar;
     public  Image           backGround_ExtendHPBar;
     public  TextMeshProUGUI text_survivorRemain;
+    public  TextMeshProUGUI text_CollapseRoomRemain;
 
     [Header("Light")]
     public  Light2D         light_Global;
@@ -38,6 +42,15 @@ public class StageManager : MonoBehaviour
     [SerializeField]
     private Transform           all_CollapseRooms;
 
+    [Header("Items")]
+    [SerializeField]
+    private Item_CollapseAlarm  item_CollapseAlarm;
+    [SerializeField]
+    private Item_PistolNozzle   item_PistolNozzle;
+    [SerializeField]
+    private Item_PortableLift   item_PortableLift;
+
+    [Header("Survivors")]
     [SerializeField]
     private List<GameObject>    List_Survivors;
 
@@ -56,7 +69,10 @@ public class StageManager : MonoBehaviour
 
     private void Awake()
     {
+        if (stageManager == null) stageManager = this;
+
         Init_Argument();
+        Init_Items();
         Init_Player();
         Init_Survivors();
         Init_UI();
@@ -74,6 +90,17 @@ public class StageManager : MonoBehaviour
         isGameOver = false;
         isRecoveryHP = false;
         Time.timeScale = 1;
+    }
+
+    private void Init_Items()
+    {
+        //item_CollapseAlarm  =   Item_CollapseAlarm.item;
+        //item_PistolNozzle   =   Item_PistolNozzle.item;
+        //item_PortableLift   =   Item_PortableLift.item;
+
+        item_CollapseAlarm.Init_Item();
+        //item_PistolNozzle.Init_Item();
+        //item_PortableLift.Init_Item();
     }
 
     /// <summary> 초기화 : 플레이어 속성 </summary>
@@ -105,6 +132,7 @@ public class StageManager : MonoBehaviour
         backGround_HPBar.enabled = true;
         backGround_ExtendHPBar.enabled = false;
         ui_PlayerExtendHPBar.SetActive(false);
+        ui_RemainCollapseRoom.SetActive(false);
     }
 
     private void Active_StageBoost()
@@ -156,11 +184,16 @@ public class StageManager : MonoBehaviour
 
 
 
-    /// <summary> 생존자 구출 </summary>
+    /// <summary> 생존자 구출 작업 수행 </summary>
     public void Save_Survivor(GameObject survivor)
     {
         List_Survivors.Remove(survivor);
         survivors--;
+    }
+
+    /// <summary> 생존자 현장 구출 완료 </summary>
+    public void Complete_EscapeSurvivor()
+    {
         text_survivorRemain.text = survivors.ToString();
     }
 
@@ -194,6 +227,26 @@ public class StageManager : MonoBehaviour
         player.Set_LightAroundRadius(2f, 8f);
         player.change_FOVAngleRange = 1.5f;
     }
+
+
+
+    public bool UseItem_CollapseAlarm()
+    {
+        return item_CollapseAlarm.Use_Item();
+    }
+
+    public bool UseItem_PistolNozzle()
+    {
+        return item_PistolNozzle.Use_Item();
+    }
+
+    public bool UseItem_PortableLift()
+    {
+        return item_PortableLift.Use_Item();
+    }
+
+    public void SetActive_UIRemainCollapseRoom(bool isActive)
+    => ui_RemainCollapseRoom.SetActive(isActive);
 
 
     /// <summary> 상태 : 안개가 가득찬 방 입장 </summary>

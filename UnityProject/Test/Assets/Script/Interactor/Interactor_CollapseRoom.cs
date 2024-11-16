@@ -16,7 +16,13 @@ public class Interactor_CollapseRoom : Interactor
     [SerializeField]
     private Transform       pos_UIInteract;
 
+    public  GameObject      item_CollapseAlarm;
+
+    [SerializeField]
+    private TextMeshProUGUI text_RemainCollapse;
+
     private bool            isCollapsed;
+    private bool            isUsedCollapseAlarm;
 
     public float            Time_Collapse => time_Collapse;
 
@@ -28,14 +34,18 @@ public class Interactor_CollapseRoom : Interactor
         base.Awake();
 
         obj_Collapse.SetActive(false);
+        item_CollapseAlarm.SetActive(false);
         text_Collapse = show_Interaction.transform.Find("Text_Interaction").GetComponent<TextMeshProUGUI>();
         text_Collapse.text = $"Collapse\n{time_Collapse:N2}";
 
         if (time_Collapse == 0) time_Collapse = 10;
 
         isCollapsed = false;
+        isUsedCollapseAlarm = false;
 
         Invoke("Waiting_Collapse", time_Collapse - 5f);
+
+        text_RemainCollapse = stageManager.text_CollapseRoomRemain;
     }
 
     private void Update()
@@ -50,6 +60,15 @@ public class Interactor_CollapseRoom : Interactor
     {
         time_Collapse -= Time.deltaTime;
         text_Collapse.text = $"Collapse\n{time_Collapse:N2}";
+
+        if (isUsedCollapseAlarm)
+        text_RemainCollapse.text = $"{time_Collapse:N2}";
+    }
+
+    public void SetActive_UseCollapseAlarm(bool isActive)
+    {
+        item_CollapseAlarm.SetActive(isActive);
+        isUsedCollapseAlarm = isActive;
     }
 
     private void Check_Collapse()
@@ -69,6 +88,10 @@ public class Interactor_CollapseRoom : Interactor
         text_Collapse.enabled = false;
 
         stageManager.player.warning_Collapse = false;
+
+        player.InActive_NavigateToCollapseRoom();
+        stageManager.SetActive_UIRemainCollapseRoom(false);
+        SetActive_UseCollapseAlarm(false);
     }
 
     public override void Show_Interact()
@@ -80,12 +103,18 @@ public class Interactor_CollapseRoom : Interactor
         show_Interaction.gameObject.SetActive(true);
 
         isPlayerInside = true;
+
+        if (!player.using_CollapseAlarm)
+        player.transform_CollapseRoom = transform;
     }
 
     public override void Hide_Interact()
     {
         base.Hide_Interact();
         isPlayerInside = false;
+
+        if (!player.using_CollapseAlarm)
+        stageManager.player.transform_CollapseRoom = null;
     }
 
     private void Waiting_Collapse()
