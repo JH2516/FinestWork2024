@@ -59,7 +59,7 @@ public class Interactor_CollapseRoom : Interactor
     private void Timing()
     {
         time_Collapse -= Time.deltaTime;
-        text_Collapse.text = $"Collapse\n{time_Collapse:N2}";
+        text_Collapse.text = $"Collapse\n{(int)time_Collapse}";
 
         if (isUsedCollapseAlarm)
         Timing_RemainCollapseRoom();
@@ -104,11 +104,11 @@ public class Interactor_CollapseRoom : Interactor
 
     public override void Show_Interact()
     {
-        isInteraction = false;
-
-        show_Interaction.Set_Interactor(gameObject);
-        show_Interaction.Set_Position(pos_UIInteract.position);
-        show_Interaction.gameObject.SetActive(true);
+        if (!isInteraction)
+        {
+            StartCoroutine("FirstRemainTimeOfCollapse");
+            isInteraction = true;
+        }
 
         isPlayerInside = true;
 
@@ -118,7 +118,7 @@ public class Interactor_CollapseRoom : Interactor
 
     public override void Hide_Interact()
     {
-        base.Hide_Interact();
+        //base.Hide_Interact();
         isPlayerInside = false;
 
         if (!player.using_CollapseAlarm)
@@ -128,5 +128,16 @@ public class Interactor_CollapseRoom : Interactor
     private void Waiting_Collapse()
     {
         stageManager.player.warning_Collapse = true;
+    }
+
+    IEnumerator FirstRemainTimeOfCollapse()
+    {
+        show_Interaction.Set_Interactor(gameObject);
+        show_Interaction.Set_Position(pos_UIInteract.position);
+        show_Interaction.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(3f);
+
+        show_Interaction.gameObject.SetActive(false);
     }
 }

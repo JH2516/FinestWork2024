@@ -45,23 +45,71 @@ public class Interactor_BackDraft : Interactor
     private void Update()
     {
         if (!isInteraction) return;
-        if (!pos_Warning.activeSelf) Break_BackDraft();
+        if (!pos_Warning.activeSelf && !player.using_PistolNozzle) Break_BackDraft();
+    }
+
+    public override void Show_Interact()
+    {
+        base.Show_Interact();
+
+        player.SetActive_InFrontOfDoor(true);
+        player.target_BackDraft = gameObject;
+    }
+
+    public override void Hide_Interact()
+    {
+        base.Hide_Interact();
+
+        player.SetActive_InFrontOfDoor(false);
+        player.SetActive_UsingPistolNozzle(false);
+
+        if (!player.using_PistolNozzle)
+        player.target_BackDraft = null;
     }
 
     public override void Start_Interact()
     {
-        base.Start_Interact();
+        if (player.using_PistolNozzle && !isInteraction)
+        {
+            Start_InteractWithOutWarning();
+            base.Start_Interact();
+            return;
+        }
 
-        show_Interaction.Set_Position(pos_WarningUI.position);
-        obj_Warning.SetActive(true);
-        pos_Warning.SetActive(true);
-        obj_Fires.SetActive(true);
-        door.SetActive(false);
+        if (!isInteraction)
+        {
+            base.Start_Interact();
+
+            show_Interaction.Set_Position(pos_WarningUI.position);
+            obj_Warning.SetActive(true);
+            pos_Warning.SetActive(true);
+            obj_Fires.SetActive(true);
+            door.SetActive(false);
+        }
+    }
+
+    public void Start_InteractWithOutWarning()
+    {
+        show_Interaction.Modify_GuageAmountUpPerSecond(3f);
+        show_Interaction.Set_Position(door.transform.position);
     }
 
     public override void Done_Interact()
     {
+        if (player.using_PistolNozzle)
+        {
+            Done_InteractWithOutWarning();
+            return;
+        }
+
         stageManager.GameOver();
+    }
+
+    public void Done_InteractWithOutWarning()
+    {
+        door.SetActive(false);
+        obj_Fires.SetActive(true);
+        player.SetActive_UsingPistolNozzle(false);
     }
 
     public void Break_BackDraft()

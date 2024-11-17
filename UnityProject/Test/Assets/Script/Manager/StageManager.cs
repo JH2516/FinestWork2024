@@ -99,7 +99,7 @@ public class StageManager : MonoBehaviour
         //item_PortableLift   =   Item_PortableLift.item;
 
         item_CollapseAlarm.Init_Item();
-        //item_PistolNozzle.Init_Item();
+        item_PistolNozzle.Init_Item();
         item_PortableLift.Init_Item();
     }
 

@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
     public  bool            isDetected;
     public  bool            isInteract;
     public  bool            isRemoveCollapse;
+    public  bool            isInFrontOfDoor;
 
     public  byte            count_Interact;
     public  float           time_Fire;
@@ -80,6 +81,7 @@ public class Player : MonoBehaviour
     public  bool            detect_Collapse;
     public  bool            using_CollapseAlarm;
     public  bool            using_PortableLift;
+    public  bool            using_PistolNozzle;
 
     public  float           change_FOVAngleRange;
 
@@ -87,13 +89,18 @@ public class Player : MonoBehaviour
     private LayerMask       layer_Fire;
     private LayerMask       layer_Interaction;
 
-    public List<Fire>        List_FireInFOV;
+    public List<Fire>       List_FireInFOV;
     List<Interactor>        List_Interactor;
 
     public  GameObject      navigator_CollapseRoom;
     public  Transform       transform_CollapseRoom;
 
     public  GameObject      target_Collapse;
+    public  GameObject      target_BackDraft;
+
+    [Header("Icon")]
+    public  GameObject      icon_PistolNozzle;
+    public  GameObject      icon_PortableLift;
 
 
     private void Awake()
@@ -115,6 +122,8 @@ public class Player : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
 
         navigator_CollapseRoom.SetActive(false);
+        icon_PistolNozzle.SetActive(false);
+        icon_PortableLift.SetActive(false);
     }
 
     private void Init_List()
@@ -145,9 +154,11 @@ public class Player : MonoBehaviour
         time_Fire = 0;
         change_FOVAngleRange = 2f;
         isRemoveCollapse = false;
+        isInFrontOfDoor = false;
 
         using_CollapseAlarm = false;
         using_PortableLift = false;
+        using_PistolNozzle = false;
     }
 
     private void Init_Light()
@@ -248,6 +259,20 @@ public class Player : MonoBehaviour
     public void SetActive_UsingPortableLift(bool isActive)
     {
         using_PortableLift = isActive;
+        icon_PortableLift.SetActive(isActive);
+    }
+
+    /// <summary> 플레이어가 문 앞에 위치하는 지 여부 </summary>
+    public void SetActive_InFrontOfDoor(bool isActive)
+    {
+        isInFrontOfDoor = isActive;
+    }
+
+    /// <summary> 휴대용 리프트 활성화 여부 </summary>
+    public void SetActive_UsingPistolNozzle(bool isActive)
+    {
+        using_PistolNozzle = isActive;
+        icon_PistolNozzle.SetActive(isActive);
     }
 
 
@@ -276,6 +301,13 @@ public class Player : MonoBehaviour
             GetComponent<Interactor_Collapse>().UIInteraction.Modify_GuageAmountUpPerSecond(4f);
             
         }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if (stageManager.UseItem_PistolNozzle())
+            target_BackDraft.
+            GetComponent<Interactor_BackDraft>().Start_Interact();
+        }
     }
 
     /// <summary> 플레이어 이동 </summary>
@@ -283,6 +315,7 @@ public class Player : MonoBehaviour
     {
         if (!isMove) return;
         if (isFire) return;
+        if (using_PistolNozzle) return;
         transform.Translate(setMoveVec * 3f * Time.deltaTime);
     }
 
