@@ -15,6 +15,7 @@ public class StageManager : MonoBehaviour
     [Header("UI")]
     public  GameObject      Panel_Pause;
     public  GameObject      Panel_GameOver;
+    public  GameObject      Panel_GameClear;
     public  GameObject      ui_PlayerExtendHPBar;
     public  GameObject      ui_RemainCollapseRoom;
     public  Image           player_HPBar;
@@ -54,18 +55,34 @@ public class StageManager : MonoBehaviour
     [SerializeField]
     private List<GameObject>    List_Survivors;
 
+    [Header("Stage Status")]
+    [SerializeField]
     private bool            isGamePlay;
+    [SerializeField]
     private bool            isGameOver;
+    [SerializeField]
     private bool            isRecoveryHP;
-    public float           player_HP;
+    [SerializeField]
+    private float           time_InGame;
+
+    [Header("Player HP Info")]
+    public  float           player_HP;
     private float           player_HPMax;
 
+    [Header("Survivor Status")]
     [SerializeField]
     private int             survivors;
 
     public  float           Player_HP   =>  player_HP;
     public  float           Player_HPMax => player_HPMax;
     public  bool            IsGamePlay  =>  isGamePlay;
+
+    [Header("Stage Clear")]
+    private byte            clearStars;
+
+    [Header("Stage Clear Require")]
+    private float           clearTime = 100;
+    private bool            unUsedBoostItems;
 
     private void Awake()
     {
@@ -89,15 +106,16 @@ public class StageManager : MonoBehaviour
         isGamePlay = true;
         isGameOver = false;
         isRecoveryHP = false;
+
+        time_InGame = 0;
+
+        unUsedBoostItems = (StageLoader.Item == 99) ? true : false;
+
         Time.timeScale = 1;
     }
 
     private void Init_Items()
     {
-        //item_CollapseAlarm  =   Item_CollapseAlarm.item;
-        //item_PistolNozzle   =   Item_PistolNozzle.item;
-        //item_PortableLift   =   Item_PortableLift.item;
-
         item_CollapseAlarm.Init_Item();
         item_PistolNozzle.Init_Item();
         item_PortableLift.Init_Item();
@@ -129,6 +147,7 @@ public class StageManager : MonoBehaviour
     {
         Panel_Pause.SetActive(false);
         Panel_GameOver.SetActive(false);
+        Panel_GameClear.SetActive(false);
         backGround_HPBar.enabled = true;
         backGround_ExtendHPBar.enabled = false;
         ui_PlayerExtendHPBar.SetActive(false);
@@ -149,8 +168,15 @@ public class StageManager : MonoBehaviour
     {
         if (isGameOver) return;
 
+        Timing();
+
         Set_decreaseHP();
         Check_PlayerHP();
+    }
+
+    private void Timing()
+    {
+        time_InGame += Time.deltaTime;
     }
 
     /// <summary> 플레이어 산소 감소 </summary>
@@ -326,5 +352,23 @@ public class StageManager : MonoBehaviour
         Time.timeScale = 0;
 
         Panel_GameOver.SetActive(true);
+    }
+
+    /// <summary> 게임 결과 출력 </summary>
+    public void GameClear()
+    {
+        isGamePlay = false;
+        Time.timeScale = 0;
+
+        clearStars = 1;
+
+        clearTime = 0;
+
+        if (unUsedBoostItems)           clearStars++;
+        if (time_InGame < clearTime)    clearStars++;
+
+        Debug.Log(clearStars);
+
+        Panel_GameClear.SetActive(true);
     }
 }

@@ -7,6 +7,7 @@ TagManager:
   - ItemList
   - Interactor
   - DarkedRoom
+  - Fire
   layers:
   - Default
   - TransparentFX
@@ -49,4 +50,7 @@ TagManager:
     locked: 0
   - name: Mask_PlayersSight
     uniqueID: 411324259
+    locked: 0
+  - name: Fire
+    uniqueID: 3000180565
     locked: 0

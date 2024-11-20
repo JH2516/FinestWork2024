@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     [Header("Light")]
     public  Light2D         light_PlayerAround;
     public  Light2D         light_PlayerFOV;
+    public  float           change_FOVAngleRange;
 
 
     [Header("Player State")]
@@ -32,14 +33,17 @@ public class Player : MonoBehaviour
     public  bool            isRemoveCollapse;
     public  bool            isInFrontOfDoor;
 
-    public  byte            count_Interact;
+    [Header("Player Fire CoolTime")]
     public  float           time_Fire;
 
 
+
+    //[Header("Player Transform")]
+    private Vector2[]       moveVec;
+    private Quaternion[]    rotate;
+
     [Header("Player Transform")]
-    public  Vector2[]       moveVec;
     public  Vector2         setMoveVec;
-    public  Quaternion[]    rotate;
     public  Quaternion      setRotate;
 
     private Interactor      target_Interactor;
@@ -50,7 +54,7 @@ public class Player : MonoBehaviour
     [Range(0, 1), SerializeField]
     private float           range_DarknessInRoom;
 
-    [Header("Detect Draw")]
+    [Header("Detect Fire")]
     public  Color           Color_nonDetected = new Color(0, 1, 0, 0.5f);
     public  Color           Color_Detected = new Color(1, 0, 0, 0.5f);
     [Range(0, 1)]
@@ -63,44 +67,39 @@ public class Player : MonoBehaviour
     [Range(0, 20)]
     public  float           Range_radius = 5;
 
-    [Header("Detect Interaction")]
-    [Range(0, 90), SerializeField]
-    private float           interaction_halfAngle = 20;
-    [Range(0, 20), SerializeField]
-    private float           interaction_Radius = 5;
-
-    [Header("Detect Fire")]
-    [Range(0, 90)]
-    [SerializeField]
-    private float           fire_halfAngle = 20;
-    [Range(0, 20)]
-    [SerializeField]
-    private float           fire_Radius = 5;
-
+    [Header("Effect Collapse")]
     public  bool            warning_Collapse;
     public  bool            detect_Collapse;
+
+    [Header("Item Status")]
     public  bool            using_CollapseAlarm;
     public  bool            using_PortableLift;
     public  bool            using_PistolNozzle;
 
-    public  float           change_FOVAngleRange;
+    
 
     private LayerMask       layer_Collapse;
     private LayerMask       layer_Fire;
     private LayerMask       layer_Interaction;
 
-    public List<Fire>       List_FireInFOV;
-    List<Interactor>        List_Interactor;
+    private List<Fire>              List_FireInFOV;
+    private List<Interactor>        List_Interactor;
 
+    [Header("Navigate CollapseRoom")]
     public  GameObject      navigator_CollapseRoom;
     public  Transform       transform_CollapseRoom;
 
+    [Header("Target Interactor")]
     public  GameObject      target_Collapse;
     public  GameObject      target_BackDraft;
 
-    [Header("Icon")]
+    [Header("Icons")]
     public  GameObject      icon_PistolNozzle;
     public  GameObject      icon_PortableLift;
+
+
+
+    private byte count_Interact;
 
 
     private void Awake()
@@ -188,15 +187,18 @@ public class Player : MonoBehaviour
         Player_Rotate();
         Player_Flip();
 
-        Player_Attack();
+        //Player_Attack();
 
-        Check_Fire();
-        Check_Collapse();
-        //Check_Interaction();
+        //Check_Fire();
+        //Check_Collapse();
     }
 
     private void FixedUpdate()
     {
+        Player_Attack();
+        Check_Fire();
+        Check_Collapse();
+
         Warning_Collapse();
         Detect_FirstCollapse();
         Navigate_CollapseRoom();
@@ -339,7 +341,7 @@ public class Player : MonoBehaviour
         {
             obj_Attack.SetActive(true);
 
-            foreach (var item in List_FireInFOV)
+            foreach (Fire item in List_FireInFOV)
             {
                 if (item.gameObject.activeSelf == false) continue;
                 item.isExtinguish = true;
@@ -358,7 +360,7 @@ public class Player : MonoBehaviour
             time_Fire = 0f;
             isFire = false;
 
-            foreach (var item in List_FireInFOV)
+            foreach (Fire item in List_FireInFOV)
             {
                 item.isExtinguish = false;
             }
@@ -401,16 +403,46 @@ public class Player : MonoBehaviour
 
         Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Fire);
 
-        foreach (Collider2D item in hit)
+        for (int i = 0; i < hit.Length; i++)
         {
-            //float theta = Get_DotTheta(item);
-            bool dotInside = Check_DotInside(item, Range_halfAngle);
+            try
+            {
+                if (!hit[i].gameObject.activeSelf) continue;
 
-            //item.gameObject.GetComponent<SpriteRenderer>().color =
-            //dotInside ? Color.blue : Color.red;
+                //float theta = Get_DotTheta(item);
+                bool dotInside = Check_DotInside(hit[i], Range_halfAngle);
 
-            if (dotInside)  List_FireInFOV.Add(item.GetComponent<Fire>());
+                //item.gameObject.GetComponent<SpriteRenderer>().color =
+                //dotInside ? Color.blue : Color.red;
+
+                if (dotInside) List_FireInFOV.Add(hit[i].GetComponent<Fire>());
+            }
+            catch
+            {
+                continue;
+            }
         }
+
+        //foreach (Collider2D item in hit)
+        //{
+        //    try
+        //    {
+        //        if (!item.gameObject.activeSelf) continue;
+
+        //        //float theta = Get_DotTheta(item);
+        //        bool dotInside = Check_DotInside(item, Range_halfAngle);
+
+        //        //item.gameObject.GetComponent<SpriteRenderer>().color =
+        //        //dotInside ? Color.blue : Color.red;
+
+        //        if (dotInside) List_FireInFOV.Add(item.GetComponent<Fire>());
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        continue;
+        //    }
+            
+        //}
     }
 
 
@@ -435,34 +467,6 @@ public class Player : MonoBehaviour
 
         detect_Collapse = false;
     }
-
-    //void Check_Interaction()
-    //{
-    //    //List_InteractionInFOV.Clear();
-
-    //    Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Interaction);
-
-    //    foreach (Collider2D item in hit)
-    //    {
-    //        //float theta = Get_DotTheta(item);
-    //        bool dotInside = Check_DotInside(item, Range_halfAngle);
-
-    //        item.gameObject.GetComponent<SpriteRenderer>().color =
-    //        dotInside ? Color.blue : Color.red;
-
-    //        //if (dotInside) List_InteractionInFOV.Add(item.gameObject);
-    //    }
-    //}
-
-    //float Get_DotTheta(Collider2D hitObj)
-    //{
-    //    Vector2 targetVec = hitObj.transform.position - transform.position;
-
-    //    float dot = Vector2.Dot(obj_FOV.transform.right, targetVec.normalized);
-    //    float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
-
-    //    return theta;
-    //}
 
     bool Check_DotInside(Collider2D hitObj, float half_Range)
     {

@@ -14,6 +14,8 @@ public class Interactor_Recovery : Interactor
     {
         base.Show_Interact();
         Start_Interact();
+
+        stageManager.GameClear();
     }
 
     public override void Start_Interact()
