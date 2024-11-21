@@ -9,19 +9,13 @@ public class TapTextSparkling : MonoBehaviour
     bool isFade = true;
     float progress;
     public TextMeshProUGUI sparkleText;
-    Color textColor;
-
-    private void Awake()
-    {
-        textColor = sparkleText.color;
-    }
 
     private void Update()
     {
         progress += Time.deltaTime;
         if (isFade)
         {
-            sparkleText.color = new Color(textColor.r, textColor.g, textColor.b, 1 - progress / sparkleSpeed);
+            sparkleText.color = new Color(0.1953125f, 0.1953125f, 0.1953125f, 1 - progress / sparkleSpeed);
             if (progress >= sparkleSpeed)
             {
                 isFade = false;
@@ -30,7 +24,7 @@ public class TapTextSparkling : MonoBehaviour
         }
         else
         {
-            sparkleText.color = new Color(textColor.r, textColor.g, textColor.b, progress / sparkleSpeed);
+            sparkleText.color = new Color(0.1953125f, 0.1953125f, 0.1953125f, progress / sparkleSpeed);
             if (progress >= sparkleSpeed)
             {
                 isFade = true;
