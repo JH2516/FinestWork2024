@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 public class StageLoader : MonoBehaviour
 {
     /// <summary>
-    /// ½ºÅ×ÀÌÁö ºÒ·¯¿Ã ¶§ Àü¼ÛÇÏ´Â º¯¼ö, Àû´çÈ÷ ²ø¾î ¾²¸é µÊ
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
     /// </summary>
     public static int Stage { get; private set; }
     /// <summary>
-    /// ½ºÅ×ÀÌÁö ºÒ·¯¿Ã ¶§ Àü¼ÛÇÏ´Â ¾ÆÀÌÅÛ°ª
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò·ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Û°ï¿½
     /// </summary>
     public static int Item { get; private set; }
 
@@ -26,6 +26,6 @@ public class StageLoader : MonoBehaviour
 
     public void LoadStage()
     {
-        SceneManager.LoadScene("Test");
+        SceneManager.LoadScene("Stage_Test");
     }
 }
