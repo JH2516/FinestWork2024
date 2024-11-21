@@ -206,40 +206,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1307702881}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 10
+          m_ObjectArgument: {fileID: 11400000, guid: 7ac094f6ae639514089255d5bcbeef5b, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item11
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item11 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &9721511
@@ -543,7 +519,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: ea2c5ac30892cda478571fffb35f516d, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -551,8 +527,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 0917567cc6c556d43a7a78d75f52fb1a, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -778,6 +754,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 298163332}
+  - component: {fileID: 298163333}
   m_Layer: 5
   m_Name: Info
   m_TagString: Untagged
@@ -807,6 +784,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -64}
   m_SizeDelta: {x: 368, y: 296}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &298163333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 298163331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d863a5a50b68da4a917e4c97aa61852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: {fileID: 385408394}
+  description: {fileID: 1827824845}
+  image: {fileID: 1213689423}
+  imageSizer: 0.5
 --- !u!1 &367873106
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,40 +1009,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 115220323}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 3
+          m_ObjectArgument: {fileID: 11400000, guid: e20b4377f91dfdf4e8076336f62feac8, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item4
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item4 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &377291549
@@ -1158,7 +1127,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1254,7 +1223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &446850184
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1482,7 +1451,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &659160667
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1718,40 +1687,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 2093140093}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 7
+          m_ObjectArgument: {fileID: 11400000, guid: 7ac094f6ae639514089255d5bcbeef5b, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item8
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item8 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &692479662
@@ -1875,40 +1820,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1189815627}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 2
+          m_ObjectArgument: {fileID: 11400000, guid: 9e5f8eb9b2567814bbab4355e53a62a7, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item3
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item3 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &694096600
@@ -2163,7 +2084,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2271,40 +2192,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1716507765}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 9
+          m_ObjectArgument: {fileID: 11400000, guid: 7ac094f6ae639514089255d5bcbeef5b, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item10
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item10 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &823358522
@@ -2413,8 +2310,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2498,7 +2395,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &830374284
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2824,40 +2721,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 374157318}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
+          m_ObjectArgument: {fileID: 11400000, guid: 381574ff050ecb548a45ec74d4e0cc89, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item1
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item1 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &848506820
@@ -2964,8 +2837,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3128,7 +3001,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3285,7 +3158,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3378,8 +3251,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3553,7 +3426,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &902095118
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3792,40 +3665,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 91575838}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 6
+          m_ObjectArgument: {fileID: 11400000, guid: 7ac094f6ae639514089255d5bcbeef5b, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item7
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item7 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &987275726
@@ -4143,8 +3992,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4228,7 +4077,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1034238201
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4428,40 +4277,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 126767421}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 1
+          m_ObjectArgument: {fileID: 11400000, guid: 95e9689445894244c8cc70de44947f41, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item2
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item2 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1042066681
@@ -4664,6 +4489,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1727175158}
   - {fileID: 2016354202}
   - {fileID: 1997350436}
   - {fileID: 1876840407}
@@ -4845,7 +4671,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: ea2c5ac30892cda478571fffb35f516d, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -4853,8 +4679,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 0917567cc6c556d43a7a78d75f52fb1a, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -5314,8 +5140,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 73bc4331d232cd949b40e64b5aa72a4c, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -5415,40 +5241,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 2102012581}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 8
+          m_ObjectArgument: {fileID: 11400000, guid: 7ac094f6ae639514089255d5bcbeef5b, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item9
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item9 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1249815950
@@ -5585,7 +5387,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5647,8 +5449,8 @@ Camera:
   m_GameObject: {fileID: 1262219267}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -5961,7 +5763,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 64, y: -40}
-  m_SizeDelta: {x: 72, y: 48}
+  m_SizeDelta: {x: 72, y: 72}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1326704470
 MonoBehaviour:
@@ -6039,8 +5841,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 73bc4331d232cd949b40e64b5aa72a4c, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -6174,8 +5976,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -6259,7 +6061,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1417062942
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6723,40 +6525,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 847973848}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 4
+          m_ObjectArgument: {fileID: 11400000, guid: 9cacae689d107cb4bafb232b066adc47, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item5
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item5 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1586095680
@@ -7059,40 +6837,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1963096046}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 11
+          m_ObjectArgument: {fileID: 11400000, guid: 7ac094f6ae639514089255d5bcbeef5b, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item12
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item12 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1626795966
@@ -7565,6 +7319,81 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1716507762}
   m_CullTransparentMesh: 1
+--- !u!1 &1727175157
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1727175158}
+  - component: {fileID: 1727175160}
+  - component: {fileID: 1727175159}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1727175158
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727175157}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1044412328}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 640, y: 360}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1727175159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727175157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: ea2c5ac30892cda478571fffb35f516d, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 0917567cc6c556d43a7a78d75f52fb1a, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1727175160
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727175157}
+  m_CullTransparentMesh: 1
 --- !u!1 &1746432694
 GameObject:
   m_ObjectHideFlags: 0
@@ -7631,8 +7460,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -7766,8 +7595,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -7886,7 +7715,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -64, y: -40}
-  m_SizeDelta: {x: 72, y: 48}
+  m_SizeDelta: {x: 72, y: 72}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1763603017
 MonoBehaviour:
@@ -7964,8 +7793,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 6e215779a3ec7254897356d477d7bda4, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -8011,7 +7840,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1788689608
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8243,8 +8072,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 73bc4331d232cd949b40e64b5aa72a4c, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -8311,7 +8140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: ea2c5ac30892cda478571fffb35f516d, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -8319,8 +8148,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: bee5bceb87282d44c903c49432334a5c, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -8405,7 +8234,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -8567,40 +8396,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1213689427}
-        m_TargetAssemblyTypeName: ItemImage, Assembly-CSharp
-        m_MethodName: ChangeItemImage
+      - m_Target: {fileID: 298163333}
+        m_TargetAssemblyTypeName: DictInfo, Assembly-CSharp
+        m_MethodName: ChangeInfo
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1595995636}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Image, UnityEngine.UI
-          m_IntArgument: 5
+          m_ObjectArgument: {fileID: 11400000, guid: 838fdafbc4a000f4e85e311eea24867d, type: 2}
+          m_ObjectArgumentAssemblyTypeName: ItemData, Assembly-CSharp
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 385408396}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: Item6
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1827824847}
-        m_TargetAssemblyTypeName: ItemName, Assembly-CSharp
-        m_MethodName: changeItemName
-        m_Mode: 5
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: ' Item6 Description'
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1850724257
@@ -8656,7 +8461,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1868590948
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8711,11 +8516,11 @@ RectTransform:
   - {fileID: 659160667}
   m_Father: {fileID: 1044412328}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 80, y: -136}
-  m_SizeDelta: {x: 128, y: 88}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -176, y: 0}
+  m_SizeDelta: {x: 128, y: 128}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1876840408
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8792,8 +8597,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: ed398c254c0a8924f99156a690d179c6, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -8965,8 +8770,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -9067,11 +8872,11 @@ RectTransform:
   - {fileID: 446850184}
   m_Father: {fileID: 1044412328}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 432, y: -136}
-  m_SizeDelta: {x: 128, y: 88}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 176, y: 0}
+  m_SizeDelta: {x: 128, y: 128}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1997350437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9148,8 +8953,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 5ef9bfb17b9da334bb5d77b743217d41, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -9394,8 +9199,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 4b9c85665c56fb947b4d8bced85e202a, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -9563,8 +9368,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 0917567cc6c556d43a7a78d75f52fb1a, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
