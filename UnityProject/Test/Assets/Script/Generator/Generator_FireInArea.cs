@@ -7,68 +7,83 @@ public class ObjectSelectorEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        // 타겟 스크립트를 가져옵니다.
-        Generator_FireInArea objectSelector = (Generator_FireInArea)target;
+        Generator_FireInArea selector = (Generator_FireInArea)target;
 
-        // 기본 인스펙터를 표시합니다.
+        // 기본 인스펙터 표시
         DrawDefaultInspector();
 
-        // 배열이 비어있다면 경고를 표시합니다.
-        if (objectSelector.objects == null || objectSelector.objects.Length == 0)
+        if (selector.Fires == null || selector.Fires.Length == 0)
         {
-            EditorGUILayout.HelpBox("Objects 배열이 비어 있습니다!", MessageType.Warning);
+            EditorGUILayout.HelpBox("Fire Object를 ", MessageType.Warning);
             return;
         }
 
         // 배열의 이름을 표시하기 위한 목록 생성
-        string[] objectNames = new string[objectSelector.objects.Length];
-        for (int i = 0; i < objectSelector.objects.Length; i++)
+        string[] objectNames = new string[selector.Fires.Length];
+        for (int i = 0; i < selector.Fires.Length; i++)
         {
-            objectNames[i] = objectSelector.objects[i] ? objectSelector.objects[i].name : "None";
+            objectNames[i] = selector.Fires[i] ? selector.Fires[i].name : "None";
         }
 
         // 콤보박스 (Popup) 표시 및 선택
-        objectSelector.selectedIndex = EditorGUILayout.Popup("Select Object", objectSelector.selectedIndex, objectNames);
+        selector.selectedIndex = EditorGUILayout.Popup("Select Object", selector.selectedIndex, objectNames);
 
         // 선택된 오브젝트를 업데이트
-        if (objectSelector.selectedIndex >= 0 && objectSelector.selectedIndex < objectSelector.objects.Length)
+        if (selector.selectedIndex >= 0 && selector.selectedIndex < selector.Fires.Length)
         {
-            objectSelector.selectedObject = objectSelector.objects[objectSelector.selectedIndex];
+            selector.selectedFire = selector.Fires[selector.selectedIndex];
         }
     }
 }
 
 public class Generator_FireInArea : MonoBehaviour
 {
-    public GameObject[] objects; // 선택할 오브젝트 배열
-    public int selectedIndex;   // 현재 선택된 인덱스
-    public GameObject selectedObject; // 선택된 오브젝트 참조
-    public int          count_Generate = 0;
+    [Header("Set Fires")]
+    public  GameObject[]    Fires;
+    public  int             SetCountGen = 0;
+
+    public  GameObject      selectedFire;
+    public  int             selectedIndex;
 
     public  Vector2 areaPosMin;
     public  Vector2 areaPosMax;
 
     private void Awake()
     {
-        Vector2 areaScale = GetComponent<BoxCollider2D>().size;
-        areaPosMin = (Vector2)transform.position - areaScale / 2;
-        areaPosMax = (Vector2)transform.position + areaScale / 2;
+        Vector2 areaScale = GetComponent<BoxCollider2D>().size / 2;
+        areaPosMin = (Vector2)transform.position - areaScale;
+        areaPosMax = (Vector2)transform.position + areaScale;
 
         Generate_Fire();
     }
 
     private void Generate_Fire()
     {
-        for (int i = 0; i < count_Generate; i++)
+        for (int i = 0; i < SetCountGen; i++)
         {
-            Vector2 firePos = new Vector2(
-            Random.Range(areaPosMin.x, areaPosMax.x),
-            Random.Range(areaPosMin.y, areaPosMax.y));
+            Fire fire = Instantiate(selectedFire, transform).GetComponent<Fire>();
+            fire.Init_Fire();
 
-            Fire fire = Instantiate(selectedObject, transform).GetComponent<Fire>();
+            Vector2 colliderSize    = fire.GetComponent<CapsuleCollider2D>().size / 2;
+            Vector2 colliderOffset  = fire.GetComponent<CapsuleCollider2D>().offset;
+
+            float sizeX = colliderSize.x * fire.transform.localScale.x;
+            float sizeY = colliderSize.y * fire.transform.localScale.y;
+            float offsetX = colliderOffset.x * fire.transform.localScale.x;
+            float offsetY = colliderOffset.y * fire.transform.localScale.y;
+
+            Vector2 firePos = new Vector2(
+            Random.Range(areaPosMin.x + sizeX - offsetX, areaPosMax.x - sizeX - offsetX),
+            Random.Range(areaPosMin.y + sizeY - offsetY, areaPosMax.y - sizeY - offsetY));
+
 
             fire.Set_OrderInLayer(i);
             fire.transform.position = firePos;
         }
     }
+
+    //private CapsuleCollider2D GetFireCollider2D_Capsule(Fire fire)
+    //{
+    //    return fire.GetComponent<CapsuleCollider2D>();
+    //}
 }

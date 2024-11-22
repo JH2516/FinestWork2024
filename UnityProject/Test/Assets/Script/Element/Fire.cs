@@ -114,12 +114,17 @@ public class Fire : MonoBehaviour
 
     public enum Type_Extinguish { All, Down }
 
-    private void Awake()
+    //private void Awake()
+    //{
+        
+    //}
+
+    public void Init_Fire()
     {
         transform.localScale = Vector2.one * UnityEngine.Random.Range(0.8f, 1.5f);
 
-        powerMax_Fire   = transform.localScale.x;
-        power_Fire      = powerMax_Fire;
+        powerMax_Fire = transform.localScale.x;
+        power_Fire = powerMax_Fire;
 
         light.intensity = 1f;
 

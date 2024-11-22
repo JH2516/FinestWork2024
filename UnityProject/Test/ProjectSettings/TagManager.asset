@@ -54,3 +54,6 @@ TagManager:
   - name: Fire
     uniqueID: 3000180565
     locked: 0
+  - name: Wall
+    uniqueID: 183870157
+    locked: 0
