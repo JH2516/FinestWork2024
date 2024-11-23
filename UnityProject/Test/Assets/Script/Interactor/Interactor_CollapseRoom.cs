@@ -140,7 +140,7 @@ public class Interactor_CollapseRoom : Interactor
 
     private void Waiting_Collapse()
     {
-        stageManager.player.warning_Collapse = true;\
+        stageManager.player.warning_Collapse = true;
         audio.StartCollapse(true);
     }
 
