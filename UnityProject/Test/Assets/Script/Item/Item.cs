@@ -7,6 +7,8 @@ public class Item : MonoBehaviour
     [SerializeField]
     protected   StageManager    stageManager;
     [SerializeField]
+    protected   AudioManager    audio;
+    [SerializeField]
     protected   Player          player;
 
     public void Init_Item() => Init();
@@ -14,6 +16,7 @@ public class Item : MonoBehaviour
     protected virtual void Init()
     {
         stageManager    = StageManager.stageManager;
+        audio           = stageManager.audio;
         player          = stageManager.player;
     }
 

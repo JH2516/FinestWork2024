@@ -18,6 +18,7 @@ public class Item_PortableLift: Item
         if (!Check_isPossableUseItem()) return false;
 
         player.SetActive_UsingPortableLift(true);
+        audio.UsePortableLift(true);
 
         return true;
     }

@@ -121,6 +121,7 @@ public class Fire : MonoBehaviour
 
     public void Init_Fire()
     {
+        if (isBackdraft) return;
         transform.localScale = Vector2.one * UnityEngine.Random.Range(0.8f, 1.5f);
 
         powerMax_Fire = transform.localScale.x;
@@ -143,6 +144,7 @@ public class Fire : MonoBehaviour
 
     private void Update()
     {
+        if (isBackdraft) return;
         Check_Extinguished();
     }
 

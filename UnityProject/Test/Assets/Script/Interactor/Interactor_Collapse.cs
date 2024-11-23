@@ -27,20 +27,25 @@ public class Interactor_Collapse : Interactor
         player.target_Collapse = null;
         player.SetActive_RemoveCollapse(false);
         player.SetActive_UsingPortableLift(false);
+
+        audio.RemoveCollapse(false);
     }
 
     public override void Start_Interact()
     {
         base.Start_Interact();
-
         player.SetActive_RemoveCollapse(true);
+
+        audio.RemoveCollapse(true);
     }
 
     public override void Done_Interact()
     {
         base.Done_Interact();
-
         player.SetActive_RemoveCollapse(false);
         player.SetActive_UsingPortableLift(false);
+
+        audio.RemoveCollapse(false);
+        audio.UsePortableLift(false);
     }
 }

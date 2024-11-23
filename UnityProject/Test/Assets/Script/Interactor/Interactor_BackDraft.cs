@@ -102,7 +102,11 @@ public class Interactor_BackDraft : Interactor
             return;
         }
 
-        stageManager.GameOver();
+        if (stageManager.IsGamePlay)
+        {
+            stageManager.GameOver();
+            audio.GameoverByBackDraft(true);
+        }
     }
 
     public void Done_InteractWithOutWarning()
@@ -114,6 +118,7 @@ public class Interactor_BackDraft : Interactor
 
     public void Break_BackDraft()
     {
+        Debug.Log("bbb");
         show_Interaction.gameObject.SetActive(false);
         obj_Warning.SetActive(false);
         trigger_Interact.enabled = false;

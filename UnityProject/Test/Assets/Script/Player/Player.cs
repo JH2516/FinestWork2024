@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
 {
     public  static  Player  player;
 
+    private AudioManager    audio;
+
     [Header("Component")]
     public  Camera          mainCamera;
     public  StageManager    stageManager;
@@ -28,7 +30,7 @@ public class Player : MonoBehaviour
     [Header("Player State")]
     public  bool            isMove;
     public  bool            isFire;
-    public  bool            isDetected;
+    public  bool            isDetectedFire;
     public  bool            isInteract;
     public  bool            isRemoveCollapse;
     public  bool            isInFrontOfDoor;
@@ -120,6 +122,8 @@ public class Player : MonoBehaviour
         stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
         sr = GetComponent<SpriteRenderer>();
 
+        audio = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+
         navigator_CollapseRoom.SetActive(false);
         icon_PistolNozzle.SetActive(false);
         icon_PortableLift.SetActive(false);
@@ -173,12 +177,12 @@ public class Player : MonoBehaviour
         Color_nonDetected = new Color(0, 1, 0, 0.5f);
         Color_Detected = new Color(1, 0, 0, 0.5f);
 
-        isDetected = false;
+        isDetectedFire = false;
     }
 
     private void Update()
     {
-        if (!stageManager.IsGamePlay) return;
+        if (stageManager.IsGameOver) return;
 
         Get_Input();
         Timing();
@@ -195,6 +199,8 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (stageManager.IsGameOver) return;
+
         Player_Attack();
         Check_Fire();
         Check_Collapse();
@@ -281,7 +287,12 @@ public class Player : MonoBehaviour
     /// <summary> 입력 키 검사 </summary>
     void Get_Input()
     {
-        if (Input.GetKey(KeyCode.A)) isFire = true;
+        if (Input.GetKey(KeyCode.A) && !isFire)
+        {
+            isFire = true;
+            audio.Extinguising(true);
+        }
+        
 
         if (Input.GetKeyDown(KeyCode.Q) && isInteract)
         {
@@ -335,6 +346,7 @@ public class Player : MonoBehaviour
         if (!isFire)
         {
             obj_Attack.SetActive(false);
+            audio.Extinguising(false);
             return;
         }
         else
@@ -390,18 +402,33 @@ public class Player : MonoBehaviour
     /// <summary> 플레이어 이동 벡터 지정 </summary>
     public void Set_MoveVec(int type) => setMoveVec = moveVec[type];
 
-    /// <summary> 플레이어 이동 여부 지정 </summary>
-    public void Set_isMove(bool move) => isMove = move;
-
     /// <summary> 플레이어 회전 지정 </summary>
     public void Set_Rotation(int type) => setRotate = rotate[type];
 
+    /// <summary> 플레이어 이동 여부 지정 </summary>
+    public void Set_isMove(bool move)
+    {
+        isMove = move;
+        audio.PlayerWalk(move);
+    }
 
     void Check_Fire()
     {
         List_FireInFOV.Clear();
 
         Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Fire);
+
+        if (hit.Length != 0 && !isDetectedFire)
+        {
+            isDetectedFire = true;
+            stageManager.FadeInAudio_BurningAround();
+        }
+
+        if (hit.Length == 0 && isDetectedFire)
+        {
+            isDetectedFire = false;
+            stageManager.FadeOutAudio_BurningAround();
+        }
 
         for (int i = 0; i < hit.Length; i++)
         {
@@ -445,6 +472,7 @@ public class Player : MonoBehaviour
         //}
     }
 
+    
 
     private void Check_Collapse()
     {

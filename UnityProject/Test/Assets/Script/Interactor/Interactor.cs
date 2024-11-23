@@ -17,6 +17,7 @@ public class Interactor : MonoBehaviour
 
     // Get Component
     protected   StageManager    stageManager;
+    protected   AudioManager    audio;
     protected   Player          player;
     protected   UIInteract      show_Interaction;
     private     Transform       parent_Interaction;
@@ -37,6 +38,7 @@ public class Interactor : MonoBehaviour
     {
         parent_Interaction = GameObject.Find("InGame_Canvas").transform.Find("Interactions");
         stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+        audio = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         player = stageManager.player;
     }
 

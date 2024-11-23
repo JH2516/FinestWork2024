@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager soundManager;
+    public static AudioManager audioManager;
 
     [Header("UI/UX Audio")]
     public AudioSource audio_ButtonClick;
@@ -20,6 +20,7 @@ public class AudioManager : MonoBehaviour
     public AudioSource audio_UsePortableLift;
 
     [Header("Around Audio")]
+    public AudioSource audio_StartCollapse;
     public AudioSource audio_TriggerCollapse;
     public AudioSource audio_BurningAround;
    
@@ -30,7 +31,7 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if (soundManager != null) soundManager = this;
+        if (audioManager != null) audioManager = this;
     }
 
     private void RemoteAudio(AudioSource source, bool isPlay)
@@ -48,6 +49,7 @@ public class AudioManager : MonoBehaviour
     public void AlertCollapseAlarm      (bool isPlay) => RemoteAudio(audio_AlertCollapseAlarm, isPlay);
     public void UsePortableLift         (bool isPlay) => RemoteAudio(audio_UsePortableLift, isPlay);
 
+    public void StartCollapse           (bool isPlay) => RemoteAudio(audio_StartCollapse, isPlay);
     public void TriggerCollapse         (bool isPlay) => RemoteAudio(audio_TriggerCollapse, isPlay);
     public void BurningAround           (bool isPlay) => RemoteAudio(audio_BurningAround, isPlay);
 

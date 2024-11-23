@@ -68,7 +68,10 @@ public class Interactor_CollapseRoom : Interactor
     private void Timing_RemainCollapseRoom()
     {
         if (time_Collapse <= 5f)
-        text_RemainCollapse.color = Color.red;
+        {
+            text_RemainCollapse.color = Color.red;
+            audio.AlertCollapseAlarm(true);
+        }
 
         text_RemainCollapse.text = $"{time_Collapse:N2}";
     }
@@ -87,11 +90,21 @@ public class Interactor_CollapseRoom : Interactor
 
     private void Start_Collapse()
     {
+        audio.AlertCollapseAlarm(false);
+        audio.StartCollapse(false);
+
         obj_Collapse.SetActive(true);
         isCollapsed = true;
 
         if (isPlayerInside)
-        stageManager.GameOver();
+        {
+            stageManager.GameOver();
+            audio.GameoverByCollapse(true);
+        }
+        else
+        {
+            audio.TriggerCollapse(true);
+        }
 
         text_Collapse.enabled = false;
 
@@ -127,7 +140,8 @@ public class Interactor_CollapseRoom : Interactor
 
     private void Waiting_Collapse()
     {
-        stageManager.player.warning_Collapse = true;
+        stageManager.player.warning_Collapse = true;\
+        audio.StartCollapse(true);
     }
 
     IEnumerator FirstRemainTimeOfCollapse()

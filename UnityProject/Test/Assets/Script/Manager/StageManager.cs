@@ -12,6 +12,9 @@ public class StageManager : MonoBehaviour
 {
     public  static  StageManager    stageManager;
 
+    [Header("Manager")]
+    public  AudioManager    audio;
+
     [Header("UI")]
     public  GameObject      Panel_Pause;
     public  GameObject      Panel_GameOver;
@@ -24,7 +27,7 @@ public class StageManager : MonoBehaviour
     public  Image           backGround_ExtendHPBar;
     public  TextMeshProUGUI text_survivorRemain;
     public  TextMeshProUGUI text_CollapseRoomRemain;
-
+    
     [Header("Light")]
     public  Light2D         light_Global;
 
@@ -76,6 +79,7 @@ public class StageManager : MonoBehaviour
     public  float           Player_HP   =>  player_HP;
     public  float           Player_HPMax => player_HPMax;
     public  bool            IsGamePlay  =>  isGamePlay;
+    public  bool            IsGameOver  =>  isGameOver;
 
     [Header("Stage Clear")]
     private byte            clearStars;
@@ -191,7 +195,11 @@ public class StageManager : MonoBehaviour
     /// <summary> 플레이어 산소량 검사 </summary>
     private void Check_PlayerHP()
     {
-        if (player_HP <= 0) GameOver();
+        if (player_HP <= 0)
+        {
+            audio.GameoverByLowerOxygen(true);
+            GameOver();
+        }
     }
 
     /// <summary> 플레이어 산소량 갱신 </summary>
@@ -319,6 +327,7 @@ public class StageManager : MonoBehaviour
         Time.timeScale = 0;
 
         Panel_Pause.SetActive(true);
+        audio.ButtonClick(true);
     }
 
     /// <summary> 게임 재개 </summary>
@@ -328,6 +337,7 @@ public class StageManager : MonoBehaviour
         Time.timeScale = 1;
 
         Panel_Pause.SetActive(false);
+        audio.ButtonClick(true);
     }
 
     /// <summary> 게임 재시작 </summary>
@@ -345,6 +355,8 @@ public class StageManager : MonoBehaviour
     /// <summary> 게임 오버 </summary>
     public void GameOver()
     {
+        StopAllCoroutines();
+
         isGamePlay = false;
         isGameOver = true;
         player_HP = 0;
@@ -352,6 +364,7 @@ public class StageManager : MonoBehaviour
         Time.timeScale = 0;
 
         Panel_GameOver.SetActive(true);
+        FadeOutAudio_BurningAround();
     }
 
     /// <summary> 게임 결과 출력 </summary>
@@ -370,5 +383,55 @@ public class StageManager : MonoBehaviour
         Debug.Log(clearStars);
 
         Panel_GameClear.SetActive(true);
+    }
+
+    public void FadeInAudio_BurningAround() =>
+    StartCoroutine(FadeInAudio(audio.audio_BurningAround));
+
+    public void FadeOutAudio_BurningAround() =>
+    StartCoroutine(FadeOutAudio(audio.audio_BurningAround));
+
+    IEnumerator FadeInAudio(AudioSource audio)
+    {
+        AudioSource audio_Burning = audio;
+        float currentTime = audio_Burning.volume;
+
+        if (!audio_Burning.isPlaying) audio_Burning.Play();
+
+        while (true)
+        {
+            if (!player.isDetectedFire) yield break;
+            if (stageManager.IsGameOver) yield break;
+            if (currentTime > 1)
+            {
+                audio_Burning.volume = 1;
+                yield break;
+            }
+
+            currentTime += Time.unscaledDeltaTime;
+            audio_Burning.volume = currentTime;
+            yield return null; // 다음 프레임까지 대기
+        }
+    }
+
+    IEnumerator FadeOutAudio(AudioSource audio)
+    {
+        AudioSource audio_Burning = audio;
+        float currentTime = audio_Burning.volume;
+
+        while (true)
+        {
+            if (player.isDetectedFire && !isGameOver) yield break;
+            if (currentTime < 0)
+            {
+                audio_Burning.volume = 0;
+                audio_Burning.Stop();
+                yield break;
+            }
+
+            currentTime -= Time.unscaledDeltaTime;
+            audio_Burning.volume = currentTime;
+            yield return null; // 다음 프레임까지 대기
+        }
     }
 }
