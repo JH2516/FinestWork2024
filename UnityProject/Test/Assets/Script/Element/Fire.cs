@@ -82,14 +82,16 @@ public class RangeSliderDrawer : PropertyDrawer
 
 public class Fire : MonoBehaviour
 {
+    private StageManager    stageManager;
+
     [Header("Fire Animation")]
     [SerializeField]
-    private Animator    animator;
+    private Animator        animator;
     [SerializeField]
     private SpriteRenderer  sprite;
 
     [RangeSlider(0.1f, 2f), SerializeField]
-    private Vector2 RandomSpeedRange = new Vector2(0.3f, 0.5f);
+    private Vector2         RandomSpeedRange = new Vector2(0.3f, 0.5f);
 
     [Header("Fire Light")]
     [SerializeField]
@@ -97,20 +99,20 @@ public class Fire : MonoBehaviour
 
     [Header("Fire Light Intensity")]
     [Range(0.1f, 1f), SerializeField]
-    private float   intensity_Increase = 0.2f;
+    private float           intensity_Increase = 0.2f;
     [Range(0.1f, 1f), SerializeField]
-    private float   intensity_Decrease = 0.4f;
+    private float           intensity_Decrease = 0.4f;
 
     [Header("Fire Extinguish")]
     [SerializeField]
-    private Type_Extinguish     type_Extinguish;
-    public  bool isExtinguish;
+    private Type_Extinguish type_Extinguish;
+    public  bool            isExtinguish;
 
     [Header("Fire In BackDraft Room")]
-    public  bool    isBackdraft = false;
+    public  bool            isBackdraft = false;
 
-    private float power_Fire = 1;
-    private float powerMax_Fire;
+    private float           power_Fire = 1;
+    private float           powerMax_Fire;
 
     public enum Type_Extinguish { All, Down }
 
@@ -122,6 +124,9 @@ public class Fire : MonoBehaviour
     public void Init_Fire()
     {
         if (isBackdraft) return;
+
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+
         transform.localScale = Vector2.one * UnityEngine.Random.Range(0.8f, 1.5f);
 
         powerMax_Fire = transform.localScale.x;
@@ -188,7 +193,9 @@ public class Fire : MonoBehaviour
 
     private void Check_Extinguished()
     {
-        if (light.intensity <= 0)
+        if (light.intensity > 0) return;
+
+        stageManager.Discount_Fires();
         gameObject.SetActive(false);
     }
 }

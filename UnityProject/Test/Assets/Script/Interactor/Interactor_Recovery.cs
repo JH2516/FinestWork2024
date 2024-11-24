@@ -12,10 +12,11 @@ public class Interactor_Recovery : Interactor
 
     public override void Show_Interact()
     {
+        bool isClear = stageManager.Check_isGameClear();
+        if (isClear) return;
+
         base.Show_Interact();
         Start_Interact();
-
-        //stageManager.GameClear();
     }
 
     public override void Start_Interact()

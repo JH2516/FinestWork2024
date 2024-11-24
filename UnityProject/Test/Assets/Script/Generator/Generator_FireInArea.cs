@@ -38,23 +38,32 @@ public class ObjectSelectorEditor : Editor
 
 public class Generator_FireInArea : MonoBehaviour
 {
+    private StageManager    stageManager;
+
     [Header("Set Fires")]
     public  GameObject[]    Fires;
     public  int             SetCountGen = 0;
 
+    [Header("Select Fire")]
     public  GameObject      selectedFire;
+    [HideInInspector]
     public  int             selectedIndex;
 
-    public  Vector2 areaPosMin;
-    public  Vector2 areaPosMax;
+
+    private Vector2 areaPosMin;
+    private Vector2 areaPosMax;
 
     private void Awake()
     {
+        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+
         Vector2 areaScale = GetComponent<BoxCollider2D>().size / 2;
         areaPosMin = (Vector2)transform.position - areaScale;
         areaPosMax = (Vector2)transform.position + areaScale;
 
         Generate_Fire();
+        stageManager.Count_Fires(SetCountGen);
+        Debug.Log("sss");
     }
 
     private void Generate_Fire()

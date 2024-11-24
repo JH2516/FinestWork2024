@@ -35,8 +35,6 @@ public class Interactor_Collapse : Interactor
     {
         base.Start_Interact();
         player.SetActive_RemoveCollapse(true);
-
-        audio.RemoveCollapse(true);
     }
 
     public override void Done_Interact()
@@ -45,7 +43,7 @@ public class Interactor_Collapse : Interactor
         player.SetActive_RemoveCollapse(false);
         player.SetActive_UsingPortableLift(false);
 
-        audio.RemoveCollapse(false);
+        audio.RemoveCollapse(true);
         audio.UsePortableLift(false);
     }
 }

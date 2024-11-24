@@ -7,6 +7,7 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using TMPro;
+using Unity.VisualScripting;
 
 public class StageManager : MonoBehaviour
 {
@@ -15,18 +16,33 @@ public class StageManager : MonoBehaviour
     [Header("Manager")]
     public  AudioManager    audio;
 
-    [Header("UI")]
+    [Header("UI : Panel")]
     public  GameObject      Panel_Pause;
     public  GameObject      Panel_GameOver;
     public  GameObject      Panel_GameClear;
     public  GameObject      ui_PlayerExtendHPBar;
     public  GameObject      ui_RemainCollapseRoom;
+
+    [Header("UI : Bar")]
     public  Image           player_HPBar;
     public  Image           Player_ExtendHPBar;
     public  Image           backGround_HPBar;
     public  Image           backGround_ExtendHPBar;
-    public  TextMeshProUGUI text_survivorRemain;
+
+    [Header("UI : Background")]
+    public  Image           ui_Survivor;
+    public  Image           ui_Fires;
+
+    [Header("UI : Text")]
+    public  TextMeshProUGUI text_FireRemain;
+    public  TextMeshProUGUI text_SurvivorRemain;
     public  TextMeshProUGUI text_CollapseRoomRemain;
+
+    [Header("UI : Clear Text")]
+    public  TextMeshProUGUI text_GameClear;
+    public  TextMeshProUGUI text_UnusedBoostItem;
+    public  TextMeshProUGUI text_InTime;
+    public  TextMeshProUGUI text_ClearStars;
     
     [Header("Light")]
     public  Light2D         light_Global;
@@ -72,9 +88,13 @@ public class StageManager : MonoBehaviour
     public  float           player_HP;
     private float           player_HPMax;
 
-    [Header("Survivor Status")]
+    [Header("Stage Unit")]
     [SerializeField]
     private int             survivors;
+    [SerializeField]
+    private int             fires;
+    [SerializeField]
+    private int             max_Countfires;
 
     public  float           Player_HP   =>  player_HP;
     public  float           Player_HPMax => player_HPMax;
@@ -82,11 +102,19 @@ public class StageManager : MonoBehaviour
     public  bool            IsGameOver  =>  isGameOver;
 
     [Header("Stage Clear")]
+    private bool            clear_SavedAllSurvivors;
+    private bool            clear_ExtinguishedAllFires;
     private byte            clearStars;
 
     [Header("Stage Clear Require")]
     private float           clearTime = 100;
     private bool            unUsedBoostItems;
+
+    public void Count_Fires(int count)
+    {
+        max_Countfires = fires += count;
+    }
+
 
     private void Awake()
     {
@@ -113,7 +141,10 @@ public class StageManager : MonoBehaviour
 
         time_InGame = 0;
 
-        unUsedBoostItems = (StageLoader.Item == 99) ? true : false;
+        unUsedBoostItems = (StageLoader.Item == 3) ? true : false;
+
+        clear_ExtinguishedAllFires = false;
+        clear_SavedAllSurvivors = false;
 
         Time.timeScale = 1;
     }
@@ -143,7 +174,7 @@ public class StageManager : MonoBehaviour
         List_Survivors.Add(survivor.gameObject);
 
         survivors = List_Survivors.Count;
-        text_survivorRemain.text = survivors.ToString();
+        text_SurvivorRemain.text = survivors.ToString();
     }
 
     /// <summary> 초기화 : UI </summary>
@@ -156,6 +187,8 @@ public class StageManager : MonoBehaviour
         backGround_ExtendHPBar.enabled = false;
         ui_PlayerExtendHPBar.SetActive(false);
         ui_RemainCollapseRoom.SetActive(false);
+
+        text_FireRemain.text = "100.0%";
     }
 
     private void Active_StageBoost()
@@ -228,9 +261,34 @@ public class StageManager : MonoBehaviour
     /// <summary> 생존자 현장 구출 완료 </summary>
     public void Complete_EscapeSurvivor()
     {
-        text_survivorRemain.text = survivors.ToString();
+        text_SurvivorRemain.text = survivors.ToString();
+        Check_SavedAllSurvivors();
     }
 
+    private void Check_SavedAllSurvivors()
+    {
+        if (survivors != 0) return;
+
+        ui_Survivor.color = Color.green;
+        clear_SavedAllSurvivors = true;
+    }
+
+
+
+    public void Discount_Fires()
+    {
+        fires--;
+        text_FireRemain.text = $"{100f * fires / max_Countfires:N1}%";
+        Check_isExtinguishedAllFires();
+    }
+
+    private void Check_isExtinguishedAllFires()
+    {
+        if (fires != 0) return;
+
+        ui_Fires.color = Color.green;
+        clear_ExtinguishedAllFires = true;
+    }
 
 
     /// <summary> 부스트 : 모든 생존자 구출 </summary>
@@ -241,7 +299,9 @@ public class StageManager : MonoBehaviour
 
         List_Survivors.Clear();
         survivors = 0;
-        text_survivorRemain.text = survivors.ToString();
+        text_SurvivorRemain.text = survivors.ToString();
+
+        Check_SavedAllSurvivors();
     }
 
     /// <summary> 부스트 : 플레이어 산소 감소 (50%) </summary>
@@ -367,6 +427,15 @@ public class StageManager : MonoBehaviour
         FadeOutAudio_BurningAround();
     }
 
+    public bool Check_isGameClear()
+    {
+        if (!clear_SavedAllSurvivors)       return false;
+        if (!clear_ExtinguishedAllFires)    return false;
+
+        GameClear();
+        return true;
+    }
+
     /// <summary> 게임 결과 출력 </summary>
     public void GameClear()
     {
@@ -374,15 +443,30 @@ public class StageManager : MonoBehaviour
         Time.timeScale = 0;
 
         clearStars = 1;
-
-        clearTime = 0;
-
-        if (unUsedBoostItems)           clearStars++;
-        if (time_InGame < clearTime)    clearStars++;
-
-        Debug.Log(clearStars);
+        GameClear_ShowStarAcquire();
+        
+        text_ClearStars.text = $"별 {clearStars}개";
 
         Panel_GameClear.SetActive(true);
+    }
+
+    private void GameClear_ShowStarAcquire()
+    {
+        text_GameClear.color        = Color.green;
+        text_UnusedBoostItem.color  = new Color(1, 1, 1, 0.5f);
+        text_InTime.color           = new Color(1, 1, 1, 0.5f);
+
+        if (unUsedBoostItems)
+        {
+            text_UnusedBoostItem.color = Color.green;
+            clearStars++;
+        }
+
+        if (time_InGame < clearTime)
+        {
+            text_InTime.color = Color.green;
+            clearStars++;
+        }
     }
 
     public void FadeInAudio_BurningAround() =>
