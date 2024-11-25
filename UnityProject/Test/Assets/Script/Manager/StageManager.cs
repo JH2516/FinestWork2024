@@ -48,9 +48,13 @@ public class StageManager : MonoBehaviour
     public  TextMeshProUGUI text_ClearStars;
 
     [Header("UI : Items")]
-    public  Image           button_CollapseAlarm;
-    public  Image           button_PistolNozzle;
-    public  Image           button_PortableLift;
+    public  GameObject      button_CollapseAlarm;
+    public  GameObject      button_PistolNozzle;
+    public  GameObject      button_PortableLift;
+
+    private Image[]         uiButton_CollapseAlarm;
+    private Image[]         uiButton_PistolNozzle;
+    private Image[]         uiButton_PortableLift;
 
     [Header("Light")]
     public  Light2D         light_Global;
@@ -213,6 +217,14 @@ public class StageManager : MonoBehaviour
         ui_PlayerExtendHPBar.SetActive(false);
         ui_RemainCollapseRoom.SetActive(false);
 
+        uiButton_CollapseAlarm = button_CollapseAlarm.GetComponentsInChildren<Image>();
+        uiButton_PortableLift = button_PortableLift.GetComponentsInChildren<Image>();
+        uiButton_PistolNozzle = button_PistolNozzle.GetComponentsInChildren<Image>();
+
+        UIButton_IsActiveItemCollapseAlarm(true);
+        UIButton_IsActiveItemPortableLift(false);
+        UIButton_IsActiveItemPistolNozzle(false);
+
         text_FireRemain.text = fires.ToString();
         mask_HPBar.sizeDelta = new Vector2(800, 150);
     }
@@ -353,7 +365,10 @@ public class StageManager : MonoBehaviour
     {
         bool isUse = item_CollapseAlarm.Use_Item();
 
-        if (isUse) button_CollapseAlarm.color = new Color(0.5f, 0, 0, 0.25f);
+        if (isUse)
+        {
+            UIButton_IsActiveItemCollapseAlarm(false);
+        }
         return isUse;
     }
 
@@ -502,6 +517,53 @@ public class StageManager : MonoBehaviour
 
     public void FadeOutAudio_BurningAround() =>
     StartCoroutine(FadeOutAudio(audio.audio_BurningAround));
+
+
+    //public GameObject button_CollapseAlarm;
+    //public GameObject button_PistolNozzle;
+    //public GameObject button_PortableLift;
+
+    public void UIButton_IsActiveItemCollapseAlarm(bool isActive)
+    {
+        if (isActive)
+        {
+            uiButton_CollapseAlarm[0].color = new Color(1, 1, 1, 1 / 4f);
+            uiButton_CollapseAlarm[1].color = Color.white;
+        }
+        else
+        {
+            uiButton_CollapseAlarm[0].color = new Color(1, 1, 1, 1 / 16f);
+            uiButton_CollapseAlarm[1].color = Color.white / 2;
+        }
+    }
+
+    public void UIButton_IsActiveItemPistolNozzle(bool isActive)
+    {
+        if (isActive)
+        {
+            uiButton_PistolNozzle[0].color = new Color(1, 1, 1, 1 / 4f);
+            uiButton_PistolNozzle[1].color = Color.white;
+        }
+        else
+        {
+            uiButton_PistolNozzle[0].color = new Color(1, 1, 1, 1 / 16f);
+            uiButton_PistolNozzle[1].color = Color.white / 2;
+        }
+    }
+
+    public void UIButton_IsActiveItemPortableLift(bool isActive)
+    {
+        if (isActive)
+        {
+            uiButton_PortableLift[0].color = new Color(1, 1, 1, 1 / 4f);
+            uiButton_PortableLift[1].color = Color.white;
+        }
+        else
+        {
+            uiButton_PortableLift[0].color = new Color(1, 1, 1, 1 / 16f);
+            uiButton_PortableLift[1].color = Color.white / 2;
+        }
+    }
 
     IEnumerator FadeInAudio(AudioSource audio)
     {
