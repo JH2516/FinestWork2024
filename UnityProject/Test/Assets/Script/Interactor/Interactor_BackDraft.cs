@@ -54,6 +54,7 @@ public class Interactor_BackDraft : Interactor
 
         player.SetActive_InFrontOfDoor(true);
         player.target_BackDraft = gameObject;
+        stageManager.button_PistolNozzle.color = Color.white;
     }
 
     public override void Hide_Interact()
@@ -62,6 +63,7 @@ public class Interactor_BackDraft : Interactor
 
         player.SetActive_InFrontOfDoor(false);
         player.SetActive_UsingPistolNozzle(false);
+        stageManager.button_PistolNozzle.color = new Color(1, 1, 1, 0.25f);
 
         if (!player.using_PistolNozzle)
         player.target_BackDraft = null;

@@ -46,7 +46,12 @@ public class StageManager : MonoBehaviour
     public  TextMeshProUGUI text_UnusedBoostItem;
     public  TextMeshProUGUI text_InTime;
     public  TextMeshProUGUI text_ClearStars;
-    
+
+    [Header("UI : Items")]
+    public  Image           button_CollapseAlarm;
+    public  Image           button_PistolNozzle;
+    public  Image           button_PortableLift;
+
     [Header("Light")]
     public  Light2D         light_Global;
 
@@ -346,7 +351,10 @@ public class StageManager : MonoBehaviour
 
     public bool UseItem_CollapseAlarm()
     {
-        return item_CollapseAlarm.Use_Item();
+        bool isUse = item_CollapseAlarm.Use_Item();
+
+        if (isUse) button_CollapseAlarm.color = new Color(0.5f, 0, 0, 0.25f);
+        return isUse;
     }
 
     public bool UseItem_PistolNozzle()

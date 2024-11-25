@@ -193,7 +193,7 @@ public class Fire : MonoBehaviour
 
     private void Check_Extinguished()
     {
-        if (light.intensity > 0) return;
+        if (power_Fire > 0) return;
 
         stageManager.Discount_Fires();
         gameObject.SetActive(false);

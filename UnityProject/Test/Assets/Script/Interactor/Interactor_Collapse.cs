@@ -27,6 +27,7 @@ public class Interactor_Collapse : Interactor
         player.target_Collapse = null;
         player.SetActive_RemoveCollapse(false);
         player.SetActive_UsingPortableLift(false);
+        stageManager.button_PortableLift.color = new Color(1, 1, 1, 0.25f);
 
         audio.RemoveCollapse(false);
     }
@@ -35,6 +36,7 @@ public class Interactor_Collapse : Interactor
     {
         base.Start_Interact();
         player.SetActive_RemoveCollapse(true);
+        stageManager.button_PortableLift.color = new Color(1, 1, 1, 1);
     }
 
     public override void Done_Interact()
@@ -42,6 +44,7 @@ public class Interactor_Collapse : Interactor
         base.Done_Interact();
         player.SetActive_RemoveCollapse(false);
         player.SetActive_UsingPortableLift(false);
+        stageManager.button_PortableLift.color = new Color(1, 1, 1, 0.25f);
 
         audio.RemoveCollapse(true);
         audio.UsePortableLift(false);

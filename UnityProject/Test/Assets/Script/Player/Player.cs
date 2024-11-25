@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEditor;
 using static UnityEditor.Progress;
 using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.UI.Image;
 
 public class Player : MonoBehaviour
 {
@@ -35,8 +37,9 @@ public class Player : MonoBehaviour
     public  bool            isRemoveCollapse;
     public  bool            isInFrontOfDoor;
 
-    [Header("Player Fire CoolTime")]
+    [Header("Player Fire")]
     public  float           time_Fire;
+    public  bool            button_isFireActive;
 
 
 
@@ -153,6 +156,7 @@ public class Player : MonoBehaviour
         isFire = false;
         isInteract = false;
         warning_Collapse = false;
+        button_isFireActive = false;
         count_Interact = 0;
         time_Fire = 0;
         change_FOVAngleRange = 2f;
@@ -289,10 +293,12 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.A) && !isFire)
         {
-            isFire = true;
-            audio.Extinguising(true);
+            Button_PlayerAttackActive();
         }
-        
+        else if (Input.GetKeyUp(KeyCode.A))
+        {
+            Button_PlayerAttackInActive();
+        }
 
         if (Input.GetKeyDown(KeyCode.Q) && isInteract)
         {
@@ -302,25 +308,51 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            if (stageManager.UseItem_CollapseAlarm())
-            transform_CollapseRoom.
-            GetComponent<Interactor_CollapseRoom>().SetActive_UseCollapseAlarm(true);
+            Button_CollapseAlarm();
         }
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-            if (stageManager.UseItem_PortableLift())
-            target_Collapse.
-            GetComponent<Interactor_Collapse>().UIInteraction.Modify_GuageAmountUpPerSecond(4f);
-            
+            Button_PortableLift();
         }
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            if (stageManager.UseItem_PistolNozzle())
+            Button_PistolNozzle();
+        }
+    }
+
+    public void Button_PlayerAttackActive()
+    {
+        isFire = true;
+        button_isFireActive = true;
+        audio.Extinguising(true);
+    }
+
+    public void Button_PlayerAttackInActive()
+    {
+        button_isFireActive = false;
+    }
+
+    public void Button_CollapseAlarm()
+    {
+        if (stageManager.UseItem_CollapseAlarm())
+        {
+            transform_CollapseRoom.
+            GetComponent<Interactor_CollapseRoom>().SetActive_UseCollapseAlarm(true);
+        }
+    }
+    public void Button_PortableLift()
+    {
+        if (stageManager.UseItem_PortableLift())
+            target_Collapse.
+            GetComponent<Interactor_Collapse>().UIInteraction.Modify_GuageAmountUpPerSecond(4f);
+    }
+    public void Button_PistolNozzle()
+    {
+        if (stageManager.UseItem_PistolNozzle())
             target_BackDraft.
             GetComponent<Interactor_BackDraft>().Start_Interact();
-        }
     }
 
     /// <summary> 플레이어 이동 </summary>
@@ -367,7 +399,7 @@ public class Player : MonoBehaviour
     /// <summary> 시간 갱신 </summary>
     void Timing()
     {
-        if (time_Fire > 1f && !Input.GetKey(KeyCode.A))
+        if (time_Fire > 1f && !button_isFireActive)
         {
             time_Fire = 0f;
             isFire = false;
@@ -414,6 +446,8 @@ public class Player : MonoBehaviour
 
     void Check_Fire()
     {
+        List<Fire> temp = List_FireInFOV.ToList();
+
         List_FireInFOV.Clear();
 
         Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Fire);
@@ -430,25 +464,66 @@ public class Player : MonoBehaviour
             stageManager.FadeOutAudio_BurningAround();
         }
 
-        for (int i = 0; i < hit.Length; i++)
+        Vector2 fov = obj_Attack.transform.right;
+
+        // 방향에 따른 박스 중심 계산
+        Vector2 boxCenter = (Vector2)transform.position + fov * 2.5f;
+        Vector2 boxSize = new Vector2(5, 2.5f);
+
+        // 박스의 회전 각도 계산
+        float angle = Mathf.Atan2(fov.y, fov.x) * Mathf.Rad2Deg;
+
+        // OverlapBox 호출
+        Collider2D[] hitColliders = Physics2D.OverlapBoxAll(boxCenter, boxSize, angle, layer_Fire);
+
+        // 감지된 오브젝트 처리
+        foreach (var hitCollider in hitColliders)
         {
-            try
-            {
-                if (!hit[i].gameObject.activeSelf) continue;
-
-                //float theta = Get_DotTheta(item);
-                bool dotInside = Check_DotInside(hit[i], Range_halfAngle);
-
-                //item.gameObject.GetComponent<SpriteRenderer>().color =
-                //dotInside ? Color.blue : Color.red;
-
-                if (dotInside) List_FireInFOV.Add(hit[i].GetComponent<Fire>());
-            }
-            catch
-            {
-                continue;
-            }
+            List_FireInFOV.Add(hitCollider.GetComponent<Fire>());
         }
+
+        foreach (var item in temp)
+        {
+            if (!List_FireInFOV.Contains(item))
+            item.isExtinguish = false;
+        }
+
+        // 디버그용 박스 그리기
+        DebugDrawBox(boxCenter, boxSize, angle, Color.red);
+
+        //Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Fire);
+
+        //if (hit.Length != 0 && !isDetectedFire)
+        //{
+        //    isDetectedFire = true;
+        //    stageManager.FadeInAudio_BurningAround();
+        //}
+
+        //if (hit.Length == 0 && isDetectedFire)
+        //{
+        //    isDetectedFire = false;
+        //    stageManager.FadeOutAudio_BurningAround();
+        //}
+
+        //for (int i = 0; i < hit.Length; i++)
+        //{
+        //    try
+        //    {
+        //        if (!hit[i].gameObject.activeSelf) continue;
+
+        //        //float theta = Get_DotTheta(item);
+        //        bool dotInside = Check_DotInside(hit[i], Range_halfAngle);
+
+        //        //item.gameObject.GetComponent<SpriteRenderer>().color =
+        //        //dotInside ? Color.blue : Color.red;
+
+        //        if (dotInside) List_FireInFOV.Add(hit[i].GetComponent<Fire>());
+        //    }
+        //    catch
+        //    {
+        //        continue;
+        //    }
+        //}
 
         //foreach (Collider2D item in hit)
         //{
@@ -472,7 +547,25 @@ public class Player : MonoBehaviour
         //}
     }
 
-    
+    void DebugDrawBox(Vector2 center, Vector2 size, float angle, Color color)
+    {
+        // 박스의 네 꼭짓점 계산
+        Vector2 halfSize = size * 0.5f;
+        Quaternion rotation = Quaternion.Euler(0, 0, angle);
+
+        // Vector3로 변환 후 Quaternion 회전 적용
+        Vector2 topRight = (Vector2)(rotation * new Vector3(halfSize.x, halfSize.y, 0)) + center;
+        Vector2 topLeft = (Vector2)(rotation * new Vector3(-halfSize.x, halfSize.y, 0)) + center;
+        Vector2 bottomRight = (Vector2)(rotation * new Vector3(halfSize.x, -halfSize.y, 0)) + center;
+        Vector2 bottomLeft = (Vector2)(rotation * new Vector3(-halfSize.x, -halfSize.y, 0)) + center;
+
+        // 박스 외곽선 그리기
+        Debug.DrawLine(topLeft, topRight, color);
+        Debug.DrawLine(topRight, bottomRight, color);
+        Debug.DrawLine(bottomRight, bottomLeft, color);
+        Debug.DrawLine(bottomLeft, topLeft, color);
+    }
+
 
     private void Check_Collapse()
     {

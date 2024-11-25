@@ -8,6 +8,7 @@ TagManager:
   - Interactor
   - DarkedRoom
   - Fire
+  - FireExtinguisher
   layers:
   - Default
   - TransparentFX
@@ -59,6 +60,9 @@ TagManager:
     locked: 0
   - name: MapObject_FrontWall
     uniqueID: 272350673
+    locked: 0
+  - name: Survivor
+    uniqueID: 167376395
     locked: 0
   - name: Player
     uniqueID: 2461222145
