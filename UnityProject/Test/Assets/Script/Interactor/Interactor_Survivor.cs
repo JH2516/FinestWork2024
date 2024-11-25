@@ -17,9 +17,16 @@ public class Interactor_Survivor : Interactor
         stageManager.Count_Survivors();
     }
 
+    public override void Start_Interact()
+    {
+        base.Start_Interact();
+        player.isSavingSurvivor = true;
+    }
+
     public override void Done_Interact()
     {
         stageManager.Save_Survivor();
+        player.isSavingSurvivor = false;
         base.Done_Interact();
     }
 }

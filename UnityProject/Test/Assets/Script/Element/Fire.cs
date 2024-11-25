@@ -93,6 +93,9 @@ public class Fire : MonoBehaviour
     [RangeSlider(0.1f, 2f), SerializeField]
     private Vector2         RandomSpeedRange = new Vector2(0.3f, 0.5f);
 
+    [Header("Fire Sprite Mask")]
+    public  SpriteMask      mask;
+
     [Header("Fire Light")]
     [SerializeField]
     private Light2D light;
@@ -145,6 +148,8 @@ public class Fire : MonoBehaviour
     public void Set_OrderInLayer(int orderNum = 0)
     {
         sprite.sortingOrder = orderNum;
+        mask.frontSortingOrder = orderNum;
+        mask.backSortingOrder = orderNum - 1;
     }
 
     private void Update()

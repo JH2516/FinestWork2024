@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     [Header("Player State")]
     public  bool            isMove;
     public  bool            isFire;
+    public  bool            isSavingSurvivor;
     public  bool            isDetectedFire;
     public  bool            isInteract;
     public  bool            isRemoveCollapse;
@@ -155,6 +156,7 @@ public class Player : MonoBehaviour
     {
         isFire = false;
         isInteract = false;
+        isSavingSurvivor = false;
         warning_Collapse = false;
         button_isFireActive = false;
         count_Interact = 0;
@@ -361,6 +363,7 @@ public class Player : MonoBehaviour
         if (!isMove) return;
         if (isFire) return;
         if (using_PistolNozzle) return;
+        if (isSavingSurvivor) return;
         transform.Translate(setMoveVec * 3f * Time.deltaTime);
     }
 

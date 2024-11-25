@@ -85,6 +85,7 @@ MonoBehaviour:
   animator: {fileID: 4138407817936756155}
   sprite: {fileID: 3602788527359731844}
   RandomSpeedRange: {x: 0.3, y: 0.5}
+  mask: {fileID: 3053418915669196606}
   light: {fileID: 6161699699755841533}
   intensity_Increase: 0.2
   intensity_Decrease: 0.4
@@ -118,7 +119,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 2, y: 1.5, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4190322244732256}
@@ -165,14 +166,14 @@ SpriteMask:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -9095717837082945937, guid: bd3cb4af8406d4436a2ae8c2aafe1f8d, type: 3}
-  m_MaskAlphaCutoff: 1
-  m_FrontSortingLayerID: 0
-  m_BackSortingLayerID: 0
-  m_FrontSortingLayer: 0
-  m_BackSortingLayer: 0
+  m_MaskAlphaCutoff: 0.1
+  m_FrontSortingLayerID: -1444925701
+  m_BackSortingLayerID: -1444925701
+  m_FrontSortingLayer: 9
+  m_BackSortingLayer: 9
   m_FrontSortingOrder: 0
-  m_BackSortingOrder: 0
-  m_IsCustomRangeActive: 0
+  m_BackSortingOrder: -1
+  m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0
 --- !u!1 &7548544736311487122
 GameObject:
