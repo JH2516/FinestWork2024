@@ -59,7 +59,7 @@ public class Interactor_CollapseRoom : Interactor
     private void Timing()
     {
         time_Collapse -= Time.deltaTime;
-        text_Collapse.text = $"Collapse\n{(int)time_Collapse}";
+        text_Collapse.text = $"붕괴까지\n{(int)time_Collapse}초";
 
         if (isUsedCollapseAlarm)
         Timing_RemainCollapseRoom();

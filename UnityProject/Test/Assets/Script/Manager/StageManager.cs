@@ -27,13 +27,14 @@ public class StageManager : MonoBehaviour
 
     [Header("UI : Bar")]
     public  Image           player_HPBar;
-    public  Image           Player_ExtendHPBar;
+    public  Image           player_ExtendHPBar;
     public  Image           backGround_HPBar;
     public  Image           backGround_ExtendHPBar;
+    public  RectTransform   mask_HPBar;
 
-    [Header("UI : Background")]
-    public  Image           ui_Survivor;
-    public  Image           ui_Fires;
+    //[Header("UI : Background")]
+    //public  Image           ui_Survivor;
+    //public  Image           ui_Fires;
 
     [Header("UI : Text")]
     public  TextMeshProUGUI text_FireRemain;
@@ -120,6 +121,7 @@ public class StageManager : MonoBehaviour
     public void Count_Fires(int count)
     {
         max_Countfires = fires += count;
+        text_FireRemain.text = fires.ToString();
     }
 
     public void Count_Survivors()
@@ -180,7 +182,7 @@ public class StageManager : MonoBehaviour
         player_HP = 100;
         player_HPMax = 100;
         player_HPBar.fillAmount = 1;
-        Player_ExtendHPBar.fillAmount = 1;
+        player_ExtendHPBar.fillAmount = 1;
     }
 
     ///// <summary> 초기화 : 생존자들 </summary>
@@ -206,7 +208,8 @@ public class StageManager : MonoBehaviour
         ui_PlayerExtendHPBar.SetActive(false);
         ui_RemainCollapseRoom.SetActive(false);
 
-        text_FireRemain.text = "100.0%";
+        text_FireRemain.text = fires.ToString();
+        mask_HPBar.sizeDelta = new Vector2(800, 150);
     }
 
     private void Active_StageBoost()
@@ -240,7 +243,7 @@ public class StageManager : MonoBehaviour
         if (isRecoveryHP) return;
         player_HP -= Time.deltaTime * decreaseHP;
         player_HPBar.fillAmount = player_HP / 100;
-        Player_ExtendHPBar.fillAmount = player_HP / 150;
+        player_ExtendHPBar.fillAmount = player_HP / 150;
     }
 
     /// <summary> 플레이어 산소량 검사 </summary>
@@ -257,7 +260,7 @@ public class StageManager : MonoBehaviour
     public void Player_RemoteHP(float fillHP)
     {
         player_HPBar.fillAmount = fillHP * (player_HPMax / 100);
-        Player_ExtendHPBar.fillAmount = fillHP;
+        player_ExtendHPBar.fillAmount = fillHP;
         player_HP = fillHP * player_HPMax;
     }
 
@@ -286,7 +289,7 @@ public class StageManager : MonoBehaviour
     {
         if (survivors != 0) return;
 
-        ui_Survivor.color = Color.green;
+        text_SurvivorRemain.color = Color.green;
         clear_SavedAllSurvivors = true;
     }
 
@@ -295,7 +298,7 @@ public class StageManager : MonoBehaviour
     public void Discount_Fires()
     {
         fires--;
-        text_FireRemain.text = $"{100f * fires / max_Countfires:N1}%";
+        text_FireRemain.text = fires.ToString();
         Check_isExtinguishedAllFires();
     }
 
@@ -303,7 +306,7 @@ public class StageManager : MonoBehaviour
     {
         if (fires != 0) return;
 
-        ui_Fires.color = Color.green;
+        text_FireRemain.color = Color.green;
         clear_ExtinguishedAllFires = true;
     }
 
@@ -327,6 +330,7 @@ public class StageManager : MonoBehaviour
         backGround_HPBar.enabled = false;
         backGround_ExtendHPBar.enabled = true;
         ui_PlayerExtendHPBar.SetActive(true);
+        mask_HPBar.sizeDelta = new Vector2(1185, 150);
     }
 
     public void Boost_IncreasePlayerLightFOVAngle()
