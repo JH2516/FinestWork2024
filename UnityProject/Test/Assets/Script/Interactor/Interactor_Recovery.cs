@@ -33,5 +33,6 @@ public class Interactor_Recovery : Interactor
         isInteraction = false;
 
         stageManager.Complete_EscapeSurvivor();
+        stageManager.Check_isGameClear();
     }
 }

@@ -63,7 +63,6 @@ public class Generator_FireInArea : MonoBehaviour
 
         Generate_Fire();
         stageManager.Count_Fires(SetCountGen);
-        Debug.Log("sss");
     }
 
     private void Generate_Fire()

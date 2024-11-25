@@ -13,6 +13,8 @@ public class StageManager : MonoBehaviour
 {
     public  static  StageManager    stageManager;
 
+    public  GameObject      stage_Test;
+
     [Header("Manager")]
     public  AudioManager    audio;
 
@@ -70,9 +72,14 @@ public class StageManager : MonoBehaviour
     [SerializeField]
     private Item_PortableLift   item_PortableLift;
 
-    [Header("Survivors")]
-    [SerializeField]
-    private List<GameObject>    List_Survivors;
+    [Header("Boost Item Use")]
+    public  bool            used_AirMat;
+    public  bool            used_OxygenTank;
+    public  bool            used_Lantern;
+
+    //[Header("Survivors")]
+    //[SerializeField]
+    //private List<GameObject>    List_Survivors;
 
     [Header("Stage Status")]
     [SerializeField]
@@ -115,6 +122,11 @@ public class StageManager : MonoBehaviour
         max_Countfires = fires += count;
     }
 
+    public void Count_Survivors()
+    {
+        survivors++;
+        text_SurvivorRemain.text = survivors.ToString();
+    }
 
     private void Awake()
     {
@@ -123,13 +135,15 @@ public class StageManager : MonoBehaviour
         Init_Argument();
         Init_Items();
         Init_Player();
-        Init_Survivors();
+        //Init_Survivors();
         Init_UI();
 
         Active_StageBoost();
 
         Debug.Log("Stage" + StageLoader.Stage);
         Debug.Log("Item" + StageLoader.Item);
+
+        stage_Test.SetActive(true);
     }
 
     /// <summary> 초기화 : 변수 </summary>
@@ -138,6 +152,10 @@ public class StageManager : MonoBehaviour
         isGamePlay = true;
         isGameOver = false;
         isRecoveryHP = false;
+
+        used_AirMat = false;
+        used_OxygenTank = false;
+        used_Lantern = false;
 
         time_InGame = 0;
 
@@ -165,17 +183,17 @@ public class StageManager : MonoBehaviour
         Player_ExtendHPBar.fillAmount = 1;
     }
 
-    /// <summary> 초기화 : 생존자들 </summary>
-    private void Init_Survivors()
-    {
-        List_Survivors = new List<GameObject>();
+    ///// <summary> 초기화 : 생존자들 </summary>
+    //private void Init_Survivors()
+    //{
+    //    List_Survivors = new List<GameObject>();
 
-        foreach (Transform survivor in all_Survivors)
-        List_Survivors.Add(survivor.gameObject);
+    //    foreach (Transform survivor in all_Survivors)
+    //    List_Survivors.Add(survivor.gameObject);
 
-        survivors = List_Survivors.Count;
-        text_SurvivorRemain.text = survivors.ToString();
-    }
+    //    survivors = List_Survivors.Count;
+    //    text_SurvivorRemain.text = survivors.ToString();
+    //}
 
     /// <summary> 초기화 : UI </summary>
     private void Init_UI()
@@ -252,9 +270,8 @@ public class StageManager : MonoBehaviour
 
 
     /// <summary> 생존자 구출 작업 수행 </summary>
-    public void Save_Survivor(GameObject survivor)
+    public void Save_Survivor()
     {
-        List_Survivors.Remove(survivor);
         survivors--;
     }
 
@@ -294,10 +311,7 @@ public class StageManager : MonoBehaviour
     /// <summary> 부스트 : 모든 생존자 구출 </summary>
     public void Boost_SaveAllSurvivor()
     {
-        foreach (GameObject survivor in List_Survivors)
-            survivor.SetActive(false);
-
-        List_Survivors.Clear();
+        used_AirMat = true;
         survivors = 0;
         text_SurvivorRemain.text = survivors.ToString();
 
@@ -307,6 +321,7 @@ public class StageManager : MonoBehaviour
     /// <summary> 부스트 : 플레이어 산소 감소 (50%) </summary>
     public void Boost_IncreaseHPAmount()
     {
+        used_OxygenTank = true;
         player_HP = 150;
         player_HPMax = 150;
         backGround_HPBar.enabled = false;
@@ -316,6 +331,7 @@ public class StageManager : MonoBehaviour
 
     public void Boost_IncreasePlayerLightFOVAngle()
     {
+        used_Lantern = true;
         player.Set_LightFOVAngle(60f, 90f);
         player.Set_LightFOVRadius(8f);
         player.Set_LightAroundRadius(2f, 8f);

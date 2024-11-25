@@ -51,9 +51,18 @@ TagManager:
   - name: Mask_PlayersSight
     uniqueID: 411324259
     locked: 0
-  - name: Fire
-    uniqueID: 3000180565
+  - name: MapObject_BackWall
+    uniqueID: 3005365789
     locked: 0
   - name: Wall
     uniqueID: 183870157
+    locked: 0
+  - name: MapObject_FrontWall
+    uniqueID: 272350673
+    locked: 0
+  - name: Player
+    uniqueID: 2461222145
+    locked: 0
+  - name: Fire
+    uniqueID: 2850041595
     locked: 0

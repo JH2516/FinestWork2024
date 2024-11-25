@@ -8,11 +8,18 @@ public class Interactor_Survivor : Interactor
     {
         Init_UIInteraction("UIInteract_Survivor");
         base.Awake();
+
+        if (stageManager.used_AirMat)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+        stageManager.Count_Survivors();
     }
 
     public override void Done_Interact()
     {
-        stageManager.Save_Survivor(gameObject);
+        stageManager.Save_Survivor();
         base.Done_Interact();
     }
 }
