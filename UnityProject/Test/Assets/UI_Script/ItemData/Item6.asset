@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 784f2d531e8eecf4786944ba86861828, type: 3}
   m_Name: Item6
   m_EditorClassIdentifier: 
-  sprite: {fileID: 71170302, guid: e8796d834785545569a251f0d5907186, type: 3}
+  sprite: {fileID: 21300000, guid: ad94b00aa5c548841998f14862eca473, type: 3}
   ItemName: "\uBD95\uAD34\uBB3C \uACBD\uBCF4\uAE30"
   ItemDesciption: "\uBD95\uAD34 \uD604\uC7A5\uC758 \uD558\uC911\uC774\uB098 \uC9C4\uB3D9,
     \uAC01\uB3C4 \uBCC0\uD654\uB97C \uBAA8\uB2C8\uD130\uB9C1\uD558\uC5EC \uACBD\uBCF4\uB97C
