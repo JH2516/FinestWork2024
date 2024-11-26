@@ -21,6 +21,7 @@ public class Interactor_CollapseRoom : Interactor
     [SerializeField]
     private TextMeshProUGUI text_RemainCollapse;
 
+    public  bool            isSurvivorInRoom;
     private bool            isCollapsed;
     private bool            isUsedCollapseAlarm;
 
@@ -40,6 +41,7 @@ public class Interactor_CollapseRoom : Interactor
 
         if (time_Collapse == 0) time_Collapse = 10;
 
+        isSurvivorInRoom = false;
         isCollapsed = false;
         isUsedCollapseAlarm = false;
 
@@ -98,8 +100,13 @@ public class Interactor_CollapseRoom : Interactor
 
         if (isPlayerInside)
         {
-            stageManager.GameOver();
+            stageManager.GameOver_CauseOfCollaspeRoom();
             audio.GameoverByCollapse(true);
+        }
+        else if (isSurvivorInRoom)
+        {
+            stageManager.GameOver_CauseOfFailedSaveSurvivor();
+            audio.TriggerCollapse(true);
         }
         else
         {
@@ -153,5 +160,15 @@ public class Interactor_CollapseRoom : Interactor
         yield return new WaitForSeconds(3f);
 
         show_Interaction.gameObject.SetActive(false);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.name == "Survivor") isSurvivorInRoom = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.name == "Survivor") isSurvivorInRoom = false;
     }
 }

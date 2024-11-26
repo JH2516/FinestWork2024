@@ -40,6 +40,7 @@ public class StageManager : MonoBehaviour
     public  TextMeshProUGUI text_FireRemain;
     public  TextMeshProUGUI text_SurvivorRemain;
     public  TextMeshProUGUI text_CollapseRoomRemain;
+    public  TextMeshProUGUI text_CauseOfGameOver;
 
     [Header("UI : Clear Text")]
     public  TextMeshProUGUI text_GameClear;
@@ -269,7 +270,7 @@ public class StageManager : MonoBehaviour
         if (player_HP <= 0)
         {
             audio.GameoverByLowerOxygen(true);
-            GameOver();
+            GameOver_CauseOfLowerOxygen();
         }
     }
 
@@ -468,6 +469,30 @@ public class StageManager : MonoBehaviour
 
         Panel_GameOver.SetActive(true);
         FadeOutAudio_BurningAround();
+    }
+
+    public void GameOver_CauseOfBackDraft() // 사유 : 백 드래프트
+    {
+        text_CauseOfGameOver.text = "순간적인 화염에 휩싸이고 말았습니다.";
+        GameOver();
+    }
+
+    public void GameOver_CauseOfCollaspeRoom() // 사유 : 붕괴
+    {
+        text_CauseOfGameOver.text = "무너지는 방 속에서 붕괴되고 말았습니다.";
+        GameOver();
+    }
+
+    public void GameOver_CauseOfLowerOxygen() // 사유 : 산소 부족
+    {
+        text_CauseOfGameOver.text = "산소통이 더 이상 버텨낼 수 없었습니다.";
+        GameOver();
+    }
+
+    public void GameOver_CauseOfFailedSaveSurvivor() // 사유 : 붕괴 위험 속 생존자 고립
+    {
+        text_CauseOfGameOver.text = "누군가 붕괴 속에서 피해를 입게 되었습니다.";
+        GameOver();
     }
 
     public bool Check_isGameClear()
