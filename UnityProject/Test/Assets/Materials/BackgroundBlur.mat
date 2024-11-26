@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CollectColor
-  m_Shader: {fileID: 4800000, guid: acc5f63139ce3b540b51f999ef0f1056, type: 3}
+  m_Name: BackgroundBlur
+  m_Shader: {fileID: 4800000, guid: 1f3136d41ffb08f4a9e5d4c8a22287a7, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -45,7 +45,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlurRadius: 1
+    - _BlurRadius: 2.5
     - _EnableExternalAlpha: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
