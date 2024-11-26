@@ -599,17 +599,6 @@ public class Player : MonoBehaviour
         detect_Collapse = false;
     }
 
-    bool Check_DotInside(Collider2D hitObj, float half_Range)
-    {
-        //float theta = Get_DotTheta(hitObj);
-
-        Vector2 targetVec = hitObj.transform.position - transform.position;
-
-        float dot = Vector2.Dot(obj_FOV.transform.right, targetVec.normalized);
-        float theta = Mathf.Acos(dot) * Mathf.Rad2Deg;
-
-        return theta < half_Range;
-    }
 
 
     /// <summary> 플레이어 전방 시야각 설정 </summary>

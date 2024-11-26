@@ -13,7 +13,8 @@ public class StageManager : MonoBehaviour
 {
     public  static  StageManager    stageManager;
 
-    public  GameObject      stage_Test;
+    [Header("Stage List")]
+    public  GameObject[]    stageList;
 
     [Header("Manager")]
     public  AudioManager    audio;
@@ -31,6 +32,9 @@ public class StageManager : MonoBehaviour
     public  Image           backGround_HPBar;
     public  Image           backGround_ExtendHPBar;
     public  RectTransform   mask_HPBar;
+
+    [Header("UI : Effect")]
+    public  Image           effect_Warning;
 
     //[Header("UI : Background")]
     //public  Image           ui_Survivor;
@@ -107,6 +111,7 @@ public class StageManager : MonoBehaviour
     private bool            isRecoveryHP;
     [SerializeField]
     private float           time_InGame;
+    public  bool            isPlayerWarning;
 
     [Header("Player HP Info")]
     public  float           player_HP;
@@ -159,7 +164,7 @@ public class StageManager : MonoBehaviour
         Debug.Log("Stage" + StageLoader.Stage);
         Debug.Log("Item" + StageLoader.Item);
 
-        stage_Test.SetActive(true);
+        stageList[StageLoader.Stage].SetActive(true);
     }
 
     /// <summary> 초기화 : 변수 </summary>
@@ -168,6 +173,7 @@ public class StageManager : MonoBehaviour
         isGamePlay = true;
         isGameOver = false;
         isRecoveryHP = false;
+        isPlayerWarning = false;
 
         used_AirMat = false;
         used_OxygenTank = false;
@@ -275,6 +281,19 @@ public class StageManager : MonoBehaviour
         {
             audio.GameoverByLowerOxygen(true);
             GameOver_CauseOfLowerOxygen();
+        }
+
+        if (player_HP <= 30 && !isPlayerWarning)
+        {
+            isPlayerWarning = true;
+            StopCoroutine("FadeOutWarningEffect");
+            StartCoroutine("FadeInWarningEffect");
+        } 
+        else if (player_HP >= 30 && isPlayerWarning)
+        {
+            isPlayerWarning = false;
+            StopCoroutine("FadeInWarningEffect");
+            StartCoroutine("FadeOutWarningEffect");
         }
     }
 
@@ -637,6 +656,36 @@ public class StageManager : MonoBehaviour
             currentTime -= Time.unscaledDeltaTime;
             audio_Burning.volume = currentTime;
             yield return null; // 다음 프레임까지 대기
+        }
+    }
+
+    IEnumerator FadeInWarningEffect()
+    {
+        float alpha;
+
+        while (true)
+        {
+            alpha = effect_Warning.color.a;
+            effect_Warning.color = new Color(1, 1, 1, alpha += Time.unscaledDeltaTime * 2);
+
+            if (alpha >= 1) yield break;
+
+            yield return null;
+        }
+    }
+
+    IEnumerator FadeOutWarningEffect()
+    {
+        float alpha;
+
+        while (true)
+        {
+            alpha = effect_Warning.color.a;
+            effect_Warning.color = new Color(1, 1, 1, alpha -= Time.unscaledDeltaTime * 2);
+
+            if (alpha <= 0) yield break;
+
+            yield return null;
         }
     }
 }
