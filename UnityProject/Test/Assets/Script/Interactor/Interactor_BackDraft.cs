@@ -116,6 +116,7 @@ public class Interactor_BackDraft : Interactor
         door.SetActive(false);
         obj_Fires.SetActive(true);
         player.SetActive_UsingPistolNozzle(false);
+        stageManager.UsedItem_PistolNozzle();
     }
 
     public void Break_BackDraft()

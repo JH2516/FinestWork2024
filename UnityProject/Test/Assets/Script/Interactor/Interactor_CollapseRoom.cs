@@ -134,6 +134,11 @@ public class Interactor_CollapseRoom : Interactor
 
         if (!player.using_CollapseAlarm)
         player.transform_CollapseRoom = transform;
+
+        if (!stageManager.used_CollapseAlarm)
+        {
+            stageManager.UIButton_IsActiveItemCollapseAlarm(true);
+        }
     }
 
     public override void Hide_Interact()
@@ -143,6 +148,11 @@ public class Interactor_CollapseRoom : Interactor
 
         if (!player.using_CollapseAlarm)
         stageManager.player.transform_CollapseRoom = null;
+
+        if (!stageManager.used_CollapseAlarm)
+        {
+            stageManager.UIButton_IsActiveItemCollapseAlarm(false);
+        }
     }
 
     private void Waiting_Collapse()

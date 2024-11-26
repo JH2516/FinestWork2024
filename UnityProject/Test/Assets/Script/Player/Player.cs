@@ -302,10 +302,9 @@ public class Player : MonoBehaviour
             Button_PlayerAttackInActive();
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) && isInteract)
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            foreach (var interactor in List_Interactor)
-            interactor.Start_Interact();
+            Button_PlayerInteract();
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
@@ -329,6 +328,14 @@ public class Player : MonoBehaviour
         isFire = true;
         button_isFireActive = true;
         audio.Extinguising(true);
+    }
+
+    public void Button_PlayerInteract()
+    {
+        if (!isInteract) return;
+
+        foreach (var interactor in List_Interactor)
+        interactor.Start_Interact();
     }
 
     public void Button_PlayerAttackInActive()
@@ -700,6 +707,8 @@ public class Player : MonoBehaviour
     /// <summary> 플레이어의 상호작용 대상에 접근 </summary>
     private void InInteract(Collider2D interact)
     {
+        stageManager.Button_ChangeToInteract();
+
         Interactor obj = interact.GetComponent<Interactor>();
         List_Interactor.Add(obj);
         obj.Show_Interact();
@@ -711,6 +720,8 @@ public class Player : MonoBehaviour
     /// <summary> 플레이어의 상호작용 대상으로부터 나가기 </summary>
     private void OutInteract(Collider2D interact)
     {
+        stageManager.Button_ChangeToAttack();
+
         Interactor obj = interact.GetComponent<Interactor>();
         List_Interactor.Remove(obj);
         obj.Hide_Interact();
