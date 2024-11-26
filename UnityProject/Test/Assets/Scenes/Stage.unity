@@ -2138,7 +2138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &972737519
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2191,7 +2191,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -949048727, guid: e8796d834785545569a251f0d5907186, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 07a309d3ec6630349a82fb07f063a68b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2226,7 +2226,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1010039812
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3760,7 +3760,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1633573457
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4186,7 +4186,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1679598667
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4452,7 +4452,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1815793421
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4491,7 +4491,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1817407212
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4544,7 +4544,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 761946183, guid: e8796d834785545569a251f0d5907186, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d71edb59aefdf3c43bd5263352eb49e2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4870,7 +4870,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2095788131
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4902,7 +4902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b6e723ad18120242bece338dac07335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSizer: 0.5
+  imageSizer: 0.03
 --- !u!114 &2095788133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4923,7 +4923,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 330437088, guid: e8796d834785545569a251f0d5907186, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 42a9baa6750e92b4ea9968237e52aea8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

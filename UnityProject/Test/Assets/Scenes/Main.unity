@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b6e723ad18120242bece338dac07335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSizer: 0.5
+  imageSizer: 0.03
 --- !u!114 &115220323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b6e723ad18120242bece338dac07335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSizer: 0.5
+  imageSizer: 0.03
 --- !u!114 &126767421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -577,7 +577,7 @@ MonoBehaviour:
   itemName: {fileID: 385408394}
   description: {fileID: 1827824845}
   image: {fileID: 1213689423}
-  imageSizer: 0.5
+  imageSizer: 0.03
 --- !u!1 &367873106
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,7 +703,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b6e723ad18120242bece338dac07335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSizer: 0.5
+  imageSizer: 0.03
 --- !u!1 &377291546
 GameObject:
   m_ObjectHideFlags: 0
@@ -2105,7 +2105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b6e723ad18120242bece338dac07335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSizer: 0.5
+  imageSizer: 0.03
 --- !u!114 &847973848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3970,7 +3970,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1137532979
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4195,7 +4195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b6e723ad18120242bece338dac07335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSizer: 0.5
+  imageSizer: 0.03
 --- !u!114 &1189815627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4397,7 +4397,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dcbfc1382b02094bb7240776ed9bf96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSizer: 0.5
+  imageSizer: 0
 --- !u!1 &1239468131
 GameObject:
   m_ObjectHideFlags: 0
@@ -5776,7 +5776,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b6e723ad18120242bece338dac07335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageSizer: 0.5
+  imageSizer: 0.03
 --- !u!114 &1595995636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5797,7 +5797,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ad94b00aa5c548841998f14862eca473, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4ceb3a6a6c62e474ba65e4ea792ddcea, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7070,7 +7070,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: ea2c5ac30892cda478571fffb35f516d, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7390,7 +7390,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1868590948
 RectTransform:
   m_ObjectHideFlags: 0
