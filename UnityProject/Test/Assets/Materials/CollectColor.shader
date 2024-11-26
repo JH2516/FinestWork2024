@@ -48,15 +48,6 @@ Shader "CustomRenderTexture/CollectColor"
                 float3 backColor = tex2D(_ScreenTex, screenPos).rgb;
                 float2 texelSize = 1.0 / _ScreenParams.xy;
 
-                for (int x = -5; x <= 5; x++)
-                {
-                    for (int y = -5; y <= 5; y++)
-                    {
-                        float2 offset = float2(x, y) * texelSize * _BlurRadius;
-                        float weight = Gaussian(sqrt(pow(x, 2) + pow(y, 2)), _BlurRadius);
-                    }
-                }
-
                 return float4(backColor, 1.0);
             }
             ENDCG
