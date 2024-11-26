@@ -135,6 +135,8 @@ public class Interactor_CollapseRoom : Interactor
         if (!player.using_CollapseAlarm)
         player.transform_CollapseRoom = transform;
 
+        stageManager.Button_ChangeToAttack();
+
         if (!stageManager.used_CollapseAlarm)
         {
             stageManager.UIButton_IsActiveItemCollapseAlarm(true);

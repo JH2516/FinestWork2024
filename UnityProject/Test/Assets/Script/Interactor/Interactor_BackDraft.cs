@@ -83,6 +83,7 @@ public class Interactor_BackDraft : Interactor
             base.Start_Interact();
 
             show_Interaction.Set_Position(pos_WarningUI.position);
+            stageManager.Button_ChangeToAttack();
             obj_Warning.SetActive(true);
             pos_Warning.SetActive(true);
             obj_Fires.SetActive(true);

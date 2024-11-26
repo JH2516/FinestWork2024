@@ -1,4 +1,3 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,6 +13,7 @@ public class StageManager : MonoBehaviour
     public  static  StageManager    stageManager;
 
     [Header("Stage List")]
+    public  GameObject      stage;
     public  GameObject[]    stageList;
 
     [Header("Manager")]
@@ -164,7 +164,8 @@ public class StageManager : MonoBehaviour
         Debug.Log("Stage" + StageLoader.Stage);
         Debug.Log("Item" + StageLoader.Item);
 
-        stageList[StageLoader.Stage].SetActive(true);
+        stage = stageList[StageLoader.Stage];
+        stage.SetActive(true);
     }
 
     /// <summary> 초기화 : 변수 </summary>
@@ -283,13 +284,13 @@ public class StageManager : MonoBehaviour
             GameOver_CauseOfLowerOxygen();
         }
 
-        if (player_HP <= 30 && !isPlayerWarning)
+        if (player_HP <= player_HPMax * 0.3f && !isPlayerWarning)
         {
             isPlayerWarning = true;
             StopCoroutine("FadeOutWarningEffect");
             StartCoroutine("FadeInWarningEffect");
         } 
-        else if (player_HP >= 30 && isPlayerWarning)
+        else if (player_HP >= player_HPMax * 0.3f && isPlayerWarning)
         {
             isPlayerWarning = false;
             StopCoroutine("FadeInWarningEffect");
@@ -504,6 +505,7 @@ public class StageManager : MonoBehaviour
         isGameOver = true;
         player_HP = 0;
         player_HPBar.fillAmount = 0;
+        player_ExtendHPBar.fillAmount = 0;
         Time.timeScale = 0;
 
         Panel_GameOver.SetActive(true);
