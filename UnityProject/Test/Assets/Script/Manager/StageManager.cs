@@ -17,6 +17,7 @@ public class StageManager : MonoBehaviour
 
     [Header("Manager")]
     public  AudioManager    audio;
+    public  BlurManager     blur;
 
     [Header("UI : Panel")]
     public  GameObject      Panel_Pause;
@@ -526,10 +527,15 @@ public class StageManager : MonoBehaviour
         player_HP = 0;
         player_HPBar.fillAmount = 0;
         player_ExtendHPBar.fillAmount = 0;
-        Time.timeScale = 0;
 
-        Panel_GameOver.SetActive(true);
+        blur.ButtonCaptureID(1); // 게임오버 화면 표기 지연
         FadeOutAudio_BurningAround();
+    }
+
+    public void GameOver_PanelOn()
+    {
+        Time.timeScale = 0;
+        Panel_GameOver.SetActive(true);
     }
 
     public void GameOver_CauseOfBackDraft() // 사유 : 백 드래프트
@@ -569,7 +575,7 @@ public class StageManager : MonoBehaviour
     public void GameClear()
     {
         isGamePlay = false;
-        Time.timeScale = 0;
+        
 
         clearStars = 0;
         text_InTime.text = $"2. {clearTime_AllStages[StageLoader.Stage]}초 내 임무 수행 완료";
@@ -581,10 +587,16 @@ public class StageManager : MonoBehaviour
 
         img_ClearStars[clearStars].SetActive(true);
 
-        Panel_GameClear.SetActive(true);
 
+        blur.ButtonCaptureID(2); // 게임 클리어 화면 표기 지연
         //StopCoroutine("FadeInWarningEffect");
         //StartCoroutine("FadeOutWarningEffect");
+    }
+
+    public void GameClear_PanelOn()
+    {
+        Time.timeScale = 0;
+        Panel_GameClear.SetActive(true);
     }
 
     private void GameClear_ShowStarAcquire()

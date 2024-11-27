@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,20 +9,24 @@ public class BackgroundCapture : MonoBehaviour
 {
     Camera gameCamera;
     public RenderTexture renderTexture; // RenderTexture
-    public Image targetImage;           // ��������Ʈ�� ������ Image ������Ʈ
+    public Canvas captureCanvas;
+    public Image[] targetImage;           // ��������Ʈ�� ������ Image ������Ʈ
     float nowTime = 0;
     public float repeatTime;
     bool isRepeat = false;
-    IAfterBlurBack afterAction;
+    int actionID = 0;
+    AfterEventInvoker[] afterAction;
 
     private void Awake()
     {
         gameCamera = GetComponent<Camera>();
-        afterAction = GetComponent<IAfterBlurBack>();
+        afterAction = GetComponents<AfterEventInvoker>();
+        Array.Sort(afterAction, (x, y) => x.Id.CompareTo(y.Id));
     }
 
     void CaptureBackground()
     {
+        captureCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         // ī�޶� RenderTexture�� �������ϵ��� ����
         gameCamera.targetTexture = renderTexture;
 
@@ -35,13 +40,21 @@ public class BackgroundCapture : MonoBehaviour
         Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
 
         // Image ������Ʈ�� ��������Ʈ ����
-        targetImage.sprite = sprite;
+        targetImage[actionID].sprite = sprite;
     }
 
     public void ButtonCapture()
     {
-        isRepeat = true;
+        actionID = 0;
         nowTime = 0;
+        isRepeat = true;
+    }
+
+    public void ButtonCaptureID(int id)
+    {
+        actionID = id;
+        nowTime = 0;
+        isRepeat = true;
     }
 
     private void Update()
@@ -54,7 +67,8 @@ public class BackgroundCapture : MonoBehaviour
             {
                 isRepeat = false;
                 gameCamera.targetTexture = null;
-                afterAction.AfterBackCapture();
+                captureCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                afterAction[actionID].AfterBackCapture();
             }
         }
     }

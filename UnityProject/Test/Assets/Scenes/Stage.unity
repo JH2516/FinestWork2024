@@ -2485,7 +2485,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   renderTexture: {fileID: 8400000, guid: e191c647a9484ea4091e220e587a4522, type: 2}
-  targetImage: {fileID: 1701875945}
+  captureCanvas: {fileID: 1609198261}
+  targetImage:
+  - {fileID: 1701875945}
   repeatTime: 0.1
 --- !u!114 &840271060
 MonoBehaviour:
@@ -2496,10 +2498,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 840271053}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5d6d61073827ca40af0d909bcc9407b, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b28e617966bc604fa830f5486585e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item: {fileID: 1815793420}
+  invokerName: Item Screen On
+  id: 0
+  action:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1815793420}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!1 &904143754
 GameObject:
   m_ObjectHideFlags: 0
