@@ -7,6 +7,9 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager audioManager;
 
+    [Header("All")]
+    public AudioSource[]    audio_All;
+
     [Header("UI/UX Audio")]
     public AudioSource audio_ButtonClick;
 
@@ -56,4 +59,21 @@ public class AudioManager : MonoBehaviour
     public void GameoverByCollapse      (bool isPlay) => RemoteAudio(audio_GameoverByCollapse, isPlay);
     public void GameoverByBackDraft     (bool isPlay) => RemoteAudio(audio_GameoverByBackDraft, isPlay);
     public void GameoverByLowerOxygen   (bool isPlay) => RemoteAudio(audio_GameoverByLowerOxygen, isPlay);
+
+    public void PauseSound_WithoutButtonSound()
+    {
+        foreach (AudioSource audio in audio_All)
+        {
+            if (audio == audio_ButtonClick) continue;
+            audio.Pause();
+        }
+    }
+
+    public void UnPauseSound_WithoutButtonSound()
+    {
+        foreach (AudioSource audio in audio_All)
+        {
+            audio.UnPause();
+        }
+    }
 }

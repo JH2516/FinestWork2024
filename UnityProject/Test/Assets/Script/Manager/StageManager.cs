@@ -491,6 +491,7 @@ public class StageManager : MonoBehaviour
         Time.timeScale = 0;
 
         Panel_Pause.SetActive(true);
+        audio.PauseSound_WithoutButtonSound();
         audio.ButtonClick(true);
     }
 
@@ -501,6 +502,7 @@ public class StageManager : MonoBehaviour
         Time.timeScale = 1;
 
         Panel_Pause.SetActive(false);
+        audio.UnPauseSound_WithoutButtonSound();
         audio.ButtonClick(true);
     }
 

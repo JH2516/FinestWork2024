@@ -67106,6 +67106,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a78b6431247e642069aac80284f229ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audio_All:
+  - {fileID: 1253297502}
+  - {fileID: 1961574691}
+  - {fileID: 788674780}
+  - {fileID: 1186486632}
+  - {fileID: 955281267}
+  - {fileID: 1248691527}
+  - {fileID: 675468438}
+  - {fileID: 2080700103}
+  - {fileID: 1690415699}
+  - {fileID: 1475820664}
+  - {fileID: 451530608}
   audio_ButtonClick: {fileID: 1313136135}
   audio_PlayerWalk: {fileID: 1253297502}
   audio_Extinguising: {fileID: 1961574691}
