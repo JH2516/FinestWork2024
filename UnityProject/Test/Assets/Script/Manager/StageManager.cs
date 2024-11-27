@@ -513,6 +513,7 @@ public class StageManager : MonoBehaviour
     /// <summary> 게임 나가기 </summary>
     public void Game_Exit()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene("Stage");
     }
 
