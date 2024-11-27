@@ -53,6 +53,7 @@ public class BackgroundCapture : MonoBehaviour
             if (nowTime >= repeatTime)
             {
                 isRepeat = false;
+                gameCamera.targetTexture = null;
                 afterAction.AfterBackCapture();
             }
         }

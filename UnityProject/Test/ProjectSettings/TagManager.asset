@@ -76,3 +76,6 @@ TagManager:
   - name: Collapse
     uniqueID: 742801571
     locked: 0
+  - name: UI
+    uniqueID: 2604195139
+    locked: 0
