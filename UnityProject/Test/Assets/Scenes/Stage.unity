@@ -2356,7 +2356,7 @@ GameObject:
   - component: {fileID: 840271059}
   - component: {fileID: 840271060}
   m_Layer: 0
-  m_Name: PopupCanvas
+  m_Name: PopupCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

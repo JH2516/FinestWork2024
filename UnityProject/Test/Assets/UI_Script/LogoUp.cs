@@ -12,24 +12,42 @@ public class LogoUp : MonoBehaviour
     float progress;
     Vector3 originPositon;
     public FadeInBack screenFader;
-    LogoUp killSelf;
+    bool upSwitch = false;
+    static float ypos;
 
     private void Awake()
     {
         rect = GetComponent<RectTransform>();
         originPositon = rect.localPosition;
-        killSelf = GetComponent<LogoUp>();
+    }
+
+    public void UpSwitchOn()
+    {
+        upSwitch = true;
     }
 
     void Update()
     {
-        progress += Time.deltaTime;
-        rect.localPosition = new Vector3(originPositon.x, originPositon.y + upDistant * Mathf.Pow(progress / upTime, upAccel), 0);
-        if (progress >= upTime)
+        if (FirstScreenSkipper.firstScreenNoSkip)
         {
-            screenFader.enabled = true;
-            rect.localPosition = new Vector3(originPositon.x, originPositon.y + upDistant, 0);
-            killSelf.enabled = false;
+            if (upSwitch)
+            {
+                progress += Time.deltaTime;
+                rect.localPosition = new Vector3(originPositon.x, originPositon.y + upDistant * Mathf.Pow(progress / upTime, upAccel), 0);
+                if (progress >= upTime)
+                {
+                    screenFader.enabled = true;
+                    ypos = originPositon.y + upDistant;
+                    rect.localPosition = new Vector3(originPositon.x, ypos, 0);
+
+                    upSwitch = false;
+                }
+            }
         }
+        else
+        {
+            rect.localPosition = new Vector3(originPositon.x, ypos, 0);
+        }
+        
     }
 }

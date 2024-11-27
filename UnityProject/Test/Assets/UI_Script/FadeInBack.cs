@@ -17,6 +17,7 @@ public class FadeInBack : MonoBehaviour
         fader.color = new Color(1, 1, 1, 1 - Mathf.Pow(progress / fadeInTime, fadeInAccel));
         if (progress > fadeInTime)
         {
+            FirstScreenSkipper.firstScreenNoSkip = false;
             frontTitle.SetActive(false);
         }
     }
