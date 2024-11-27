@@ -50,10 +50,8 @@ public class BackgroundCapture : MonoBehaviour
         {
             CaptureBackground();
             nowTime += Time.deltaTime;
-            Debug.Log("으악 업데이트 작동중이야 : " + nowTime);
             if (nowTime >= repeatTime)
             {
-                Debug.Log("종료 이벤트 작동됨");
                 isRepeat = false;
                 afterAction.AfterBackCapture();
             }

@@ -9,6 +9,5 @@ public class Stage_Item : MonoBehaviour, IAfterBlurBack
     public void AfterBackCapture()
     {
         item.SetActive(true);
-        Debug.Log("이후 액션 이벤트 작동됨");
     }
 }
