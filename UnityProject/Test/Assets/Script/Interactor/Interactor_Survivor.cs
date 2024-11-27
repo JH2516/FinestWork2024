@@ -14,7 +14,7 @@ public class Interactor_Survivor : Interactor
             gameObject.SetActive(false);
             return;
         }
-        stageManager.Count_Survivors();
+        stageManager.Count_Survivors(gameObject);
     }
 
     public override void Start_Interact()
@@ -25,7 +25,7 @@ public class Interactor_Survivor : Interactor
 
     public override void Done_Interact()
     {
-        stageManager.Save_Survivor();
+        stageManager.Save_Survivor(gameObject);
         player.isSavingSurvivor = false;
         base.Done_Interact();
     }

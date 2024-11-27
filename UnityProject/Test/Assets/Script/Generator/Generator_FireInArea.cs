@@ -62,7 +62,6 @@ public class Generator_FireInArea : MonoBehaviour
         areaPosMax = (Vector2)transform.position + areaScale;
 
         Generate_Fire();
-        stageManager.Count_Fires(SetCountGen);
     }
 
     private void Generate_Fire()
@@ -87,6 +86,8 @@ public class Generator_FireInArea : MonoBehaviour
 
             fire.Set_OrderInLayer(i);
             fire.transform.position = firePos;
+
+            stageManager.Count_Fires(fire.gameObject);
         }
     }
 

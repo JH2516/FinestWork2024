@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
     public  bool            isInFrontOfDoor;
 
     [Header("Player Fire")]
+    public  SpriteRenderer  sr_FireExtinguisher;
     public  float           time_Fire;
     public  bool            button_isFireActive;
 
@@ -437,8 +438,21 @@ public class Player : MonoBehaviour
     {
         if (!isMove) return;
 
-        if (setMoveVec.x < 0) sr.flipX = true;
-        if (setMoveVec.x > 0) sr.flipX = false;
+        if (setMoveVec.x < 0)
+        {
+            sr.flipX = true;
+            sr_FireExtinguisher.flipX = true;
+            sr_FireExtinguisher.flipY = true;
+            return;
+        }
+
+        if (setMoveVec.x > 0)
+        {
+            sr.flipX = false;
+            sr_FireExtinguisher.flipX = false;
+            sr_FireExtinguisher.flipY = false;
+            return;
+        }
     }
 
     /// <summary> 플레이어 이동 벡터 지정 </summary>

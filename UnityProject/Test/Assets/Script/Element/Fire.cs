@@ -201,7 +201,7 @@ public class Fire : MonoBehaviour
         if (isBackdraft)        return;
         if (power_Fire > 0.1f)  return;
 
-        stageManager.Discount_Fires();
+        stageManager.Discount_Fires(gameObject);
         gameObject.SetActive(false);
     }
 }

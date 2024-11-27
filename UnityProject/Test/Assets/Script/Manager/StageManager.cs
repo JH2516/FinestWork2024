@@ -42,6 +42,7 @@ public class StageManager : MonoBehaviour
     [Header("UI : Text")]
     public  TextMeshProUGUI text_FireRemain;
     public  TextMeshProUGUI text_SurvivorRemain;
+    public  TextMeshProUGUI text_InGameTime;
     public  TextMeshProUGUI text_CollapseRoomRemain;
     public  TextMeshProUGUI text_CauseOfGameOver;
 
@@ -100,9 +101,16 @@ public class StageManager : MonoBehaviour
     public  bool            used_OxygenTank;
     public  bool            used_Lantern;
 
-    //[Header("Survivors")]
-    //[SerializeField]
-    //private List<GameObject>    List_Survivors;
+    [Header("List")]
+    [SerializeField]
+    private List<GameObject> list_Fires;
+    [SerializeField]
+    private List<GameObject> list_Survivors;
+
+    [Header("Player HP Info")]
+    public  float           player_HP;
+    private float           player_HPMax;
+
 
     [Header("Stage Status")]
     [SerializeField]
@@ -114,10 +122,6 @@ public class StageManager : MonoBehaviour
     [SerializeField]
     private float           time_InGame;
     public  bool            isPlayerWarning;
-
-    [Header("Player HP Info")]
-    public  float           player_HP;
-    private float           player_HPMax;
 
     [Header("Stage Unit")]
     [SerializeField]
@@ -139,7 +143,7 @@ public class StageManager : MonoBehaviour
     private byte            clearStars;
 
     [Header("Stage Clear Require")]
-    private float           clearTime = 100;
+    public  float[]         clearTime_AllStages;
     private bool            unUsedBoostItems;
     private bool            clearTimeInCondition;
 
@@ -147,15 +151,17 @@ public class StageManager : MonoBehaviour
     public  GameObject      Text_Debug;
     public  bool            isDebug;
 
-    public void Count_Fires(int count)
+    public void Count_Fires(GameObject fire)
     {
-        fires += count;
+        fires++;
+        list_Fires.Add(fire);
         text_FireRemain.text = fires.ToString();
     }
 
-    public void Count_Survivors()
+    public void Count_Survivors(GameObject survivor)
     {
         survivors++;
+        list_Survivors.Add(survivor);
         text_SurvivorRemain.text = survivors.ToString();
     }
 
@@ -218,18 +224,6 @@ public class StageManager : MonoBehaviour
         player_ExtendHPBar.fillAmount = 1;
     }
 
-    ///// <summary> 초기화 : 생존자들 </summary>
-    //private void Init_Survivors()
-    //{
-    //    List_Survivors = new List<GameObject>();
-
-    //    foreach (Transform survivor in all_Survivors)
-    //    List_Survivors.Add(survivor.gameObject);
-
-    //    survivors = List_Survivors.Count;
-    //    text_SurvivorRemain.text = survivors.ToString();
-    //}
-
     /// <summary> 초기화 : UI </summary>
     private void Init_UI()
     {
@@ -282,6 +276,7 @@ public class StageManager : MonoBehaviour
     private void Timing()
     {
         time_InGame += Time.deltaTime;
+        text_InGameTime.text = $"Time : {(int)time_InGame}";
     }
 
     /// <summary> 플레이어 산소 감소 </summary>
@@ -335,9 +330,10 @@ public class StageManager : MonoBehaviour
 
 
     /// <summary> 생존자 구출 작업 수행 </summary>
-    public void Save_Survivor()
+    public void Save_Survivor(GameObject survivor)
     {
         survivors--;
+        list_Survivors.Remove(survivor);
     }
 
     /// <summary> 생존자 현장 구출 완료 </summary>
@@ -357,9 +353,10 @@ public class StageManager : MonoBehaviour
 
 
 
-    public void Discount_Fires()
+    public void Discount_Fires(GameObject fire)
     {
         fires--;
+        list_Fires.Remove(fire);
         text_FireRemain.text = fires.ToString();
         Check_isExtinguishedAllFires();
     }
@@ -575,10 +572,10 @@ public class StageManager : MonoBehaviour
         Time.timeScale = 0;
 
         clearStars = 0;
+        text_InTime.text = $"2. {clearTime_AllStages[StageLoader.Stage]}초 내 임무 수행 완료";
 
-        if (!isDebug)
         clearTimeInCondition =
-        (time_InGame < clearTime) ? true : false;
+        (time_InGame < clearTime_AllStages[StageLoader.Stage]) ? true : false;
 
         GameClear_ShowStarAcquire();
 
@@ -733,18 +730,18 @@ public class StageManager : MonoBehaviour
 
     private void DebugMode()
     {
-        if (Input.GetKeyDown(KeyCode.Minus))
+        if (Input.GetKeyDown(KeyCode.Minus) && !clear_ExtinguishedAllFires)
         {
             Set_DebugMode();
-            clear_SavedAllSurvivors = !clear_SavedAllSurvivors;
-            Debug.Log($"디버그 : 모든 생존자 구출 {(clear_SavedAllSurvivors ? "활성화" : "비활성화")}");
+            Debug_AllFiresExtinguished();
+            Debug.Log($"디버그 : 화재 진압 완료");
         }
 
-        if (Input.GetKeyDown(KeyCode.Equals))
+        if (Input.GetKeyDown(KeyCode.Equals) && !clear_SavedAllSurvivors)
         {
             Set_DebugMode();
-            clear_ExtinguishedAllFires = !clear_ExtinguishedAllFires;
-            Debug.Log($"디버그 : 화재 진압 완료 {(clear_ExtinguishedAllFires ? "활성화" : "비활성화")}");
+            Debug_SaveAllSurvivor();
+            Debug.Log($"디버그 : 모든 생존자 구출");
         }
 
         if (Input.GetKeyDown(KeyCode.LeftBracket))
@@ -757,8 +754,8 @@ public class StageManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightBracket))
         {
             Set_DebugMode();
-            clearTimeInCondition = !clearTimeInCondition;
-            Debug.Log($"디버그 : 시간 내 임무  {(clearTimeInCondition ? "활성화" : "비활성화")}");
+            time_InGame = 0;
+            Debug.Log($"디버그 : 스테이지 시간 초기화");
         }
 
         if (Input.GetKeyDown(KeyCode.P))
@@ -775,5 +772,35 @@ public class StageManager : MonoBehaviour
 
         isDebug = true;
         Text_Debug.SetActive(true);
+    }
+
+    /// <summary> 디버그 : 모든 생존자 구출 </summary>
+    public void Debug_SaveAllSurvivor()
+    {
+        for (int i = 0; i < list_Survivors.Count; i++)
+        {
+            list_Survivors[i].SetActive(false);
+        }
+
+        survivors = 0;
+        list_Survivors.Clear();
+        text_SurvivorRemain.text = survivors.ToString();
+
+        Check_SavedAllSurvivors();
+    }
+
+    /// <summary> 디버그 : 화재 완전 진화 </summary>
+    public void Debug_AllFiresExtinguished()
+    {
+        for (int i = 0; i < list_Fires.Count; i++)
+        {
+            list_Fires[i].SetActive(false);
+        }
+
+        fires = 0;
+        list_Fires.Clear();
+        text_FireRemain.text = fires.ToString();
+
+        Check_isExtinguishedAllFires();
     }
 }
