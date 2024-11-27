@@ -19,6 +19,7 @@ public class LogoUp : MonoBehaviour
     {
         rect = GetComponent<RectTransform>();
         originPositon = rect.localPosition;
+        ypos = originPositon.y + upDistant;
     }
 
     public void UpSwitchOn()
@@ -28,7 +29,7 @@ public class LogoUp : MonoBehaviour
 
     void Update()
     {
-        if (FirstScreenSkipper.firstScreenNoSkip)
+        if (FirstScreenSkipper.FirstScreenNoSkip)
         {
             if (upSwitch)
             {
@@ -37,7 +38,6 @@ public class LogoUp : MonoBehaviour
                 if (progress >= upTime)
                 {
                     screenFader.enabled = true;
-                    ypos = originPositon.y + upDistant;
                     rect.localPosition = new Vector3(originPositon.x, ypos, 0);
 
                     upSwitch = false;
