@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +25,7 @@ public class DictInfo : MonoBehaviour
         itemName.text = item.ItemName;
         description.text = item.ItemDesciption;
         imageComponent.sprite = item.sprite;
+        imageComponent.color = Color.white;
         imageRect.transform.localScale = new Vector3(item.sprite.bounds.size.x * imageSizer, item.sprite.bounds.size.y * imageSizer);
     }
 }

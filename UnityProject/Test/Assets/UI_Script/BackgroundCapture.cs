@@ -1,34 +1,59 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BackgroundCapture : MonoBehaviour
 {
-    public Camera gameCamera;          // Ä¸Ã³ÇÒ Ä«¸Þ¶ó
+    Camera gameCamera;
     public RenderTexture renderTexture; // RenderTexture
-    public Image targetImage;           // ½ºÇÁ¶óÀÌÆ®¸¦ ¼³Á¤ÇÒ Image ÄÄÆ÷³ÍÆ®
+    public Image targetImage;           // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Image ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+    float nowTime = 0;
+    public float repeatTime;
+    bool isRepeat = false;
+    IAfterBlurBack afterAction;
 
-    void CaptureToSprite()
+    private void Awake()
     {
-        // Ä«¸Þ¶ó°¡ RenderTexture¿¡ ·»´õ¸µÇÏµµ·Ï ¼³Á¤
+        gameCamera = GetComponent<Camera>();
+        afterAction = GetComponent<IAfterBlurBack>();
+    }
+
+    void CaptureBackground()
+    {
+        // Ä«ï¿½Þ¶ï¿½ RenderTextureï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         gameCamera.targetTexture = renderTexture;
 
-        // RenderTexture¿¡¼­ Texture2D·Î º¹»ç
+        // RenderTextureï¿½ï¿½ï¿½ï¿½ Texture2Dï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         RenderTexture.active = renderTexture;
         Texture2D texture2D = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
         texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         texture2D.Apply();
 
-        // Texture2D¸¦ ½ºÇÁ¶óÀÌÆ®·Î º¯È¯
+        // Texture2Dï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½È¯
         Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
 
-        // Image ÄÄÆ÷³ÍÆ®¿¡ ½ºÇÁ¶óÀÌÆ® ¼³Á¤
+        // Image ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
         targetImage.sprite = sprite;
+    }
+
+    public void ButtonCapture()
+    {
+        isRepeat = true;
     }
 
     private void Update()
     {
-        CaptureToSprite();
+        if (isRepeat)
+        {
+            CaptureBackground();
+            nowTime += Time.deltaTime;
+            if (nowTime >= repeatTime)
+            {
+                isRepeat = false;
+                afterAction.AfterBackCapture();
+            }
+        }
     }
 }
