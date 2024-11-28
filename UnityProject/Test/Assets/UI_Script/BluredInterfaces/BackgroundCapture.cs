@@ -13,6 +13,7 @@ public class BackgroundCapture : MonoBehaviour
     public Image[] targetImage;           // ��������Ʈ�� ������ Image ������Ʈ
     RectTransform[] targetRect;
     float originWidth = 16.0f / 9;
+    float originHeight = 9.0f / 16;
     float nowTime = 0;
     public float repeatTime;
     bool isRepeat = false;
@@ -65,9 +66,20 @@ public class BackgroundCapture : MonoBehaviour
     {
         nowTime = 0;
         float screenWidth = (float)Screen.width / Screen.height;
-        renderTexture = new RenderTexture(Mathf.FloorToInt(640 * screenWidth / originWidth), 360, 24);
-        renderTexture.Create();
-        targetRect[actionID].sizeDelta = new Vector2(1920 * screenWidth / originWidth, 1080);
+        if (screenWidth >= originWidth)
+        {
+            renderTexture = new RenderTexture(Mathf.FloorToInt(640 * screenWidth / originWidth), 360, 24);
+            renderTexture.Create();
+            targetRect[actionID].sizeDelta = new Vector2(1920 * screenWidth / originWidth, 1080);
+        }
+        else
+        {
+            float screenHeight = (float)Screen.height / Screen.width;
+            renderTexture = new RenderTexture(640, Mathf.FloorToInt(360 * screenHeight / originHeight), 24);
+            renderTexture.Create();
+            targetRect[actionID].sizeDelta = new Vector2(1920, 1080 * screenHeight / originHeight);
+        }
+        
         isRepeat = true;
     }
 
