@@ -521,10 +521,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1191815044}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &143109023
 MonoBehaviour:
@@ -1813,6 +1813,9 @@ MonoBehaviour:
   captureCanvas: {fileID: 1609198261}
   targetImage:
   - {fileID: 1701875945}
+  backImage:
+  - {fileID: 143109022}
+  - {fileID: 1927136158}
   repeatTime: 0.1
 --- !u!114 &840271060
 MonoBehaviour:
@@ -3114,7 +3117,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1690772157
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &1191815044
@@ -3498,7 +3501,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1690772157
   m_SortingOrder: 0
   m_TargetDisplay: 1
 --- !u!224 &1609198262
@@ -4522,10 +4525,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1609198262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1927136159
 MonoBehaviour:
