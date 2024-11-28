@@ -538,6 +538,7 @@ public class StageManager : MonoBehaviour
 
         isGamePlay = false;
         isGameOver = true;
+        player.isGameOver = true;
         player_HP = 0;
         player_HPBar.fillAmount = 0;
         player_ExtendHPBar.fillAmount = 0;
@@ -613,6 +614,7 @@ public class StageManager : MonoBehaviour
         blur.ButtonCaptureID(2); // 게임 클리어 화면 표기 지연
         //StopCoroutine("FadeInWarningEffect");
         //StartCoroutine("FadeOutWarningEffect");
+        FadeOutAudio_BurningAround();
     }
 
     public void GameClear_PanelOn()

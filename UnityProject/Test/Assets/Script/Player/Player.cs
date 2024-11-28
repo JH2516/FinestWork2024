@@ -36,6 +36,7 @@ public class Player : MonoBehaviour
     public  bool            isInteract;
     public  bool            isRemoveCollapse;
     public  bool            isInFrontOfDoor;
+    public  bool            isGameOver;
 
     [Header("Player Fire")]
     public  SpriteRenderer  sr_FireExtinguisher;
@@ -187,7 +188,7 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (stageManager.IsGameOver) return;
+        if (isGameOver) return;
 
         Get_Input();
         Timing();
