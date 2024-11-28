@@ -117,6 +117,8 @@ public class StageManager : MonoBehaviour
     [SerializeField]
     private bool            isGamePlay;
     [SerializeField]
+    private bool            isGamePause;
+    [SerializeField]
     private bool            isGameOver;
     [SerializeField]
     private bool            isRecoveryHP;
@@ -150,7 +152,10 @@ public class StageManager : MonoBehaviour
 
     [Header("Debug")]
     public  GameObject      Text_Debug;
+    public  TextMeshProUGUI Text_DebugHPFreeze;
+    public  TextMeshProUGUI Text_DebugIsUsingBoostItem;
     public  bool            isDebug;
+    public  bool            debug_isHPFreeze;
 
     public void Count_Fires(GameObject fire)
     {
@@ -189,6 +194,7 @@ public class StageManager : MonoBehaviour
     private void Init_Argument()
     {
         isGamePlay = true;
+        isGamePause = false;
         isGameOver = false;
         isRecoveryHP = false;
         isPlayerWarning = false;
@@ -205,6 +211,7 @@ public class StageManager : MonoBehaviour
         clear_SavedAllSurvivors = false;
 
         isDebug = false;
+        debug_isHPFreeze = false;
 
         Time.timeScale = 1;
     }
@@ -250,6 +257,8 @@ public class StageManager : MonoBehaviour
         mask_HPBar.sizeDelta = new Vector2(800, 150);
 
         Text_Debug.SetActive(false);
+        Text_DebugHPFreeze.gameObject.SetActive(false);
+        Text_DebugIsUsingBoostItem.gameObject.SetActive(false);
     }
 
     private void Active_StageBoost()
@@ -265,6 +274,7 @@ public class StageManager : MonoBehaviour
     private void Update()
     {
         if (isGameOver) return;
+        if (isGamePause) return;
 
         Timing();
 
@@ -284,6 +294,7 @@ public class StageManager : MonoBehaviour
     private void Set_decreaseHP()
     {
         if (isRecoveryHP) return;
+        if (debug_isHPFreeze) return;
         player_HP -= Time.deltaTime * decreaseHP;
         player_HPBar.fillAmount = player_HP / 100;
         player_ExtendHPBar.fillAmount = player_HP / 150;
@@ -486,6 +497,7 @@ public class StageManager : MonoBehaviour
     public void Game_Pause()
     {
         isGamePlay = false;
+        isGamePause = true;
         Time.timeScale = 0;
 
         Panel_Pause.SetActive(true);
@@ -497,6 +509,7 @@ public class StageManager : MonoBehaviour
     public void Game_Resume()
     {
         isGamePlay = true;
+        isGamePause = false;
         Time.timeScale = 1;
 
         Panel_Pause.SetActive(false);
@@ -527,6 +540,8 @@ public class StageManager : MonoBehaviour
         player_HP = 0;
         player_HPBar.fillAmount = 0;
         player_ExtendHPBar.fillAmount = 0;
+
+        player.Player_KnockOut();
 
         blur.ButtonCaptureID(1); // 게임오버 화면 표기 지연
         FadeOutAudio_BurningAround();
@@ -559,6 +574,12 @@ public class StageManager : MonoBehaviour
     public void GameOver_CauseOfFailedSaveSurvivor() // 사유 : 붕괴 위험 속 생존자 고립
     {
         text_CauseOfGameOver.text = "누군가 붕괴 속에서 피해를 입게 되었습니다.";
+        GameOver();
+    }
+
+    public void GameOver_Debug() // 사유 : 디버그용
+    {
+        text_CauseOfGameOver.text = "ZWxxanJtIDogYWt0ZGpxdHNtc2RrZGx0bXptZmxh";
         GameOver();
     }
 
@@ -742,6 +763,21 @@ public class StageManager : MonoBehaviour
 
     private void DebugMode()
     {
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            Set_DebugMode();
+            player_HP = player_HPMax;
+            Debug.Log($"디버그 : 체력 유지 {(debug_isHPFreeze ? "활성화" : "비활성화")}");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            Set_DebugMode();
+            debug_isHPFreeze = !debug_isHPFreeze;
+            Text_DebugHPFreeze.gameObject.SetActive(debug_isHPFreeze);
+            Debug.Log($"디버그 : 체력 유지 {(debug_isHPFreeze ? "활성화" : "비활성화")}");
+        }
+
         if (Input.GetKeyDown(KeyCode.Minus) && !clear_ExtinguishedAllFires)
         {
             Set_DebugMode();
@@ -756,18 +792,20 @@ public class StageManager : MonoBehaviour
             Debug.Log($"디버그 : 모든 생존자 구출");
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftBracket))
+        if (Input.GetKeyDown(KeyCode.Backspace))
         {
             Set_DebugMode();
             unUsedBoostItems = !unUsedBoostItems;
+            Text_DebugIsUsingBoostItem.gameObject.SetActive(true);
+            Text_DebugIsUsingBoostItem.text = $"Boost {(unUsedBoostItems ? "X" : "O")}";
             Debug.Log($"디버그 : 부스트 아이템 {(unUsedBoostItems ? "미사용" : "사용")}");
         }
 
-        if (Input.GetKeyDown(KeyCode.RightBracket))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             Set_DebugMode();
-            time_InGame = 0;
-            Debug.Log($"디버그 : 스테이지 시간 초기화");
+            GameOver_Debug();
+            Debug.Log("디버그 : 게임 오버");
         }
 
         if (Input.GetKeyDown(KeyCode.P))
@@ -775,6 +813,28 @@ public class StageManager : MonoBehaviour
             Set_DebugMode();
             GameClear();
             Debug.Log("디버그 : 게임 클리어");
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftBracket))
+        {
+            Set_DebugMode();
+            time_InGame -= 10;
+            if (time_InGame < 0) time_InGame = 0;
+            Debug.Log($"디버그 : 스테이지 시간 10초 감소");
+        }
+
+        if (Input.GetKeyDown(KeyCode.RightBracket))
+        {
+            Set_DebugMode();
+            time_InGame += 10;
+            Debug.Log($"디버그 : 스테이지 시간 10초 증가");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Backslash))
+        {
+            Set_DebugMode();
+            time_InGame = 0;
+            Debug.Log($"디버그 : 스테이지 시간 초기화");
         }
     }
 

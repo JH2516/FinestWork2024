@@ -125,7 +125,6 @@ public class Player : MonoBehaviour
     {
         mainCamera = Camera.main;
         stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
-        sr = GetComponent<SpriteRenderer>();
 
         audio = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 
@@ -453,6 +452,11 @@ public class Player : MonoBehaviour
             sr_FireExtinguisher.flipY = false;
             return;
         }
+    }
+
+    public void Player_KnockOut()
+    {
+        sr.gameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
     }
 
     /// <summary> 플레이어 이동 벡터 지정 </summary>
