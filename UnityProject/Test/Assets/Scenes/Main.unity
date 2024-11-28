@@ -1215,6 +1215,7 @@ GameObject:
   - component: {fileID: 456599171}
   - component: {fileID: 456599175}
   - component: {fileID: 456599176}
+  - component: {fileID: 456599177}
   m_Layer: 0
   m_Name: CanvasCamera
   m_TagString: MainCamera
@@ -1378,6 +1379,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+--- !u!114 &456599177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 456599170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89b44f86b7166408ea753c1be2ebc72b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &483336197
 GameObject:
   m_ObjectHideFlags: 0
@@ -4709,8 +4722,8 @@ Canvas:
   m_GameObject: {fileID: 1044412324}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 456599173}
+  m_RenderMode: 1
+  m_Camera: {fileID: 1262219269}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -4721,7 +4734,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!224 &1044412328
 RectTransform:
@@ -5587,6 +5600,7 @@ GameObject:
   - component: {fileID: 1262219272}
   - component: {fileID: 1262219271}
   - component: {fileID: 1262219273}
+  - component: {fileID: 1262219274}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -5737,6 +5751,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firstScreen: {fileID: 1868590947}
+--- !u!114 &1262219274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262219267}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89b44f86b7166408ea753c1be2ebc72b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1279811223
 GameObject:
   m_ObjectHideFlags: 0
