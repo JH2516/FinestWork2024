@@ -43,6 +43,8 @@ public class BackgroundCapture : MonoBehaviour
         texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
         texture2D.Apply();
 
+        texture2D.wrapMode = TextureWrapMode.Clamp;
+
         // Texture2D�� ��������Ʈ�� ��ȯ
         Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
 
