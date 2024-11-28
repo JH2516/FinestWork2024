@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
-using UnityEditor.SceneManagement;
 using TMPro;
 
 public class StageManager : MonoBehaviour
@@ -173,6 +172,8 @@ public class StageManager : MonoBehaviour
 
     private void Awake()
     {
+        Application.targetFrameRate = 60;
+
         if (stageManager == null) stageManager = this;
 
         Init_Argument();
@@ -520,7 +521,7 @@ public class StageManager : MonoBehaviour
     /// <summary> 게임 재시작 </summary>
     public void Game_Restart()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Stage_Test");
     }
 
     /// <summary> 게임 나가기 </summary>

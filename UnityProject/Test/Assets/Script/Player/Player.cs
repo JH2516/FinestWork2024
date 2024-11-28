@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+#if UNITY_EDITOR
 using UnityEditor;
-using static UnityEditor.Progress;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.UI.Image;
+#endif
 
 public class Player : MonoBehaviour
 {
@@ -681,6 +680,7 @@ public class Player : MonoBehaviour
         light_PlayerAround.pointLightOuterRadius /= decrease;
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Handles.color = (isFire) ? Color_Detected : Color_nonDetected;
@@ -688,6 +688,7 @@ public class Player : MonoBehaviour
         Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, Range_halfAngle, Range_radius);
         Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, -Range_halfAngle, Range_radius);
     }
+#endif
 
     /// <summary> 플레이어의 어두운 방 입장 </summary>
     private void InDarkedRoom(Collider2D room)

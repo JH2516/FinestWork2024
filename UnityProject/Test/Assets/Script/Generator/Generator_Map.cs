@@ -12,7 +12,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.FilePathAttribute;
 
 #if UNITY_EDITOR
 using UnityEditor;

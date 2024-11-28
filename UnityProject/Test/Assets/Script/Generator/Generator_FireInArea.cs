@@ -1,6 +1,7 @@
-using UnityEditor;
-using UnityEditor.SearchService;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
 
 [CustomEditor(typeof(Generator_FireInArea))]
 public class ObjectSelectorEditor : Editor
@@ -35,6 +36,7 @@ public class ObjectSelectorEditor : Editor
         }
     }
 }
+#endif
 
 public class Generator_FireInArea : MonoBehaviour
 {
@@ -90,9 +92,4 @@ public class Generator_FireInArea : MonoBehaviour
             stageManager.Count_Fires(fire.gameObject);
         }
     }
-
-    //private CapsuleCollider2D GetFireCollider2D_Capsule(Fire fire)
-    //{
-    //    return fire.GetComponent<CapsuleCollider2D>();
-    //}
 }

@@ -26,6 +26,7 @@ public class StageLoader : MonoBehaviour
 
     public void LoadStage()
     {
+        Debug.Log("ㅗㅗㅗ");
         SceneManager.LoadScene("Stage_Test");
     }
 }

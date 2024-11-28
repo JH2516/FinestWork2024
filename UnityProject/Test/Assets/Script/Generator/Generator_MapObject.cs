@@ -35,14 +35,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Progress;
-using static Get_DateNow;
 
 #if UNITY_EDITOR
+using static Get_DateNow;
 using UnityEditor;
-#endif
-
-
 
 public static class Get_DateNow
 {
@@ -50,7 +46,6 @@ public static class Get_DateNow
     { return DateTime.Now.ToString("HH:mm:ss"); }
 }
 
-#if UNITY_EDITOR
 [CustomEditor(typeof(Generator_MapObject))]
 public class Editor_Generator_MapObject : Editor
 {
@@ -138,7 +133,7 @@ public class Editor_Generator_MapObject : Editor
         }
     }
 }
-#endif
+
 
 public class Generator_MapObject : MonoBehaviour
 {
@@ -223,3 +218,4 @@ public class Generator_MapObject : MonoBehaviour
         
     }
 }
+#endif

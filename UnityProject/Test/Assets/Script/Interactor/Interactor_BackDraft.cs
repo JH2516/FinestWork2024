@@ -29,7 +29,7 @@ public class Interactor_BackDraft : Interactor
         base.Awake();
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
         Init_BackDraft();
     }

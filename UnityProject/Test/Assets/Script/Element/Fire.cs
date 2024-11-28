@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+
+#if UNITY_EDITOR
+using UnityEditor;
 
 public class RangeSliderAttribute : PropertyAttribute
 {
@@ -78,6 +79,7 @@ public class RangeSliderDrawer : PropertyDrawer
         return EditorGUIUtility.singleLineHeight * 2 + 4;
     }
 }
+#endif
 
 
 public class Fire : MonoBehaviour
@@ -90,7 +92,10 @@ public class Fire : MonoBehaviour
     [SerializeField]
     private SpriteRenderer  sprite;
 
-    [RangeSlider(0.1f, 2f), SerializeField]
+#if UNITY_EDITOR
+    [RangeSlider(0.1f, 2f)]
+#endif
+    [SerializeField]
     private Vector2         RandomSpeedRange = new Vector2(0.3f, 0.5f);
 
     [Header("Fire Sprite Mask")]
