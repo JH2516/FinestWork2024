@@ -26,7 +26,6 @@ public class BackgroundCapture : MonoBehaviour
 
     void CaptureBackground()
     {
-        captureCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         // ī�޶� RenderTexture�� �������ϵ��� ����
         gameCamera.targetTexture = renderTexture;
 
@@ -67,7 +66,6 @@ public class BackgroundCapture : MonoBehaviour
             {
                 isRepeat = false;
                 gameCamera.targetTexture = null;
-                captureCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
                 afterAction[actionID].AfterBackCapture();
             }
         }
