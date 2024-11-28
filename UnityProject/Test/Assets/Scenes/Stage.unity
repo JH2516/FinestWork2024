@@ -1813,9 +1813,6 @@ MonoBehaviour:
   captureCanvas: {fileID: 1609198261}
   targetImage:
   - {fileID: 1701875945}
-  backImage:
-  - {fileID: 143109022}
-  - {fileID: 1927136158}
   repeatTime: 0.1
 --- !u!114 &840271060
 MonoBehaviour:
@@ -2031,7 +2028,7 @@ RectTransform:
   m_GameObject: {fileID: 972737518}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 904143755}
@@ -4226,7 +4223,7 @@ RectTransform:
   m_GameObject: {fileID: 1817407211}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.6, y: 1.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1653233294}
@@ -4815,7 +4812,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1137272866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -9,4 +9,5 @@ public class ItemData : ScriptableObject
     public string ItemName;
     [Multiline(4)]
     public string ItemDesciption;
+    public float size;
 }

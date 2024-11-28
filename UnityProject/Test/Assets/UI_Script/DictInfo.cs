@@ -26,6 +26,6 @@ public class DictInfo : MonoBehaviour
         description.text = item.ItemDesciption;
         imageComponent.sprite = item.sprite;
         imageComponent.color = Color.white;
-        imageRect.transform.localScale = new Vector3(item.sprite.bounds.size.x * imageSizer, item.sprite.bounds.size.y * imageSizer);
+        imageRect.transform.localScale = imageSizer * item.size * new Vector3(item.sprite.bounds.size.x, item.sprite.bounds.size.y);
     }
 }
