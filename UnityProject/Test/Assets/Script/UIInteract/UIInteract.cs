@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class UIInteract : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class UIInteract : MonoBehaviour
     protected   GameObject      obj_Interactor;
     protected   Vector2         pos_Interact;
     protected   RectTransform   rectTransform;
+    protected   Camera          uiCamera;       // 캔버스에 설정된 카메라
+    protected   Canvas          canvas;         // 참조하고 있는 Canvas
 
     [SerializeField]
     protected   Image           guage;
@@ -49,6 +52,16 @@ public class UIInteract : MonoBehaviour
         Init();
     }
 
+    void Start()
+    {
+        // RectTransform 초기화
+        rectTransform = GetComponent<RectTransform>();
+
+        // Canvas 및 카메라 초기화
+        canvas = GetComponentInParent<Canvas>();
+        uiCamera = canvas.worldCamera; // Screen Space - Camera에서 사용하는 카메라
+    }
+
     private void LateUpdate()
     {
         Set_Position();
@@ -59,8 +72,24 @@ public class UIInteract : MonoBehaviour
 
     void Set_Position()
     {
+        ////Vector3 screenPosition = Camera.main.WorldToScreenPoint(pos_Interact);
+        //Vector2 screenPos = Camera.main.WorldToViewportPoint(pos_Interact);
+        //rectTransform.position = new Vector3(screenPos.x, screenPos.y, 90);
+
+        // 월드 좌표를 스크린 좌표로 변환
         Vector3 screenPosition = Camera.main.WorldToScreenPoint(pos_Interact);
-        rectTransform.position = screenPosition;
+
+        // 스크린 좌표를 캔버스 좌표로 변환
+        Vector2 canvasPosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvas.GetComponent<RectTransform>(),
+            screenPosition,
+            uiCamera, // Canvas에 설정된 카메라를 사용
+            out canvasPosition
+        );
+
+        // RectTransform 위치 갱신
+        rectTransform.anchoredPosition = canvasPosition;
     }
 
     private void Gauge_Up()
