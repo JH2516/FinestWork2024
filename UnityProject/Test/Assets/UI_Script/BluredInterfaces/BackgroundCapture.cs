@@ -8,9 +8,11 @@ using UnityEngine.UI;
 public class BackgroundCapture : MonoBehaviour
 {
     Camera gameCamera;
-    public RenderTexture renderTexture; // RenderTexture
+    RenderTexture renderTexture; // RenderTexture
     public Canvas captureCanvas;
     public Image[] targetImage;           // ��������Ʈ�� ������ Image ������Ʈ
+    RectTransform[] targetRect;
+    float originWidth = 16.0f / 9;
     float nowTime = 0;
     public float repeatTime;
     bool isRepeat = false;
@@ -22,6 +24,11 @@ public class BackgroundCapture : MonoBehaviour
         gameCamera = GetComponent<Camera>();
         afterAction = GetComponents<AfterEventInvoker>();
         Array.Sort(afterAction, (x, y) => x.Id.CompareTo(y.Id));
+        targetRect = new RectTransform[targetImage.Length];
+        for (int i = 0; i < targetImage.Length; i++)
+        {
+            targetRect[i] = targetImage[i].gameObject.GetComponent<RectTransform>();
+        }
     }
 
     void CaptureBackground()
@@ -45,14 +52,22 @@ public class BackgroundCapture : MonoBehaviour
     public void ButtonCapture()
     {
         actionID = 0;
-        nowTime = 0;
-        isRepeat = true;
+        ReadyToCapure();
     }
 
     public void ButtonCaptureID(int id)
     {
         actionID = id;
+        ReadyToCapure();
+    }
+
+    private void ReadyToCapure()
+    {
         nowTime = 0;
+        float screenWidth = (float)Screen.width / Screen.height;
+        renderTexture = new RenderTexture(Mathf.FloorToInt(640 * screenWidth / originWidth), 360, 24);
+        renderTexture.Create();
+        targetRect[actionID].sizeDelta = new Vector2(1920 * screenWidth / originWidth, 1080);
         isRepeat = true;
     }
 
