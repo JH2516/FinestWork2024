@@ -727,7 +727,11 @@ public class StageManager : MonoBehaviour
 
     private void FadeAlphaOfWarinigEffect()
     {
-        if (player_HP >= player_HPMax / 10) return;
+        if (player_HP >= player_HPMax / 10)
+        {
+            effect_Warning.color = Color.white * 0;
+            return;
+        }
 
         float alpha = 1 - player_HP / (player_HPMax / 10);
         effect_Warning.color = new Color(1, 1, 1, alpha);
