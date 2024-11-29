@@ -412,7 +412,6 @@ GameObject:
   - component: {fileID: 138523778}
   - component: {fileID: 138523781}
   - component: {fileID: 138523780}
-  - component: {fileID: 138523779}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -439,18 +438,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 144, y: 144}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &138523779
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 138523777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b6e723ad18120242bece338dac07335, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &138523780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1548,6 +1535,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 840271062}
+        m_TargetAssemblyTypeName: MaterialManager, Assembly-CSharp
+        m_MethodName: OnMaterialWithTag
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Main
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 840271062}
+        m_TargetAssemblyTypeName: MaterialManager, Assembly-CSharp
+        m_MethodName: OffMaterialWithTag
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Popup1
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &673490988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1681,6 +1692,7 @@ GameObject:
   - component: {fileID: 840271059}
   - component: {fileID: 840271060}
   - component: {fileID: 840271061}
+  - component: {fileID: 840271062}
   m_Layer: 0
   m_Name: PopupCamera
   m_TagString: MainCamera
@@ -1842,6 +1854,30 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 840271062}
+        m_TargetAssemblyTypeName: MaterialManager, Assembly-CSharp
+        m_MethodName: OnMaterialWithTag
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Popup1
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 840271062}
+        m_TargetAssemblyTypeName: MaterialManager, Assembly-CSharp
+        m_MethodName: OffMaterialWithTag
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Main
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &840271061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1854,6 +1890,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89b44f86b7166408ea753c1be2ebc72b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &840271062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 840271053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d86cf019ce98354e9c3ac2a84fbe87b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materialedImages:
+  - {fileID: 143109023}
+  - {fileID: 1927136159}
+  - {fileID: 1701875945}
+  imageTag:
+  - Main
+  - Copy
+  - Popup1
+  isOn: 010000
 --- !u!1 &904143754
 GameObject:
   m_ObjectHideFlags: 0

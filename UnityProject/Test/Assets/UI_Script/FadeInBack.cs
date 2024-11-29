@@ -10,6 +10,12 @@ public class FadeInBack : MonoBehaviour
     public float fadeInAccel;
     public Image fader;
     public GameObject frontTitle;
+    public MaterialManager materialManager;
+
+    private void Start()
+    {
+        materialManager.OnMaterialWithTag("Main");
+    }
 
     void Update()
     {

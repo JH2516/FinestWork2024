@@ -20,6 +20,7 @@ public class BackgroundCapture : MonoBehaviour
     bool allowOutput = false;
     int actionID = 0;
     AfterEventInvoker[] afterAction;
+    MaterialManager materialManager;
 
     private void Awake()
     {
@@ -31,6 +32,7 @@ public class BackgroundCapture : MonoBehaviour
         {
             targetRect[i] = targetImage[i].gameObject.GetComponent<RectTransform>();
         }
+        materialManager = GetComponent<MaterialManager>();
     }
 
     void CaptureBackground()
@@ -70,7 +72,7 @@ public class BackgroundCapture : MonoBehaviour
         actionID = id;
         ReadyToCapure();
     }
-
+    
     private void ReadyToCapure()
     {
         float screenWidth = (float)Screen.width / Screen.height;
@@ -88,6 +90,7 @@ public class BackgroundCapture : MonoBehaviour
             targetRect[actionID].sizeDelta = new Vector2(1920, 1080 * screenHeight / originHeight);
         }
         allowOutput = false;
+        materialManager.OnMaterialWithTag("Copy");
         isRepeat = true;
     }
 
@@ -98,6 +101,7 @@ public class BackgroundCapture : MonoBehaviour
             CaptureBackground();
             if (allowOutput)
             {
+                materialManager.OffMaterialWithTag("Copy");
                 isRepeat = false;
                 gameCamera.targetTexture = null;
                 afterAction[actionID].AfterBackCapture();
