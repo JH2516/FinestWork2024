@@ -5000,6 +5000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firstScreen: {fileID: 1868590947}
+  materialManager: {fileID: 456599178}
 --- !u!114 &1262219274
 MonoBehaviour:
   m_ObjectHideFlags: 0

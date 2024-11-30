@@ -16,6 +16,8 @@ public class BackgroundCapture : MonoBehaviour
     RectTransform[] targetRect;
     float originWidth = 16.0f / 9;
     float originHeight = 9.0f / 16;
+    int texWidth;
+    int texHeight;
     bool isRepeat = false;
     bool allowOutput = false;
     int actionID = 0;
@@ -37,23 +39,17 @@ public class BackgroundCapture : MonoBehaviour
 
     void CaptureBackground()
     {
-        // ī�޶� RenderTexture�� �������ϵ��� ����
-        gameCamera.targetTexture = renderTexture;
-
-        // RenderTexture���� Texture2D�� ����
         RenderTexture.active = renderTexture;
-        int width = renderTexture.width;
-        int height = renderTexture.height;
-        Texture2D texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
-        texture2D.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+        Texture2D texture2D = new Texture2D(texWidth, texHeight, TextureFormat.RGB24, false);
+        texture2D.ReadPixels(new Rect(0, 0, texWidth, texHeight), 0, 0);
         texture2D.Apply();
         texture2D.wrapMode = TextureWrapMode.Clamp;
 
-        Color centerColor = texture2D.GetPixel(width / 2, height / 2);
+        Color centerColor = texture2D.GetPixel(texWidth / 2, texHeight / 2);
 
         Debug.Log("Center Color: " + centerColor);
 
-        if (centerColor != Color.black)
+        if (centerColor.r != centerColor.g || centerColor.g != centerColor.b || centerColor.b != centerColor.r)
         {
             Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
             allowOutput = true;
@@ -91,6 +87,10 @@ public class BackgroundCapture : MonoBehaviour
         }
         allowOutput = false;
         materialManager.OnMaterialWithTag("Copy");
+        gameCamera.targetTexture = renderTexture;
+        
+        texWidth = renderTexture.width;
+        texHeight = renderTexture.height;
         isRepeat = true;
     }
 
@@ -104,6 +104,7 @@ public class BackgroundCapture : MonoBehaviour
                 materialManager.OffMaterialWithTag("Copy");
                 isRepeat = false;
                 gameCamera.targetTexture = null;
+                renderTexture = null;
                 afterAction[actionID].AfterBackCapture();
             }
         }
