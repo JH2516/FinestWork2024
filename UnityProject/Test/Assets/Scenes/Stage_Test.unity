@@ -18562,7 +18562,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 777766753}
         m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
-        m_MethodName: Game_Pause
+        m_MethodName: Game_Pause_PanelOn
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -86330,10 +86330,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 519420037}
-        m_TargetAssemblyTypeName: BackgroundCapture, Assembly-CSharp
-        m_MethodName: ButtonCaptureID
-        m_Mode: 3
+      - m_Target: {fileID: 777766753}
+        m_TargetAssemblyTypeName: StageManager, Assembly-CSharp
+        m_MethodName: Button_Pause
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

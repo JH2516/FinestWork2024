@@ -499,11 +499,16 @@ public class StageManager : MonoBehaviour
     {
         isGamePlay = false;
         isGamePause = true;
-        Time.timeScale = 0;
 
-        Panel_Pause.SetActive(true);
+        blur.ButtonCaptureID(0);
         audio.PauseSound_WithoutButtonSound();
         audio.ButtonClick(true);
+    }
+
+    public void Game_Pause_PanelOn()
+    {
+        Time.timeScale = 0;
+        Panel_Pause.SetActive(true);
     }
 
     /// <summary> 게임 재개 </summary>
