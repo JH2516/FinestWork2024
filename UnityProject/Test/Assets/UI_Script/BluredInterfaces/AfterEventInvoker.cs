@@ -23,6 +23,7 @@ public class AfterEventInvokerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
+        DrawDefaultInspector();
         AfterEventInvoker myTarget = (AfterEventInvoker)target;
         myTarget.invokerName = EditorGUILayout.TextField("Invoker Name", myTarget.invokerName);
         myTarget.Id = EditorGUILayout.IntField("ID", myTarget.Id);
