@@ -18485,6 +18485,7 @@ MonoBehaviour:
   - {fileID: 120764564}
   - {fileID: 438959960}
   - {fileID: 1665058187}
+  rangeOfCheck: 0.4
 --- !u!114 &519420040
 MonoBehaviour:
   m_ObjectHideFlags: 0
