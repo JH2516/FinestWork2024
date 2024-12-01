@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Events;
 
 public class AfterEventInvoker : MonoBehaviour
 {
-    public string invokerName; // ´Ü¼ø ±¸ºÐ¿ë
+    public string invokerName; // ï¿½Ü¼ï¿½ ï¿½ï¿½ï¿½Ð¿ï¿½
     [SerializeField]
     private int id;
     public int Id { get => id; set => id = value; }
@@ -18,23 +20,24 @@ public class AfterEventInvoker : MonoBehaviour
     }
 }
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(AfterEventInvoker))]
 public class AfterEventInvokerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        // Script ÇÊµå¸¦ ¼öÁ¤ ºÒ°¡´ÉÇÏ°Ô Ç¥½Ã
-        GUI.enabled = false; // GUI ºñÈ°¼ºÈ­
+        // Script ï¿½Êµå¸¦ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ Ç¥ï¿½ï¿½
+        GUI.enabled = false; // GUI ï¿½ï¿½È°ï¿½ï¿½È­
         EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"), true);
-        GUI.enabled = true; // GUI ´Ù½Ã È°¼ºÈ­
+        GUI.enabled = true; // GUI ï¿½Ù½ï¿½ È°ï¿½ï¿½È­
 
-        // ±âº»ÀûÀ¸·Î Á÷·ÄÈ­µÈ ÇÊµå¸¦ ±×¸®µÇ, "action"Àº Á¦¿Ü
+        // ï¿½âº»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ ï¿½Êµå¸¦ ï¿½×¸ï¿½ï¿½ï¿½, "action"ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         SerializedProperty actionProperty = serializedObject.FindProperty("action");
 
-        // ±âº» ÇÊµå ±×¸®±â (action Á¦¿Ü)
+        // ï¿½âº» ï¿½Êµï¿½ ï¿½×¸ï¿½ï¿½ï¿½ (action ï¿½ï¿½ï¿½ï¿½)
         DrawPropertiesExcluding(serializedObject, "action", "m_Script");
 
-        // action ÇÊµå¸¦ ¼öµ¿À¸·Î ±×¸®±â
+        // action ï¿½Êµå¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½
         if (actionProperty != null)
         {
             EditorGUILayout.PropertyField(actionProperty, true);
@@ -44,7 +47,8 @@ public class AfterEventInvokerEditor : Editor
             GUILayout.Label("List is empty.", EditorStyles.helpBox);
         }
 
-        // Á÷·ÄÈ­µÈ °´Ã¼ÀÇ º¯°æ »çÇ×À» Àû¿ëÇÕ´Ï´Ù.
+        // ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
         serializedObject.ApplyModifiedProperties();
     }
 }
+#endif

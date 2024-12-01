@@ -194,6 +194,7 @@ public class StageManager : MonoBehaviour
     /// <summary> 초기화 : 변수 </summary>
     private void Init_Argument()
     {
+
         isGamePlay = true;
         isGamePause = false;
         isGameOver = false;
@@ -619,7 +620,8 @@ public class StageManager : MonoBehaviour
         blur.ButtonCaptureID(2); // 게임 클리어 화면 표기 지연
         //StopCoroutine("FadeInWarningEffect");
         //StartCoroutine("FadeOutWarningEffect");
-        FadeOutAudio_BurningAround();
+        //FadeOutAudio_BurningAround();
+        audio.StopSound_AllSounds();
     }
 
     public void GameClear_PanelOn()

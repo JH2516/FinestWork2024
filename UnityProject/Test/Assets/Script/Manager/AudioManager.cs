@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Rendering;
 
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager audioManager;
+    public AudioMixer audioMixer;
 
     [Header("All")]
     public AudioSource[]    audio_All;
@@ -34,16 +36,25 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        if (audioManager != null) audioManager = this;
+        Debug.Log(Mathf.Log10(PlayerPrefs.GetFloat("Volume")) * 20);
+        audioMixer.SetFloat("Master", Mathf.Log10(PlayerPrefs.GetFloat("Volume")) * 20);
     }
 
-    private void RemoteAudio(AudioSource source, bool isPlay)
+
+    private void RemoteAudio(AudioSource source, bool isPlay, bool isReplay = false)
     {
+        if (isPlay && isReplay)
+        {
+            source.Stop();
+            source.Play();
+            return;
+        }
         if (isPlay && !source.isPlaying)    source.Play();
         if (!isPlay)                        source.Stop();
     }
 
     public void ButtonClick             (bool isPlay) => RemoteAudio(audio_ButtonClick, isPlay);
+    public void ButtonClickReplay       ()            => RemoteAudio(audio_ButtonClick, true, true);
 
     public void PlayerWalk              (bool isPlay) => RemoteAudio(audio_PlayerWalk, isPlay);
     public void Extinguising            (bool isPlay) => RemoteAudio(audio_Extinguising, isPlay);
@@ -59,6 +70,14 @@ public class AudioManager : MonoBehaviour
     public void GameoverByCollapse      (bool isPlay) => RemoteAudio(audio_GameoverByCollapse, isPlay);
     public void GameoverByBackDraft     (bool isPlay) => RemoteAudio(audio_GameoverByBackDraft, isPlay);
     public void GameoverByLowerOxygen   (bool isPlay) => RemoteAudio(audio_GameoverByLowerOxygen, isPlay);
+
+    public void StopSound_AllSounds()
+    {
+        foreach (AudioSource audio in audio_All)
+        {
+            audio.Stop();
+        }
+    }
 
     public void PauseSound_WithoutButtonSound()
     {

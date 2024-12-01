@@ -101,9 +101,9 @@ public class Fire : MonoBehaviour
     [Header("Fire Sprite Mask")]
     public  SpriteMask      mask;
 
-    [Header("Fire Light")]
-    [SerializeField]
-    private Light2D light;
+    //[Header("Fire Light")]
+    //[SerializeField]
+    //private Light2D light;
 
     [Header("Fire Light Intensity")]
     [Range(0.1f, 1f), SerializeField]
@@ -140,7 +140,7 @@ public class Fire : MonoBehaviour
         powerMax_Fire = transform.localScale.x;
         power_Fire = powerMax_Fire;
 
-        light.intensity = 1f;
+        //light.intensity = 1f;
 
         isExtinguish = false;
 
@@ -198,7 +198,7 @@ public class Fire : MonoBehaviour
                 break;
         }
         
-        light.intensity = power_Fire;
+        //light.intensity = power_Fire;
     }
 
     private void Check_Extinguished()
