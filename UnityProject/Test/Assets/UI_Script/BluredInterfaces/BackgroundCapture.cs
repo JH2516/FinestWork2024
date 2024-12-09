@@ -38,20 +38,31 @@ public class BackgroundCapture : MonoBehaviour
 
     void CaptureBackground()
     {
-        RenderTexture.active = renderTexture;
-        Texture2D texture2D = new Texture2D(texWidth, texHeight, TextureFormat.RGB24, false);
+        while (RenderTexture.active == null)
+        {
+            RenderTexture.active = renderTexture;
+        }
+        Texture2D texture2D = new(texWidth, texHeight, TextureFormat.RGB24, false);
         texture2D.ReadPixels(new Rect(0, 0, texWidth, texHeight), 0, 0);
         texture2D.Apply();
         texture2D.wrapMode = TextureWrapMode.Clamp;
 
         if (CheckTexture(texture2D, CheckRangeCarculate()))
         {
+            while (RenderTexture.active != null)
+            {
+                RenderTexture.active = null;
+            }
             return;
         }
 
         Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
         allowOutput = true;
         targetImage[actionID].sprite = sprite;
+        while (RenderTexture.active != null)
+        {
+            RenderTexture.active = null;
+        }
     }
 
     Vector2 CheckRangeCarculate()
@@ -148,6 +159,11 @@ public class BackgroundCapture : MonoBehaviour
     
     private void ReadyToCapure()
     {
+        while (renderTexture != null)
+        {
+            renderTexture.Release();
+            renderTexture = null;
+        }
         float screenWidth = (float)Screen.width / Screen.height;
         if (screenWidth >= originWidth)
         {
@@ -181,7 +197,6 @@ public class BackgroundCapture : MonoBehaviour
                 materialManager.OffMaterialWithTag("Copy");
                 isRepeat = false;
                 gameCamera.targetTexture = null;
-                renderTexture = null;
                 afterAction[actionID].AfterBackCapture();
             }
         }
