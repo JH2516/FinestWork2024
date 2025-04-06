@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,9 +7,14 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public class StageManager : MonoBehaviour
+[DefaultExecutionOrder(-80)]
+public class StageManager : MonoBehaviour, IEventListener
 {
     public  static  StageManager    stageManager;
+
+    public  SO_Stage    sO_Stage;
+
+    public  UIManager   uiManager;
 
     [Header("Stage List")]
     public  GameObject      stage;
@@ -64,10 +70,6 @@ public class StageManager : MonoBehaviour
     public  GameObject      button_PistolNozzle;
     public  GameObject      button_PortableLift;
 
-    private Image[]         uiButton_CollapseAlarm;
-    private Image[]         uiButton_PistolNozzle;
-    private Image[]         uiButton_PortableLift;
-
     [Header("Light")]
     public  Light2D         light_Global;
 
@@ -96,10 +98,6 @@ public class StageManager : MonoBehaviour
 
     public  bool            used_CollapseAlarm;
 
-    [Header("Boost Item Use")]
-    public  bool            used_AirMat;
-    public  bool            used_OxygenTank;
-    public  bool            used_Lantern;
 
     [Header("List")]
     [SerializeField]
@@ -122,14 +120,15 @@ public class StageManager : MonoBehaviour
     [SerializeField]
     private bool            isRecoveryHP;
     [SerializeField]
-    private float           time_InGame;
+    //private float           time_InGame;
     public  bool            isPlayerWarning;
 
+    private float           startedTime;
+
     [Header("Stage Unit")]
-    [SerializeField]
-    private int             survivors;
-    [SerializeField]
-    private int             fires;
+    public  int             fires;
+    public  int             survivors;
+    public  int             interacts;
 
     public  float           Player_HP   =>  player_HP;
     public  float           Player_HPMax => player_HPMax;
@@ -149,26 +148,23 @@ public class StageManager : MonoBehaviour
     private bool            unUsedBoostItems;
     private bool            clearTimeInCondition;
 
+    
+
     [Header("Debug")]
-    public  GameObject      Text_Debug;
-    public  TextMeshProUGUI Text_DebugHPFreeze;
-    public  TextMeshProUGUI Text_DebugIsUsingBoostItem;
     public  bool            isDebug;
     public  bool            debug_isHPFreeze;
 
-    public void Count_Fires(GameObject fire)
+    private PlayerEventType[] listenerTypes =
     {
-        fires++;
-        list_Fires.Add(fire);
-        text_FireRemain.text = fires.ToString();
-    }
+        PlayerEventType.f_Summon, PlayerEventType.f_Dead,
+        PlayerEventType.s_Summon, PlayerEventType.s_Saved,
+        PlayerEventType.d_Interact,
+        PlayerEventType.g_GameOver,
+        PlayerEventType.Debug,
+        PlayerEventType.i_UseItem1, PlayerEventType.i_UseItem2, PlayerEventType.i_UseItem3,
+        PlayerEventType.UI_UseItem1, PlayerEventType.UI_UseItem2, PlayerEventType.UI_UseItem3,
+    };
 
-    public void Count_Survivors(GameObject survivor)
-    {
-        survivors++;
-        list_Survivors.Add(survivor);
-        text_SurvivorRemain.text = survivors.ToString();
-    }
 
     private void Awake()
     {
@@ -180,9 +176,9 @@ public class StageManager : MonoBehaviour
         Init_Items();
         Init_Player();
         //Init_Survivors();
-        Init_UI();
+        //Init_UI();
 
-        Active_StageBoost();
+        //Active_StageBoost();
 
         Debug.Log("Stage" + StageLoader.Stage);
         Debug.Log("Item" + StageLoader.Item);
@@ -201,11 +197,7 @@ public class StageManager : MonoBehaviour
         isRecoveryHP = false;
         isPlayerWarning = false;
 
-        used_AirMat = false;
-        used_OxygenTank = false;
-        used_Lantern = false;
-
-        time_InGame = 0;
+        startedTime = Time.time;
 
         unUsedBoostItems = (StageLoader.Item == 3) ? true : false;
 
@@ -230,16 +222,14 @@ public class StageManager : MonoBehaviour
     {
         player_HP = 100;
         player_HPMax = 100;
-        player_HPBar.fillAmount = 1;
-        player_ExtendHPBar.fillAmount = 1;
     }
 
     /// <summary> 초기화 : UI </summary>
     private void Init_UI()
     {
-        Panel_Pause.SetActive(false);
-        Panel_GameOver.SetActive(false);
-        Panel_GameClear.SetActive(false);
+        //Panel_Pause.SetActive(false);
+        //Panel_GameOver.SetActive(false);
+        //Panel_GameClear.SetActive(false);
         backGround_HPBar.enabled = true;
         backGround_ExtendHPBar.enabled = false;
         ui_PlayerExtendHPBar.SetActive(false);
@@ -247,20 +237,8 @@ public class StageManager : MonoBehaviour
 
         foreach (var img in img_ClearStars) img.SetActive(false);
 
-        uiButton_CollapseAlarm = button_CollapseAlarm.GetComponentsInChildren<Image>();
-        uiButton_PortableLift = button_PortableLift.GetComponentsInChildren<Image>();
-        uiButton_PistolNozzle = button_PistolNozzle.GetComponentsInChildren<Image>();
-
-        UIButton_IsActiveItemCollapseAlarm(false);
-        UIButton_IsActiveItemPortableLift(false);
-        UIButton_IsActiveItemPistolNozzle(false);
-
         text_FireRemain.text = fires.ToString();
         mask_HPBar.sizeDelta = new Vector2(800, 150);
-
-        Text_Debug.SetActive(false);
-        Text_DebugHPFreeze.gameObject.SetActive(false);
-        Text_DebugIsUsingBoostItem.gameObject.SetActive(false);
     }
 
     private void Active_StageBoost()
@@ -273,6 +251,17 @@ public class StageManager : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        EventManager.instance.AddListener(this, listenerTypes);
+    }
+
+    private void Start()
+    {
+        uiManager.UI_PlayerHP(100);
+        Active_StageBoost();
+    }
+
     private void Update()
     {
         if (isGameOver) return;
@@ -282,24 +271,18 @@ public class StageManager : MonoBehaviour
 
         Set_decreaseHP();
         Check_PlayerHP();
-
-        DebugMode();
     }
 
     private void Timing()
-    {
-        time_InGame += Time.deltaTime;
-        text_InGameTime.text = $"Time : {(int)time_InGame}";
-    }
+        => uiManager.UI_InGameTime(Time.time - startedTime);
 
     /// <summary> 플레이어 산소 감소 </summary>
     private void Set_decreaseHP()
     {
         if (isRecoveryHP) return;
         if (debug_isHPFreeze) return;
-        player_HP -= Time.deltaTime * decreaseHP;
-        player_HPBar.fillAmount = player_HP / 100;
-        player_ExtendHPBar.fillAmount = player_HP / 150;
+
+        uiManager.UI_PlayerHP(player_HP -= Time.deltaTime * decreaseHP);
     }
 
     /// <summary> 플레이어 산소량 검사 </summary>
@@ -308,23 +291,11 @@ public class StageManager : MonoBehaviour
         if (player_HP <= 0)
         {
             audio.GameoverByLowerOxygen(true);
-            GameOver_CauseOfLowerOxygen();
+            GameOver(GameOverType.LowerOxygen);
+            uiManager.UI_PlayerHP(0);
         }
 
         FadeAlphaOfWarinigEffect();
-
-        //if (player_HP <= player_HPMax * 0.3f && !isPlayerWarning)
-        //{
-        //    isPlayerWarning = true;
-        //    StopCoroutine("FadeOutWarningEffect");
-        //    StartCoroutine("FadeInWarningEffect");
-        //} 
-        //else if (player_HP >= player_HPMax * 0.3f && isPlayerWarning)
-        //{
-        //    isPlayerWarning = false;
-        //    StopCoroutine("FadeInWarningEffect");
-        //    StartCoroutine("FadeOutWarningEffect");
-        //}
     }
 
     /// <summary> 플레이어 산소량 갱신 </summary>
@@ -344,100 +315,95 @@ public class StageManager : MonoBehaviour
 
 
     /// <summary> 생존자 구출 작업 수행 </summary>
-    public void Save_Survivor(GameObject survivor)
+    public void Save_Survivor()
     {
         survivors--;
-        list_Survivors.Remove(survivor);
     }
 
     /// <summary> 생존자 현장 구출 완료 </summary>
     public void Complete_EscapeSurvivor()
     {
-        text_SurvivorRemain.text = survivors.ToString();
-        Check_SavedAllSurvivors();
+        uiManager.UI_SurvovirRemains(survivors);
+
+        if (survivors == 0) clear_SavedAllSurvivors = true;
+        if (Check_isGameClear()) GameClear();
     }
 
-    private void Check_SavedAllSurvivors()
+    private void CountFireRemains(bool isSummond)
     {
-        if (survivors != 0) return;
+        uiManager.UI_FireRemains(isSummond ? ++fires : --fires);
 
-        text_SurvivorRemain.color = Color.green;
-        clear_SavedAllSurvivors = true;
+        if (!isSummond && fires == 0) clear_SavedAllSurvivors = true;
+        if (Check_isGameClear()) GameClear();
     }
 
-
-
-    public void Discount_Fires(GameObject fire)
+    private void CountSurvivorRemains()
     {
-        fires--;
-        list_Fires.Remove(fire);
-        text_FireRemain.text = fires.ToString();
-        Check_isExtinguishedAllFires();
+        uiManager.UI_SurvovirRemains(++survivors);
     }
 
-    private void Check_isExtinguishedAllFires()
+    private void CountInteract(bool isPlayerAround)
     {
-        if (fires != 0) return;
-
-        text_FireRemain.color = Color.green;
-        clear_ExtinguishedAllFires = true;
+        _ = isPlayerAround ? ++interacts : --interacts;
+        if (interacts == 0) Button_ChangeToAttack();
+        else                Button_ChangeToInteract();
     }
-
 
     /// <summary> 부스트 : 모든 생존자 구출 </summary>
     public void Boost_SaveAllSurvivor()
     {
-        used_AirMat = true;
+        EventManager.instance.TriggerEvent(PlayerEventType.b_Save, this);
         survivors = 0;
-        text_SurvivorRemain.text = survivors.ToString();
+        uiManager.UI_SurvovirRemains(0);
 
-        Check_SavedAllSurvivors();
+        Complete_EscapeSurvivor();
     }
 
     /// <summary> 부스트 : 플레이어 산소 감소 (50%) </summary>
     public void Boost_IncreaseHPAmount()
     {
-        used_OxygenTank = true;
         player_HP = 150;
         player_HPMax = 150;
-        backGround_HPBar.enabled = false;
-        backGround_ExtendHPBar.enabled = true;
-        ui_PlayerExtendHPBar.SetActive(true);
-        mask_HPBar.sizeDelta = new Vector2(1185, 150);
+        
+        uiManager.UI_EnablePlayerExtendHP();
+        uiManager.UI_PlayerHP(150);
     }
 
     public void Boost_IncreasePlayerLightFOVAngle()
     {
-        used_Lantern = true;
-        player.Set_LightFOVAngle(60f, 90f);
-        player.Set_LightFOVRadius(8f);
-        player.Set_LightAroundRadius(2f, 8f);
-        player.change_FOVAngleRange = 1.5f;
+        EventManager.instance.TriggerEventForOneListener(PlayerEventType.b_Light, this);
+        //player.Set_LightFOVAngle(60f, 90f);
+        //player.Set_LightFOVRadius(8f);
+        //player.Set_LightAroundRadius(2f, 8f);
+        //player.change_FOVAngleRange = 1.5f;
     }
 
 
 
-    public bool UseItem_CollapseAlarm()
-    {
-        bool isUse = item_CollapseAlarm.Use_Item();
+    //public bool UseItem_CollapseAlarm()
+    //{
+        
+    //    bool isUse = item_CollapseAlarm.Use_Item();
+        
+    //    if (isUse)
+    //    {
+    //        used_CollapseAlarm = true;
+    //        UIButton_IsActiveItemCollapseAlarm(false, true);
+    //    }
+    //    return isUse;
+    //}
 
-        if (isUse)
-        {
-            used_CollapseAlarm = true;
-            UIButton_IsActiveItemCollapseAlarm(false, true);
-        }
-        return isUse;
-    }
+    //public bool UseItem_PortableLift()
+    //{
+        
+    //    return item_PortableLift.Use_Item();
+    //}
 
-    public bool UseItem_PistolNozzle()
-    {
-        return item_PistolNozzle.Use_Item();
-    }
-
-    public bool UseItem_PortableLift()
-    {
-        return item_PortableLift.Use_Item();
-    }
+    //public bool UseItem_PistolNozzle()
+    //{
+        
+    //    return item_PistolNozzle.Use_Item();
+    //}
 
     public void UsedItem_PistolNozzle()
     {
@@ -485,14 +451,12 @@ public class StageManager : MonoBehaviour
 
     public void Button_ChangeToAttack()
     {
-        button_FireAttack.gameObject.SetActive(true);
-        button_Interact.gameObject.SetActive(false);
+        uiManager.UIButton_EnableAttack();
     }
 
     public void Button_ChangeToInteract()
     {
-        button_FireAttack.gameObject.SetActive(false);
-        button_Interact.gameObject.SetActive(true);
+        uiManager.UIButton_EnableInteract();
     }
 
     /// <summary> 게임 일시정지 </summary>
@@ -527,18 +491,22 @@ public class StageManager : MonoBehaviour
     /// <summary> 게임 재시작 </summary>
     public void Game_Restart()
     {
+        EventManager.instance.RemoveListener(this, listenerTypes);
+        EventManager.instance.ResetList();
         SceneManager.LoadScene("Stage_Test");
     }
 
     /// <summary> 게임 나가기 </summary>
     public void Game_Exit()
     {
+        EventManager.instance.RemoveListener(this, listenerTypes);
+        EventManager.instance.ResetList();
         Time.timeScale = 1;
         SceneManager.LoadScene("Stage");
     }
 
     /// <summary> 게임 오버 </summary>
-    public void GameOver()
+    public void GameOver(GameOverType type)
     {
         StopAllCoroutines();
 
@@ -546,75 +514,45 @@ public class StageManager : MonoBehaviour
         isGameOver = true;
         player.isGameOver = true;
         player_HP = 0;
-        player_HPBar.fillAmount = 0;
-        player_ExtendHPBar.fillAmount = 0;
+        
 
         player.Player_KnockOut();
 
         blur.ButtonCaptureID(1); // 게임오버 화면 표기 지연
         FadeOutAudio_BurningAround();
+
+        uiManager.UI_GameOver(type);
     }
 
     public void GameOver_PanelOn()
     {
         Time.timeScale = 0;
-        Panel_GameOver.SetActive(true);
+        
     }
 
-    public void GameOver_CauseOfBackDraft() // 사유 : 백 드래프트
-    {
-        text_CauseOfGameOver.text = "순간적인 화염에 휩싸이고 말았습니다.";
-        GameOver();
-    }
 
-    public void GameOver_CauseOfCollaspeRoom() // 사유 : 붕괴
-    {
-        text_CauseOfGameOver.text = "무너지는 방 속에서 붕괴되고 말았습니다.";
-        GameOver();
-    }
-
-    public void GameOver_CauseOfLowerOxygen() // 사유 : 산소 부족
-    {
-        text_CauseOfGameOver.text = "산소통이 더 이상 버텨낼 수 없었습니다.";
-        GameOver();
-    }
-
-    public void GameOver_CauseOfFailedSaveSurvivor() // 사유 : 붕괴 위험 속 생존자 고립
-    {
-        text_CauseOfGameOver.text = "누군가 붕괴 속에서 피해를 입게 되었습니다.";
-        GameOver();
-    }
-
-    public void GameOver_Debug() // 사유 : 디버그용
-    {
-        text_CauseOfGameOver.text = "ZWxxanJtIDogYWt0ZGpxdHNtc2RrZGx0bXptZmxh";
-        GameOver();
-    }
 
     public bool Check_isGameClear()
     {
         if (!clear_SavedAllSurvivors)       return false;
         if (!clear_ExtinguishedAllFires)    return false;
 
-        GameClear();
         return true;
     }
 
     /// <summary> 게임 결과 출력 </summary>
     public void GameClear()
     {
-        isGamePlay = false;
-        
+        float resultTime = Time.time - startedTime;
 
-        clearStars = 0;
-        text_InTime.text = $"2. {clearTime_AllStages[StageLoader.Stage]}초 내 임무 수행 완료";
+        isGamePlay = false;
+        int clearRank = 0;
 
         clearTimeInCondition =
-        (time_InGame < clearTime_AllStages[StageLoader.Stage]) ? true : false;
+        (resultTime < sO_Stage.stageClearTime[StageLoader.Stage]) ? true : false;
 
-        GameClear_ShowStarAcquire();
-
-        img_ClearStars[clearStars].SetActive(true);
+        if (unUsedBoostItems)       clearRank++;
+        if (clearTimeInCondition)   clearRank++;
 
 
         blur.ButtonCaptureID(2); // 게임 클리어 화면 표기 지연
@@ -622,6 +560,8 @@ public class StageManager : MonoBehaviour
         //StartCoroutine("FadeOutWarningEffect");
         //FadeOutAudio_BurningAround();
         audio.StopSound_AllSounds();
+
+        uiManager.UI_GameClear(unUsedBoostItems, clearTimeInCondition, clearRank);
     }
 
     public void GameClear_PanelOn()
@@ -630,63 +570,11 @@ public class StageManager : MonoBehaviour
         Panel_GameClear.SetActive(true);
     }
 
-    private void GameClear_ShowStarAcquire()
-    {
-        text_GameClear.color        = Color.green;
-        text_UnusedBoostItem.color  = new Color(1, 1, 1, 0.5f);
-        text_InTime.color           = new Color(1, 1, 1, 0.5f);
-
-        if (unUsedBoostItems)
-        {
-            text_UnusedBoostItem.color = Color.green;
-            clearStars++;
-        }
-
-        if (clearTimeInCondition)
-        {
-            text_InTime.color = Color.green;
-            clearStars++;
-        }
-    }
-
     public void FadeInAudio_BurningAround() =>
     StartCoroutine(FadeInAudio(audio.audio_BurningAround));
 
     public void FadeOutAudio_BurningAround() =>
     StartCoroutine(FadeOutAudio(audio.audio_BurningAround));
-
-
-
-
-    public void UIButton_IsActiveItemCollapseAlarm(bool isActive, bool isUsedItem = false)
-    => UIButton_IsActive(uiButton_CollapseAlarm, isActive, isUsedItem);
-
-    public void UIButton_IsActiveItemPistolNozzle(bool isActive, bool isUsedItem = false)
-    => UIButton_IsActive(uiButton_PistolNozzle, isActive, isUsedItem);
-
-    public void UIButton_IsActiveItemPortableLift(bool isActive, bool isUsedItem = false)
-    => UIButton_IsActive(uiButton_PortableLift, isActive, isUsedItem);
-
-    private void UIButton_IsActive(Image[] ui, bool isActive, bool isUsedItem = false)
-    {
-        if (isActive)
-        {
-            ui[0].color = Color.white;
-            ui[1].color = Color.white;
-        }
-        else if (isUsedItem)
-        {
-            ui[0].color = new Color(1, 0, 0, 1 / 2f);
-            ui[1].color = Color.red / 2;
-        }
-        else
-        {
-            ui[0].color = new Color(1, 1, 1, 1 / 2f);
-            ui[1].color = Color.white / 2;
-        }
-    }
-
-
 
     IEnumerator FadeInAudio(AudioSource audio)
     {
@@ -707,7 +595,7 @@ public class StageManager : MonoBehaviour
 
             currentTime += Time.unscaledDeltaTime;
             audio_Burning.volume = currentTime;
-            yield return null; // 다음 프레임까지 대기
+            yield return null;
         }
     }
 
@@ -728,7 +616,7 @@ public class StageManager : MonoBehaviour
 
             currentTime -= Time.unscaledDeltaTime;
             audio_Burning.volume = currentTime;
-            yield return null; // 다음 프레임까지 대기
+            yield return null;
         }
     }
 
@@ -745,148 +633,178 @@ public class StageManager : MonoBehaviour
         //effect_Warning.color = Color.white * alpha;
     }
 
-    //IEnumerator FadeInWarningEffect()
-    //{
-    //    float alpha;
 
-    //    while (true)
-    //    {
-    //        alpha = effect_Warning.color.a;
-    //        effect_Warning.color = new Color(1, 1, 1, alpha += Time.unscaledDeltaTime * 2);
 
-    //        if (alpha >= 1) yield break;
-
-    //        yield return null;
-    //    }
-    //}
-
-    //IEnumerator FadeOutWarningEffect()
-    //{
-    //    float alpha;
-
-    //    while (true)
-    //    {
-    //        alpha = effect_Warning.color.a;
-    //        effect_Warning.color = new Color(1, 1, 1, alpha -= Time.unscaledDeltaTime * 2);
-
-    //        if (alpha <= 0) yield break;
-
-    //        yield return null;
-    //    }
-    //}
-
-    private void DebugMode()
+    
+    public bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
-        if (Input.GetKeyDown(KeyCode.Alpha9))
+        switch (e_Type)
         {
-            Set_DebugMode();
-            player_HP = player_HPMax;
-            Debug.Log($"디버그 : 체력 유지 {(debug_isHPFreeze ? "활성화" : "비활성화")}");
+            case PlayerEventType.f_Dead:        CountFireRemains(false);        return true;
+            case PlayerEventType.f_Summon:      CountFireRemains(true);         return true;
+            case PlayerEventType.s_Saved:       Save_Survivor();                return true;
+            case PlayerEventType.s_Summon:      CountSurvivorRemains();         return true;
+
+            case PlayerEventType.d_Interact:    CountInteract((bool)args);      return true;
+
+
+            case PlayerEventType.g_GameOver:    GameOver((GameOverType)args);   return true;
+
+            case PlayerEventType.Debug:         OnDebug((KeyCode)args);         return true;
+
+            case PlayerEventType.i_UseItem1:
+                used_CollapseAlarm = true;
+                return true;
+
+            case PlayerEventType.i_UseItem2:
+                
+                return true;
+
+            case PlayerEventType.i_UseItem3:
+                
+                return true;
+
+            case PlayerEventType.UI_UseItem1:
+                uiManager.UIButton_ItemIsActive(UIItemImage.CollapseAlarm, false, true);
+                SetActive_UIRemainCollapseRoom(true);
+                return true;
+
+            case PlayerEventType.UI_UseItem2:
+                uiManager.UIButton_ItemIsActive(UIItemImage.PortableLift, (bool)args);
+                return true;
+
+            case PlayerEventType.UI_UseItem3:
+                uiManager.UIButton_ItemIsActive(UIItemImage.PistolNozzle, (bool)args);
+                return true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha0))
+        return false;
+    }
+
+
+
+
+    /// <summary>
+    /// 디버그 실행 목록
+    /// </summary>
+    /// <param name="key"> 디버그 할당 키 </param>
+    private void OnDebug(KeyCode key)
+    {
+        if (!isDebug)
         {
-            Set_DebugMode();
-            debug_isHPFreeze = !debug_isHPFreeze;
-            Text_DebugHPFreeze.gameObject.SetActive(debug_isHPFreeze);
-            Debug.Log($"디버그 : 체력 유지 {(debug_isHPFreeze ? "활성화" : "비활성화")}");
+            isDebug = true;
+            uiManager.UIDebug();
         }
 
-        if (Input.GetKeyDown(KeyCode.Minus) && !clear_ExtinguishedAllFires)
+        switch (key)
         {
-            Set_DebugMode();
-            Debug_AllFiresExtinguished();
-            Debug.Log($"디버그 : 화재 진압 완료");
-        }
+            case KeyCode.Alpha9:
+                Debug_PlayerHPMax();
+                Debug.Log("디버그 : 체력 모두 회복"); break;
 
-        if (Input.GetKeyDown(KeyCode.Equals) && !clear_SavedAllSurvivors)
-        {
-            Set_DebugMode();
-            Debug_SaveAllSurvivor();
-            Debug.Log($"디버그 : 모든 생존자 구출");
-        }
+            case KeyCode.Alpha0:
+                Debug_PlayerHPFreeze();
+                Debug.Log($"디버그 : 체력 유지 {(debug_isHPFreeze ? "활성화" : "비활성화")}"); break;
 
-        if (Input.GetKeyDown(KeyCode.Backspace))
-        {
-            Set_DebugMode();
-            unUsedBoostItems = !unUsedBoostItems;
-            Text_DebugIsUsingBoostItem.gameObject.SetActive(true);
-            Text_DebugIsUsingBoostItem.text = $"Boost {(unUsedBoostItems ? "X" : "O")}";
-            Debug.Log($"디버그 : 부스트 아이템 {(unUsedBoostItems ? "미사용" : "사용")}");
-        }
+            case KeyCode.Minus:
+                Debug_AllFiresExtinguished();
+                Debug.Log($"디버그 : 화재 진압 완료"); break;
 
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            Set_DebugMode();
-            GameOver_Debug();
-            Debug.Log("디버그 : 게임 오버");
-        }
+            case KeyCode.Equals:
+                Debug_SaveAllSurvivor();
+                Debug.Log($"디버그 : 모든 생존자 구출"); break;
 
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            Set_DebugMode();
-            GameClear();
-            Debug.Log("디버그 : 게임 클리어");
-        }
+            case KeyCode.Backspace:
+                Debug_UsedBoostItem();
+                Debug.Log($"디버그 : 부스트 아이템 {(unUsedBoostItems ? "미사용" : "사용")}"); break;
 
-        if (Input.GetKeyDown(KeyCode.LeftBracket))
-        {
-            Set_DebugMode();
-            time_InGame -= 10;
-            if (time_InGame < 0) time_InGame = 0;
-            Debug.Log($"디버그 : 스테이지 시간 10초 감소");
-        }
+            case KeyCode.O:
+                GameOver(GameOverType.Debug);
+                Debug.Log("디버그 : 게임 오버"); break;
 
-        if (Input.GetKeyDown(KeyCode.RightBracket))
-        {
-            Set_DebugMode();
-            time_InGame += 10;
-            Debug.Log($"디버그 : 스테이지 시간 10초 증가");
-        }
+            case KeyCode.P:
+                GameClear();
+                Debug.Log("디버그 : 게임 클리어"); break;
 
-        if (Input.GetKeyDown(KeyCode.Backslash))
-        {
-            Set_DebugMode();
-            time_InGame = 0;
-            Debug.Log($"디버그 : 스테이지 시간 초기화");
+            case KeyCode.LeftBracket:
+                Debug_DecreaseTime();
+                Debug.Log($"디버그 : 스테이지 시간 10초 감소"); break;
+
+            case KeyCode.RightBracket:
+                Debug_IncreaseTime();
+                Debug.Log($"디버그 : 스테이지 시간 10초 증가"); break;
+
+            case KeyCode.Backslash:
+                Debug_ResetTime();
+                Debug.Log($"디버그 : 스테이지 시간 초기화"); break;
         }
     }
 
-    private void Set_DebugMode()
-    {
-        if (isDebug) return;
+    /// <summary>
+    /// 디버그 : 플레이어 체력 최대 회복
+    /// </summary>
+    private void Debug_PlayerHPMax()
+        => player_HP = player_HPMax;
 
-        isDebug = true;
-        Text_Debug.SetActive(true);
-    }
+    /// <summary>
+    /// 디버그 : 플레이어 체력 동결
+    /// </summary>
+    private void Debug_PlayerHPFreeze()
+        => uiManager.UIDebug_HPFreeze(debug_isHPFreeze = !debug_isHPFreeze);
 
-    /// <summary> 디버그 : 모든 생존자 구출 </summary>
+    /// <summary>
+    /// 디버그 : 플레이어 부스트 아이템 임시 사용
+    /// </summary>
+    private void Debug_UsedBoostItem()
+        => uiManager.UIDebug_UsedBoostItem(unUsedBoostItems = !unUsedBoostItems);
+
+    /// <summary>
+    /// 디버그 : 모든 생존자 구출
+    /// </summary>
     public void Debug_SaveAllSurvivor()
     {
-        for (int i = 0; i < list_Survivors.Count; i++)
-        {
-            list_Survivors[i].SetActive(false);
-        }
+        if (clear_SavedAllSurvivors) return;
+
+        //EventManager.instance.TriggerEvent(PlayerEventType.Debug_Survivor, this, true);
 
         survivors = 0;
-        list_Survivors.Clear();
-        text_SurvivorRemain.text = survivors.ToString();
-
-        Check_SavedAllSurvivors();
+        Complete_EscapeSurvivor();
     }
 
-    /// <summary> 디버그 : 화재 완전 진화 </summary>
+    /// <summary>
+    /// 디버그 : 화재 완전 진화
+    /// </summary>
     public void Debug_AllFiresExtinguished()
     {
-        for (int i = 0; i < list_Fires.Count; i++)
-        {
-            list_Fires[i].SetActive(false);
-        }
+        if (clear_ExtinguishedAllFires) return;
 
+        EventManager.instance.TriggerEvent(PlayerEventType.Debug_Fire, this, true);
         fires = 0;
-        list_Fires.Clear();
-        text_FireRemain.text = fires.ToString();
+        uiManager.UI_FireRemains(0);
+    }
 
-        Check_isExtinguishedAllFires();
+    /// <summary>
+    /// 디버그 : 게임 시간 증가
+    /// </summary>
+    private void Debug_IncreaseTime()
+    {
+        startedTime -= 10f;
+    }
+
+    /// <summary>
+    /// 디버그 : 게임 시간 감소
+    /// </summary>
+    private void Debug_DecreaseTime()
+    {
+        startedTime += 10f;
+        if (startedTime > Time.time) startedTime = Time.time;
+    }
+
+    /// <summary>
+    /// 디버그 : 게임 시간 초기화
+    /// </summary>
+    private void Debug_ResetTime()
+    {
+        startedTime = Time.time;
     }
 }

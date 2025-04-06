@@ -92,6 +92,7 @@ public class Interactor_CollapseRoom : Interactor
 
     private void Start_Collapse()
     {
+        EventManager.instance.TriggerEvent(PlayerEventType.e_CollapseDone, this);
         audio.AlertCollapseAlarm(false);
         audio.StartCollapse(false);
 
@@ -100,12 +101,12 @@ public class Interactor_CollapseRoom : Interactor
 
         if (isPlayerInside)
         {
-            stageManager.GameOver_CauseOfCollaspeRoom();
+            EventManager.instance.TriggerEvent(PlayerEventType.g_GameOver, this, GameOverType.CollaspeRoom);
             audio.GameoverByCollapse(true);
         }
         else if (isSurvivorInRoom)
         {
-            stageManager.GameOver_CauseOfFailedSaveSurvivor();
+            EventManager.instance.TriggerEvent(PlayerEventType.g_GameOver, this, GameOverType.FailedSaveSurvivor);
             audio.TriggerCollapse(true);
         }
         else
@@ -117,7 +118,7 @@ public class Interactor_CollapseRoom : Interactor
 
         stageManager.player.warning_Collapse = false;
 
-        player.InActive_NavigateToCollapseRoom();
+        //player.SetActive_NavigateToCollapseRoom(false);
         stageManager.SetActive_UIRemainCollapseRoom(false);
         SetActive_UseCollapseAlarm(false);
     }
@@ -139,7 +140,7 @@ public class Interactor_CollapseRoom : Interactor
 
         if (!stageManager.used_CollapseAlarm)
         {
-            stageManager.UIButton_IsActiveItemCollapseAlarm(true);
+            //stageManager.UIButton_IsActiveItemCollapseAlarm(true);
         }
     }
 
@@ -153,13 +154,14 @@ public class Interactor_CollapseRoom : Interactor
 
         if (!stageManager.used_CollapseAlarm)
         {
-            stageManager.UIButton_IsActiveItemCollapseAlarm(false);
+            //stageManager.UIButton_IsActiveItemCollapseAlarm(false);
         }
     }
 
     private void Waiting_Collapse()
     {
-        stageManager.player.warning_Collapse = true;
+        //stageManager.player.warning_Collapse = true;
+        EventManager.instance.TriggerEvent(PlayerEventType.e_CollapseSoon, this);
         audio.StartCollapse(true);
     }
 
@@ -182,5 +184,13 @@ public class Interactor_CollapseRoom : Interactor
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.name == "Survivor") isSurvivorInRoom = false;
+    }
+
+    public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
+    {
+        if ((sender as Interactor_CollapseRoom) == this)
+            return base.OnEvent(e_Type, sender, args);
+
+        return false;
     }
 }

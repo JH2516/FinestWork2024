@@ -54,7 +54,7 @@ public class Interactor_BackDraft : Interactor
 
         player.SetActive_InFrontOfDoor(true);
         player.target_BackDraft = gameObject;
-        stageManager.UIButton_IsActiveItemPistolNozzle(true);
+        EventManager.instance.TriggerEvent(PlayerEventType.UI_UseItem3, this, true);
     }
 
     public override void Hide_Interact()
@@ -63,7 +63,7 @@ public class Interactor_BackDraft : Interactor
 
         player.SetActive_InFrontOfDoor(false);
         player.SetActive_UsingPistolNozzle(false);
-        stageManager.UIButton_IsActiveItemPistolNozzle(false);
+        EventManager.instance.TriggerEvent(PlayerEventType.UI_UseItem3, this, false);
 
         if (!player.using_PistolNozzle)
         player.target_BackDraft = null;
@@ -107,7 +107,7 @@ public class Interactor_BackDraft : Interactor
 
         if (stageManager.IsGamePlay)
         {
-            stageManager.GameOver_CauseOfBackDraft();
+            //stageManager.GameOver_CauseOfBackDraft();
             audio.GameoverByBackDraft(true);
         }
     }
@@ -128,5 +128,13 @@ public class Interactor_BackDraft : Interactor
         isInteraction = false;
 
         Debug.Log("Break_BackDraft");
+    }
+
+    public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
+    {
+        if ((sender as Interactor_BackDraft) == this)
+            return base.OnEvent(e_Type, sender, args);
+
+        return false;
     }
 }

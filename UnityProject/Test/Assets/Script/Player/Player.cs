@@ -1,17 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.InputSystem;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-public class Player : MonoBehaviour
+[DefaultExecutionOrder(-70)]
+public class Player : MonoBehaviour, IEventListener
 {
     public  static  Player  player;
+    public  SController_Player sController_Player { get; private set; }
 
-    private AudioManager    audio;
+    public  AudioManager    audio;
 
     [Header("Component")]
     public  Camera          mainCamera;
@@ -30,13 +33,16 @@ public class Player : MonoBehaviour
 
     [Header("Player State")]
     public  bool            isMove;
+    public  bool            isButtonDownMove;
     public  bool            isFire;
+    public  bool            isCanMove;
     public  bool            isSavingSurvivor;
     public  bool            isDetectedFire;
     public  bool            isInteract;
     public  bool            isRemoveCollapse;
     public  bool            isInFrontOfDoor;
     public  bool            isGameOver;
+    public  bool            isBoostLight;
 
     [Header("Player Fire")]
     public  SpriteRenderer  sr_FireExtinguisher;
@@ -46,14 +52,14 @@ public class Player : MonoBehaviour
 
 
     //[Header("Player Transform")]
-    private Vector2[]       moveVec;
-    private Quaternion[]    rotate;
+    public  SO_Player       sO_Player;
 
     [Header("Player Transform")]
-    public  Vector2         setMoveVec;
-    public  Quaternion      setRotate;
-
+    [SerializeField]
+    private Quaternion      setRotate;
+    [SerializeField]
     private Interactor      target_Interactor;
+    public  Vector2         setMoveVec          { get; private set; }
 
     [Header("Darkness")]
     [Range(0, 1), SerializeField]
@@ -62,10 +68,11 @@ public class Player : MonoBehaviour
     private float           range_DarknessInRoom;
 
     [Header("Detect Fire")]
-    public  Color           Color_nonDetected = new Color(0, 1, 0, 0.5f);
-    public  Color           Color_Detected = new Color(1, 0, 0, 0.5f);
-    [Range(0, 1)]
     [SerializeField]
+    private Color           Color_nonDetected = new Color(0, 1, 0, 0.5f);
+    [SerializeField]
+    private Color           Color_Detected = new Color(1, 0, 0, 0.5f);
+    [Range(0, 1), SerializeField]
     private float           Range_Alpha = 0.5f;
 
 
@@ -84,12 +91,8 @@ public class Player : MonoBehaviour
     public  bool            using_PistolNozzle;
 
     
+    public  LayerMask       layer_Fire;
 
-    private LayerMask       layer_Collapse;
-    private LayerMask       layer_Fire;
-    private LayerMask       layer_Interaction;
-
-    private List<Fire>              List_FireInFOV;
     private List<Interactor>        List_Interactor;
 
     [Header("Navigate CollapseRoom")]
@@ -104,10 +107,20 @@ public class Player : MonoBehaviour
     public  GameObject      icon_PistolNozzle;
     public  GameObject      icon_PortableLift;
 
-
+    private PlayerEventType[] listenerTypes =
+    {
+        PlayerEventType.b_Light,
+        PlayerEventType.s_Saved,
+        PlayerEventType.d_Collapse, PlayerEventType.e_CollapseSoon, PlayerEventType.e_CollapseDone,
+        PlayerEventType.i_UseItem1, PlayerEventType.i_UseItem2, PlayerEventType.i_UseItem3,
+        PlayerEventType.Try_UseItem1, PlayerEventType.Try_UseItem2, PlayerEventType.Try_UseItem3
+    };
 
     private byte count_Interact;
 
+    private Coroutine   co_Navigate;
+    private Coroutine   co_Notificate;
+    private Coroutine   co_Warning;
 
     private void Awake()
     {
@@ -115,46 +128,38 @@ public class Player : MonoBehaviour
 
         Init_Argument();
         Init_Conmpnent();
-        Init_Layer();
         Init_Light();
         Init_List();
-        Init_Transform();
     }
+
+    
 
     private void Init_Conmpnent()
     {
         mainCamera = Camera.main;
-        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+        
 
         audio = GameObject.Find("AudioManager").GetComponent<AudioManager>();
 
         navigator_CollapseRoom.SetActive(false);
         icon_PistolNozzle.SetActive(false);
         icon_PortableLift.SetActive(false);
+
+        
+
+        layer_Fire = LayerMask.GetMask("Fire");
     }
 
     private void Init_List()
     {
-        List_FireInFOV = new List<Fire>();
         List_Interactor = new List<Interactor>();
-    }
-
-    private void Init_Layer()
-    {
-        layer_Collapse = LayerMask.GetMask("Collapse");
-        layer_Fire = LayerMask.GetMask("Fire");
-        layer_Interaction = LayerMask.GetMask("Interaction");
-    }
-
-    private void Init_Transform()
-    {
-        moveVec = Init_PlayerTransform.Get_MoveVecs();
-        rotate = Init_PlayerTransform.Get_Rotation();
     }
 
     private void Init_Argument()
     {
         isFire = false;
+        isCanMove = true;
+        isButtonDownMove = false;
         isInteract = false;
         isSavingSurvivor = false;
         warning_Collapse = false;
@@ -164,6 +169,7 @@ public class Player : MonoBehaviour
         change_FOVAngleRange = 2f;
         isRemoveCollapse = false;
         isInFrontOfDoor = false;
+        isBoostLight = false;
 
         using_CollapseAlarm = false;
         using_PortableLift = false;
@@ -172,8 +178,7 @@ public class Player : MonoBehaviour
 
     private void Init_Light()
     {
-        Set_LightAroundIntensity(0.5f);
-        Set_LightAroundRadius(2f, 5f);
+        
     }
 
     private void Reset()
@@ -186,103 +191,146 @@ public class Player : MonoBehaviour
         isDetectedFire = false;
     }
 
+    private void Start()
+    {
+        stageManager = StageManager.stageManager;
+
+        sController_Player = new SController_Player(this);
+        sController_Player.Initialize(sController_Player.state_Idle);
+
+        //EventManager.instance.AddListener(PlayerEventType.d_Collapse, this);
+        //EventManager.instance.AddListener(PlayerEventType.e_CollapseSoon, this);
+        //EventManager.instance.AddListener(PlayerEventType.e_CollapseDone, this);
+        EventManager.instance.AddListener(this, listenerTypes);
+        sO_Player.SetLight_DarkedRoom(light_PlayerAround, light_PlayerFOV, false);
+    }
+
     private void Update()
     {
-        if (isGameOver) return;
-
-        Get_Input();
-        Timing();
-
-        Player_Move();
-        Player_Rotate();
-        Player_Flip();
-
-        //Player_Attack();
-
-        //Check_Fire();
-        //Check_Collapse();
+        sController_Player?.Update();
     }
 
-    private void FixedUpdate()
+    private void OnDestroy()
     {
-        if (stageManager.IsGameOver) return;
-
-        Player_Attack();
-        Check_Fire();
-        Check_Collapse();
-
-        Warning_Collapse();
-        Detect_FirstCollapse();
-        Navigate_CollapseRoom();
+        EventManager.instance.RemoveListener(this, listenerTypes);
     }
 
-
-    /// <summary> 붕괴 위험, 화면 흔들림 출현 </summary>
-    public void Warning_Collapse()
+    /// <summary>
+    /// Coroutine 실행 중지 및 참조 해제
+    /// </summary>
+    /// <param name="coroutine">종료 및 참조를 해제할 Coroutine<param>
+    private void StopAndRemoveCoroutine(Coroutine coroutine)
     {
-        if (!warning_Collapse) return;
-
-        Vector3 effect = new Vector3(Random.Range(-0.1f, 0.1f), Random.Range(-0.1f, 0.1f), -10);
-        mainCamera.transform.position = transform.position + effect;
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+            coroutine = null;
+        }
     }
 
-    /// <summary> 초기 붕괴물 근처 감지 시 화면 흔들림 출현 </summary>
-    public void Detect_FirstCollapse()
+    /// <summary>
+    /// 붕괴 위험 알림 - 카메라 떨림 효과
+    /// </summary>
+    private IEnumerator Warning_Collapse()
     {
-        if (!detect_Collapse) return;
+        WaitForFixedUpdate wf = new WaitForFixedUpdate();
 
-        Vector3 effect = new Vector3(Random.Range(-0.05f, 0.05f), Random.Range(-0.05f, 0.05f), -10);
-        mainCamera.transform.position = transform.position + effect;
+        while (true)
+        {
+            Vector3 effect = new Vector3(UnityEngine.Random.Range(-0.1f, 0.1f), UnityEngine.Random.Range(-0.1f, 0.1f), -10);
+            mainCamera.transform.position = transform.position + effect;
+
+            yield return wf;
+        }
     }
 
-    /// <summary> 붕괴물 경보기 사용 시 내비게이트 기능 출현 </summary>
-    public void Navigate_CollapseRoom()
+    /// <summary>
+    /// 인근 붕괴물 감지 - 일정 시간동안 약한 카메라 떨림 효과
+    /// </summary>
+    private IEnumerator Notificate_Collapse(float setTime)
     {
-        if (!using_CollapseAlarm) return;
+        WaitForFixedUpdate wf = new WaitForFixedUpdate();
+        float time = 0;
 
-        Vector3 direction = transform_CollapseRoom.position - transform.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        while(time < setTime)
+        {
+            time += Time.deltaTime;
 
-        navigator_CollapseRoom.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+            Vector3 effect = new Vector3(UnityEngine.Random.Range(-0.05f, 0.05f), UnityEngine.Random.Range(-0.05f, 0.05f), -10);
+            mainCamera.transform.position = transform.position + effect;
+
+            yield return wf;
+        }
     }
 
-    //public void SetTarget_CollapseRoomForNavigate(Transform collapseRoom)
-    //=> transform_CollapseRoom = collapseRoom;
-
-    /// <summary> 붕괴물 경보기 내비게이트 활성화 </summary>
-    public void Active_NavigateToCollapseRoom()
+    /// <summary>
+    /// 붕괴 위험 장소 안내 - 해당 위치로 네비게이트
+    /// </summary>
+    private IEnumerator Navigate_CollapseRoom(Transform target = null)
     {
-        navigator_CollapseRoom.SetActive(true);
-        using_CollapseAlarm = true;
+        WaitForFixedUpdate wf = new WaitForFixedUpdate();
+
+        while (true)
+        {
+            Vector3 direction = target.position - transform.position;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            navigator_CollapseRoom.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+
+            yield return wf;
+        }
     }
 
-    /// <summary> 붕괴물 경보기 내비게이트 비활성화 </summary>
-    public void InActive_NavigateToCollapseRoom()
+    /// <summary>
+    /// 붕괴물 경보기 내비게이트 활성화 여부
+    /// </summary>
+    /// <param name="isActive">활성화 여부</param>
+    /// <param name="target">네이게이트 대상 Transform</param>
+    private void SetActive_NavigateToCollapseRoom(bool isActive, Transform target = null)
     {
-        navigator_CollapseRoom.SetActive(false);
-        using_CollapseAlarm = false;
+        using_CollapseAlarm = isActive;
+        navigator_CollapseRoom.SetActive(isActive);
+
+        switch (isActive)
+        {
+            case true when target != null:
+                co_Navigate = StartCoroutine(Navigate_CollapseRoom(target)); break;
+            case false:
+                StopAndRemoveCoroutine(co_Navigate); break;
+        }
     }
 
-    /// <summary> 붕괴물 제거 작업 활성화 여부 </summary>
+    /// <summary>
+    /// 붕괴물 제거 작업 활성화 여부
+    /// </summary>
+    /// <param name="isActive">활성화 여부</param>
     public void SetActive_RemoveCollapse(bool isActive)
     {
         isRemoveCollapse = isActive;
     }
 
-    /// <summary> 휴대용 리프트 활성화 여부 </summary>
+    /// <summary>
+    /// 휴대용 리프트 활성화 여부
+    /// </summary>
+    /// <param name="isActive">활성화 여부</param>
     public void SetActive_UsingPortableLift(bool isActive)
     {
         using_PortableLift = isActive;
         icon_PortableLift.SetActive(isActive);
     }
 
-    /// <summary> 플레이어가 문 앞에 위치하는 지 여부 </summary>
+    /// <summary>
+    /// 플레이어가 문 앞에 위치하는 지 여부
+    /// </summary>
+    /// <param name="isActive">활성화 여부</param>
     public void SetActive_InFrontOfDoor(bool isActive)
     {
         isInFrontOfDoor = isActive;
     }
 
-    /// <summary> 휴대용 리프트 활성화 여부 </summary>
+    /// <summary>
+    /// 휴대용 리프트 활성화 여부
+    /// </summary>
+    /// <param name="isActive">활성화 여부</param>
     public void SetActive_UsingPistolNozzle(bool isActive)
     {
         using_PistolNozzle = isActive;
@@ -290,291 +338,357 @@ public class Player : MonoBehaviour
     }
 
 
-    /// <summary> 입력 키 검사 </summary>
-    void Get_Input()
-    {
-        if (Input.GetKey(KeyCode.A) && !isFire)
-        {
-            Button_PlayerAttackActive();
-        }
-        else if (Input.GetKeyUp(KeyCode.A))
-        {
-            Button_PlayerAttackInActive();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Button_PlayerInteract();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            Button_CollapseAlarm();
-        }
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            Button_PortableLift();
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Button_PistolNozzle();
-        }
-    }
-
-    public void Button_PlayerAttackActive()
-    {
-        isFire = true;
-        button_isFireActive = true;
-        audio.Extinguising(true);
-    }
-
-    public void Button_PlayerInteract()
-    {
-        if (!isInteract) return;
-
-        foreach (var interactor in List_Interactor)
-        interactor.Start_Interact();
-    }
-
-    public void Button_PlayerAttackInActive()
-    {
-        button_isFireActive = false;
-    }
+    
 
     public void Button_CollapseAlarm()
     {
-        if (stageManager.UseItem_CollapseAlarm())
-        {
-            transform_CollapseRoom.
-            GetComponent<Interactor_CollapseRoom>().SetActive_UseCollapseAlarm(true);
-        }
+        // Item_CollapseAlarm 수신
+        EventManager.instance.TriggerEventForOneListener(PlayerEventType.p_UseItem1, this);
     }
+
     public void Button_PortableLift()
     {
-        if (stageManager.UseItem_PortableLift())
-            target_Collapse.
-            GetComponent<Interactor_Collapse>().UIInteraction.Modify_GuageAmountUpPerSecond(4f);
+        // Item_PortableLift 수신
+        EventManager.instance.TriggerEventForOneListener(PlayerEventType.p_UseItem2, this, target_Collapse);
     }
     public void Button_PistolNozzle()
     {
-        if (stageManager.UseItem_PistolNozzle())
+        // Item_PistolNozzle 수신
+        EventManager.instance.TriggerEventForOneListener(PlayerEventType.p_UseItem3, this);
+
+
             target_BackDraft.
             GetComponent<Interactor_BackDraft>().Start_Interact();
     }
 
-    /// <summary> 플레이어 이동 </summary>
-    void Player_Move()
-    {
-        if (!isMove) return;
-        if (isFire) return;
-        if (using_PistolNozzle) return;
-        if (isSavingSurvivor) return;
-        transform.Translate(setMoveVec * 3f * Time.deltaTime);
-    }
 
     /// <summary> 플레이어 회전 </summary>
-    void Player_Rotate()
+    public void Player_Rotate()
     {
         if (!isMove) return;
         obj_FOV.transform.rotation = setRotate;
         obj_Attack.transform.rotation = setRotate;
     }
 
-    /// <summary> 플레이어 소화기 분사 </summary>
-    void Player_Attack()
-    {
-        if (!isFire)
-        {
-            obj_Attack.SetActive(false);
-            audio.Extinguising(false);
-            return;
-        }
-        else
-        {
-            obj_Attack.SetActive(true);
-
-            foreach (Fire item in List_FireInFOV)
-            {
-                if (item.gameObject.activeSelf == false) continue;
-                item.isExtinguish = true;
-
-                if (item.GetComponent<Fire>().isBackdraft)
-                item.gameObject.SetActive(false);
-            }
-        }
-    }
-
-    /// <summary> 시간 갱신 </summary>
-    void Timing()
-    {
-        if (time_Fire > 1f && !button_isFireActive)
-        {
-            time_Fire = 0f;
-            isFire = false;
-
-            foreach (Fire item in List_FireInFOV)
-            {
-                item.isExtinguish = false;
-            }
-        }
-
-        if (isFire)
-        {
-            Timing_Fire(); return;
-        }
-    }
-
-    /// <summary> 소화기 분사 시간 갱신 </summary>
-    void Timing_Fire()
-    {
-        time_Fire += Time.deltaTime;
-    }
-
-    /// <summary> 플레이어 이미지 소스 좌우반전 </summary>
-    void Player_Flip()
+    public void Player_Flip(bool isFlip)
     {
         if (!isMove) return;
 
-        if (setMoveVec.x < 0)
-        {
-            sr.flipX = true;
-            sr_FireExtinguisher.flipX = true;
-            sr_FireExtinguisher.flipY = true;
-            return;
-        }
-
-        if (setMoveVec.x > 0)
-        {
-            sr.flipX = false;
-            sr_FireExtinguisher.flipX = false;
-            sr_FireExtinguisher.flipY = false;
-            return;
-        }
+        sr.flipX =
+        sr_FireExtinguisher.flipX =
+        sr_FireExtinguisher.flipY = isFlip;
     }
 
     public void Player_KnockOut()
     {
-        sr.gameObject.transform.rotation = Quaternion.Euler(0, 0, 90);
+        sController_Player.ChangeState(sController_Player.state_Dead);
     }
 
     /// <summary> 플레이어 이동 벡터 지정 </summary>
-    public void Set_MoveVec(int type) => setMoveVec = moveVec[type];
+    public void Set_MoveVec(int type) => setMoveVec = sO_Player.moveVecs[type];
 
     /// <summary> 플레이어 회전 지정 </summary>
-    public void Set_Rotation(int type) => setRotate = rotate[type];
+    public void Set_Rotation(int type) => setRotate = sO_Player.rotations[type];
 
     /// <summary> 플레이어 이동 여부 지정 </summary>
     public void Set_isMove(bool move)
     {
+        isButtonDownMove = move;
+        if (!isCanMove) return;
+
         isMove = move;
         audio.PlayerWalk(move);
+
+        sController_Player.ChangeState
+            (move ? sController_Player.state_Walk : sController_Player.state_Idle);
     }
 
-    void Check_Fire()
+    /// <summary>
+    /// 플레이어 진화 작업 개시
+    /// </summary>
+    public void StartAttack()
     {
-        List<Fire> temp = List_FireInFOV.ToList();
-
-        List_FireInFOV.Clear();
-
-        Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Fire);
-
-        if (hit.Length != 0 && !isDetectedFire)
-        {
-            isDetectedFire = true;
-            stageManager.FadeInAudio_BurningAround();
-        }
-
-        if (hit.Length == 0 && isDetectedFire)
-        {
-            isDetectedFire = false;
-            stageManager.FadeOutAudio_BurningAround();
-        }
-
+        // OverlapBox 영역 관련 계산
         Vector2 fov = obj_Attack.transform.right;
-
-        // 방향에 따른 박스 중심 계산
         Vector2 boxCenter = (Vector2)transform.position + fov * 2.5f;
         Vector2 boxSize = new Vector2(5, 2.5f);
 
-        // 박스의 회전 각도 계산
+        // OverlapBox 회전 각도 계산
         float angle = Mathf.Atan2(fov.y, fov.x) * Mathf.Rad2Deg;
 
         // OverlapBox 호출
-        Collider2D[] hitColliders = Physics2D.OverlapBoxAll(boxCenter, boxSize, angle, layer_Fire);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, boxSize, angle, layer_Fire);
 
-        // 감지된 오브젝트 처리
-        foreach (var hitCollider in hitColliders)
+        foreach (var item in hits)
         {
-            List_FireInFOV.Add(hitCollider.GetComponent<Fire>());
+            // 감지 대상 오브젝트의 비활성화 시 작업 미수행
+            if (!item.gameObject.activeSelf) continue;
+
+            // Fire 송신
+            EventManager.instance.
+                TriggerEventForOneListener(PlayerEventType.p_StartAttack, this, item.GetComponent<Fire>());
         }
-
-        foreach (var item in temp)
-        {
-            if (!List_FireInFOV.Contains(item))
-            item.isExtinguish = false;
-        }
-
-        // 디버그용 박스 그리기
-        DebugDrawBox(boxCenter, boxSize, angle, Color.red);
-
-        //Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Fire);
-
-        //if (hit.Length != 0 && !isDetectedFire)
-        //{
-        //    isDetectedFire = true;
-        //    stageManager.FadeInAudio_BurningAround();
-        //}
-
-        //if (hit.Length == 0 && isDetectedFire)
-        //{
-        //    isDetectedFire = false;
-        //    stageManager.FadeOutAudio_BurningAround();
-        //}
-
-        //for (int i = 0; i < hit.Length; i++)
-        //{
-        //    try
-        //    {
-        //        if (!hit[i].gameObject.activeSelf) continue;
-
-        //        //float theta = Get_DotTheta(item);
-        //        bool dotInside = Check_DotInside(hit[i], Range_halfAngle);
-
-        //        //item.gameObject.GetComponent<SpriteRenderer>().color =
-        //        //dotInside ? Color.blue : Color.red;
-
-        //        if (dotInside) List_FireInFOV.Add(hit[i].GetComponent<Fire>());
-        //    }
-        //    catch
-        //    {
-        //        continue;
-        //    }
-        //}
-
-        //foreach (Collider2D item in hit)
-        //{
-        //    try
-        //    {
-        //        if (!item.gameObject.activeSelf) continue;
-
-        //        //float theta = Get_DotTheta(item);
-        //        bool dotInside = Check_DotInside(item, Range_halfAngle);
-
-        //        //item.gameObject.GetComponent<SpriteRenderer>().color =
-        //        //dotInside ? Color.blue : Color.red;
-
-        //        if (dotInside) List_FireInFOV.Add(item.GetComponent<Fire>());
-        //    }
-        //    catch (System.Exception ex)
-        //    {
-        //        continue;
-        //    }
-            
-        //}
     }
 
+
+    /// <summary>
+    /// 플레이어 진화 작업 중지
+    /// </summary>
+    public void EndAttack()
+    {
+        // Fire 송신
+        EventManager.instance.TriggerEvent(PlayerEventType.p_EndAttack, this);
+    }
+
+
+    /// <summary>
+    /// Input System - 플레이어 공격 실행 (Left Shift)
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if (context.started && !isFire)
+        {
+            button_isFireActive = true;
+            sController_Player.ChangeState(sController_Player.state_Attack);
+            return;
+        }
+
+        if (context.canceled)
+        {
+            button_isFireActive = false;
+        }
+    }
+
+
+    /// <summary>
+    /// Button - 플레이어 공격 실행
+    /// </summary>
+    /// <param name="isButtonDown"> Button 누름 유무 </param>
+    public void OnAttack(bool isButtonDown)
+    {
+        if (isButtonDown)
+        {
+            button_isFireActive = true;
+            sController_Player.ChangeState(sController_Player.state_Attack);
+        }
+        else
+        {
+            button_isFireActive = false;
+        }
+    }
+
+    /// <summary>
+    /// Input System - 플레이어 아이템 사용 실행 (Z, X, C)
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnUseItem(InputAction.CallbackContext context)
+    {
+        //Debug.Log(context.control.path);
+        char key = context.control.path[10];
+
+        switch (key)
+        {
+            case 'z': Button_CollapseAlarm(); return;
+            case 'x': Button_PortableLift(); return;
+            case 'c': Button_PistolNozzle(); return;
+        }
+    }
+
+    /// <summary>
+    /// Input System - 플레이어 상호작용 실행 (Q)
+    /// </summary>
+    /// <param name="context"></param>
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        // Interact 송신
+        if (context.started && isInteract)
+            foreach (Interactor interactor in List_Interactor)
+                EventManager.instance.TriggerEvent(PlayerEventType.p_Interact, interactor);
+    }
+
+    /// <summary>
+    /// Button - 플레이어 상호작용 실행
+    /// </summary>
+    public void OnInteract()
+    {
+        // Interact 송신
+        if (isInteract)
+            foreach (Interactor interactor in List_Interactor)
+                EventManager.instance.TriggerEvent(PlayerEventType.p_Interact, interactor);
+    }
+
+    
+
+    
+
+
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("DarkedRoom"))
+        {
+            //InDarkedRoom(collision); return;
+        }
+
+        if (collision.CompareTag("Interactor"))
+        {
+            InInteract(collision); return;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("DarkedRoom"))
+        {
+            //OutDarkedRoom(collision); return;
+        }
+
+        if (collision.CompareTag("Interactor"))
+        {
+            OutInteract(collision); return;
+        }
+    }
+
+    public bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
+    {
+        switch (e_Type)
+        {
+            case PlayerEventType.d_Collapse when sender is Interactor_Collapse:
+                Interactor_Collapse collapse = sender as Interactor_Collapse;
+
+                if (!collapse.isPlayerDetect)
+                    OnDetected_Collapse(out collapse.isPlayerDetect);
+
+                return true;
+
+            case PlayerEventType.d_DarkedRoom:
+                OnDetected_DarkedRoom((bool)args);
+                return true;
+
+            case PlayerEventType.e_CollapseSoon:
+                OnActivate_CollapseSoon();
+                return true;
+
+            case PlayerEventType.e_CollapseDone:
+                OnActivate_CollapseDone();
+                return true;
+
+            case PlayerEventType.s_Saved when (bool)args:
+                isSavingSurvivor = false;
+                return true;
+
+            case PlayerEventType.s_Saved when !(bool)args:
+                isSavingSurvivor = true;
+                return true;
+
+            case PlayerEventType.Try_UseItem1:
+                if ((bool)args)
+                    transform_CollapseRoom = sender.gameObject.transform;
+                SetActive_NavigateToCollapseRoom((bool)args);
+                return true;
+
+            case PlayerEventType.Try_UseItem2:
+                SetActive_UsingPortableLift((bool)args);
+                return true;
+
+            case PlayerEventType.Try_UseItem3:
+                SetActive_UsingPistolNozzle((bool)args);
+                return true;
+
+            case PlayerEventType.b_Light:
+                isBoostLight = true;
+                sO_Player.SetLight_DarkedRoom(light_PlayerAround, light_PlayerFOV, false, isBoostLight);
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 플레이어 주변 초기 붕괴물 감지 및 효과 활성화
+    /// </summary>
+    /// <param name="isPlayerDetected"> 붕괴물의 플레이어 감지 유무 갱신 </param>
+    private void OnDetected_Collapse(out bool isPlayerDetected)
+    {
+        isPlayerDetected = true;
+        StopAndRemoveCoroutine(co_Notificate);
+        co_Notificate = StartCoroutine(Notificate_Collapse(5f));
+    }
+
+    /// <summary>
+    /// 플레이어의 안개가 가득 찬 방 출입 감지 및 효과 활성화
+    /// </summary>
+    /// <param name="isPlayerInRoom"> 플레이어의 방 입장 유무 (퇴장 시 false) </param>
+    private void OnDetected_DarkedRoom(bool isPlayerInRoom)
+    {
+        sO_Player.SetLight_DarkedRoom(light_PlayerAround, light_PlayerFOV, isPlayerInRoom, isBoostLight);
+    }
+
+
+    /// <summary>
+    /// 붕괴 진행 효과 활성화
+    /// </summary>
+    private void OnActivate_CollapseSoon()
+    {
+        StopAndRemoveCoroutine(co_Warning);
+        co_Warning = StartCoroutine(Warning_Collapse());
+    }
+
+
+    /// <summary>
+    /// 붕괴 진행 효과 비활성화
+    /// </summary>
+    private void OnActivate_CollapseDone()
+    {
+        StopAndRemoveCoroutine(co_Warning);
+        SetActive_NavigateToCollapseRoom(false);
+    }
+
+
+    /// <summary>
+    /// 플레이어의 상호작용 대상 접근
+    /// </summary>
+    /// <param name="interact"> 상호대상의 Collider2D </param>
+    private void InInteract(Collider2D interact)
+    {
+        Interactor obj = interact.GetComponent<Interactor>();
+
+        // Interact, StageManager 송신
+        EventManager.instance.TriggerEvent
+            (PlayerEventType.d_Interact, obj, true);
+
+        List_Interactor.Add(obj);
+
+        count_Interact++;
+        isInteract = true;
+    }
+
+    /// <summary>
+    /// 플레이어의 상호작용 대상 탈출
+    /// </summary>
+    /// <param name="interact"> 상호대상의 Collider2D </param>\
+    private void OutInteract(Collider2D interact)
+    {
+        Interactor obj = interact.GetComponent<Interactor>();
+
+        EventManager.instance.TriggerEvent
+            (PlayerEventType.d_Interact, obj, false);
+
+        List_Interactor.Remove(obj);
+
+        count_Interact--;
+        if (count_Interact == 0) isInteract = false;
+    }
+
+
+
+
+
+
+
+    /*
     void DebugDrawBox(Vector2 center, Vector2 size, float angle, Color color)
     {
         // 박스의 네 꼭짓점 계산
@@ -593,93 +707,7 @@ public class Player : MonoBehaviour
         Debug.DrawLine(bottomRight, bottomLeft, color);
         Debug.DrawLine(bottomLeft, topLeft, color);
     }
-
-
-    private void Check_Collapse()
-    {
-        Collider2D[] hit = Physics2D.OverlapCircleAll(transform.position, Range_radius, layer_Collapse);
-        foreach (Collider2D item in hit)
-        {
-            Interactor_Collapse collapse = item.GetComponent<Interactor_Collapse>();
-            if (!collapse.isPlayerDetect)
-            {
-                collapse.isPlayerDetect = true;
-                StartCoroutine("Detect_Collapse");
-            }
-        }
-    }
-
-    private IEnumerator Detect_Collapse()
-    {
-        detect_Collapse = true;
-        yield return new WaitForSeconds(5f);
-
-        detect_Collapse = false;
-    }
-
-
-
-    /// <summary> 플레이어 전방 시야각 설정 </summary>
-    public void Set_LightFOVAngle(float inner, float outer)
-    {
-        light_PlayerFOV.pointLightInnerAngle = inner;
-        light_PlayerFOV.pointLightOuterAngle = outer;
-    }
-
-    /// <summary> 플레이어 전방 시야 거리 설정 </summary>
-    public void Set_LightFOVRadius(float raduis)
-    {
-        light_PlayerFOV.pointLightOuterRadius = raduis;
-    }
-
-    /// <summary> 플레이어 전방 시야각 일정 배율 증가 </summary>
-    private void Set_IncreaseLightFOVAngle(float increase = 2f)
-    {
-        light_PlayerFOV.pointLightInnerAngle *= increase;
-        light_PlayerFOV.pointLightOuterAngle *= increase;
-    }
-
-    /// <summary> 플레이어 전방 시야각 일정 배율 감소 </summary>
-    private void Set_DecreaseLightFOVAngle(float decrease = 2f)
-    {
-        light_PlayerFOV.pointLightInnerAngle /= decrease;
-        light_PlayerFOV.pointLightOuterAngle /= decrease;
-    }
-
-    /// <summary> 플레이어 전방 시야각 일정 배율 증가 </summary>
-    private void Set_IncreaseLightFOVRaduis(float increase = 2f)
-    {
-        light_PlayerFOV.pointLightOuterRadius *= increase;
-    }
-
-    /// <summary> 플레이어 전방 시야각 일정 배율 감소 </summary>
-    private void Set_DecreaseLightFOVRaduis(float decrease = 2f)
-    {
-        light_PlayerFOV.pointLightOuterRadius /= decrease;
-    }
-
-    /// <summary> 플레이어 주변 밝기 수치 설정 </summary>
-    public void Set_LightAroundIntensity(float intensity)
-    => light_PlayerAround.intensity = intensity;
-
-    /// <summary> 플레이어 주변 밝기 반경 설정 </summary>
-    public void Set_LightAroundRadius(float inner = 0f, float outer = 5f)
-    {
-        light_PlayerAround.pointLightInnerRadius = inner;
-        light_PlayerAround.pointLightOuterRadius = outer;
-    }
-
-    /// <summary> 플레이어 전방 시야각 일정 배율 증가 </summary>
-    private void Set_IncreaseLightAroundRaduis(float increase = 2f)
-    {
-        light_PlayerAround.pointLightOuterRadius *= increase;
-    }
-
-    /// <summary> 플레이어 전방 시야각 일정 배율 감소 </summary>
-    private void Set_DecreaseLightAroundRaduis(float decrease = 2f)
-    {
-        light_PlayerAround.pointLightOuterRadius /= decrease;
-    }
+    */
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()
@@ -690,81 +718,4 @@ public class Player : MonoBehaviour
         Handles.DrawSolidArc(transform.position, transform.forward, obj_FOV.transform.right, -Range_halfAngle, Range_radius);
     }
 #endif
-
-    /// <summary> 플레이어의 어두운 방 입장 </summary>
-    private void InDarkedRoom(Collider2D room)
-    {
-        stageManager.State_InDarkedRoom(room);
-        Set_LightAroundIntensity(0.25f);
-        //Set_LightAroundRadius(0f, 5f);
-        Set_DecreaseLightAroundRaduis(change_FOVAngleRange);
-        Set_DecreaseLightFOVAngle(change_FOVAngleRange);
-        Set_DecreaseLightFOVRaduis();
-    }
-
-    /// <summary> 플레이어의 어두운 방 퇴장 </summary>
-    private void OutDarkedRoom(Collider2D room)
-    {
-        stageManager.State_OutDarkedRoom(room);
-        Set_LightAroundIntensity(0.5f);
-        //Set_LightAroundRadius(2f, 7f);
-        Set_IncreaseLightAroundRaduis(change_FOVAngleRange);
-        Set_IncreaseLightFOVAngle(change_FOVAngleRange);
-        Set_IncreaseLightFOVRaduis();
-    }
-
-    /// <summary> 플레이어의 상호작용 대상에 접근 </summary>
-    private void InInteract(Collider2D interact)
-    {
-        stageManager.Button_ChangeToInteract();
-
-        Interactor obj = interact.GetComponent<Interactor>();
-        List_Interactor.Add(obj);
-        obj.Show_Interact();
-
-        count_Interact++;
-        isInteract = true;
-    }
-
-    /// <summary> 플레이어의 상호작용 대상으로부터 나가기 </summary>
-    private void OutInteract(Collider2D interact)
-    {
-        stageManager.Button_ChangeToAttack();
-
-        Interactor obj = interact.GetComponent<Interactor>();
-        List_Interactor.Remove(obj);
-        obj.Hide_Interact();
-
-        count_Interact--;
-        if (count_Interact == 0) isInteract = false;
-    }
-
-
-
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("DarkedRoom"))
-        {
-            InDarkedRoom(collision); return;
-        }
-
-        if (collision.CompareTag("Interactor"))
-        {
-            InInteract(collision); return;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("DarkedRoom"))
-        {
-            OutDarkedRoom(collision); return;
-        }
-
-        if (collision.CompareTag("Interactor"))
-        {
-            OutInteract(collision); return;
-        }
-    }
 }

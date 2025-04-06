@@ -118,11 +118,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2d58a2edbce4d3bb8fb490e4212b2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sO_Fire: {fileID: 11400000, guid: f0e71098b0d014c478c9183d74cce5f3, type: 2}
   animator: {fileID: 4138407817936756155}
   sprite: {fileID: 3602788527359731844}
-  RandomSpeedRange: {x: 0.3, y: 0.5}
   mask: {fileID: 3053418915669196606}
-  light: {fileID: 0}
   intensity_Increase: 0.2
   intensity_Decrease: 0.4
   type_Extinguish: 0

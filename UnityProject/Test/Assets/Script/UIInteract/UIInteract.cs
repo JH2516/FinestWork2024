@@ -15,13 +15,12 @@ public class UIInteract : MonoBehaviour
     protected   Camera          uiCamera;       // 캔버스에 설정된 카메라
     protected   Canvas          canvas;         // 참조하고 있는 Canvas
 
-    [SerializeField]
-    protected   Image           guage;
+    public      Image           guage;
     [SerializeField]
     protected   TextMeshProUGUI text;
     protected   bool            getRequested;
-    protected   float           amount_Up;
-    private     bool            isRecoveryHP;
+    public      float           amount_Up { get; protected set; }
+    public      bool            isRecoveryHP;
 
     public float time_Interact;
 
@@ -70,7 +69,7 @@ public class UIInteract : MonoBehaviour
         Gauge_Check();
     }
 
-    void Set_Position()
+    public void Set_Position()
     {
         ////Vector3 screenPosition = Camera.main.WorldToScreenPoint(pos_Interact);
         //Vector2 screenPos = Camera.main.WorldToViewportPoint(pos_Interact);

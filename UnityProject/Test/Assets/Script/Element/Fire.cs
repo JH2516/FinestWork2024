@@ -2,89 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
-#if UNITY_EDITOR
-using UnityEditor;
-
-public class RangeSliderAttribute : PropertyAttribute
+public class Fire : MonoBehaviour, IEventListener
 {
-    public float Min;
-    public float Max;
+    public  SO_Fire             sO_Fire;
+    public  SController_Fire    sController_Fire { get; private set; }
 
-    public RangeSliderAttribute(float min, float max)
-    {
-        Min = min;
-        Max = max;
-    }
-}
-
-[CustomPropertyDrawer(typeof(RangeSliderAttribute))]
-public class RangeSliderDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-    {
-        // 어트리뷰트를 가져옵니다.
-        RangeSliderAttribute range = (RangeSliderAttribute)attribute;
-
-        // Vector2 타입의 값이 필요합니다.
-        if (property.propertyType == SerializedPropertyType.Vector2)
-        {
-            EditorGUI.BeginProperty(position, label, property);
-
-            // 현재 값을 가져옵니다.
-            Vector2 rangeValues = property.vector2Value;
-            float min = rangeValues.x;
-            float max = rangeValues.y;
-
-            // 레이블을 위한 영역
-            Rect labelRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-            EditorGUI.PrefixLabel(labelRect, label);
-
-            // 슬라이더 영역 설정
-            float fieldWidth = 50f;
-            float sliderWidth = position.width - fieldWidth * 2 - 10f;
-
-            // 최솟값 입력 필드
-            Rect minFieldRect = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight + 2, fieldWidth, EditorGUIUtility.singleLineHeight);
-            min = EditorGUI.FloatField(minFieldRect, Mathf.Clamp(min, range.Min, max));
-
-            // 최솟값 반올림 (소수점 2자리)
-            min = Mathf.Round(min * 100f) / 100f;
-
-            // 슬라이더
-            Rect sliderRect = new Rect(position.x + fieldWidth + 5f, position.y + EditorGUIUtility.singleLineHeight + 2, sliderWidth, EditorGUIUtility.singleLineHeight);
-            EditorGUI.MinMaxSlider(sliderRect, ref min, ref max, range.Min, range.Max);
-
-            // 최댓값 반올림 (소수점 2자리)
-            max = Mathf.Round(max * 100f) / 100f;
-
-            // 최댓값 입력 필드
-            Rect maxFieldRect = new Rect(position.x + fieldWidth + sliderWidth + 10f, position.y + EditorGUIUtility.singleLineHeight + 2, fieldWidth, EditorGUIUtility.singleLineHeight);
-            max = EditorGUI.FloatField(maxFieldRect, Mathf.Clamp(max, min, range.Max));
-
-            // 최솟값과 최댓값을 다시 반올림하여 벡터로 저장
-            property.vector2Value = new Vector2(min, max);
-
-            EditorGUI.EndProperty();
-        }
-        else
-        {
-            EditorGUI.LabelField(position, label.text, "Use only with Vector2");
-        }
-    }
-
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        return EditorGUIUtility.singleLineHeight * 2 + 4;
-    }
-}
-#endif
-
-
-public class Fire : MonoBehaviour
-{
-    private StageManager    stageManager;
+    public  StageManager    stageManager { get; private set; }
 
     [Header("Fire Animation")]
     [SerializeField]
@@ -92,121 +16,153 @@ public class Fire : MonoBehaviour
     [SerializeField]
     private SpriteRenderer  sprite;
 
-#if UNITY_EDITOR
-    [RangeSlider(0.1f, 2f)]
-#endif
-    [SerializeField]
-    private Vector2         RandomSpeedRange = new Vector2(0.3f, 0.5f);
-
     [Header("Fire Sprite Mask")]
     public  SpriteMask      mask;
 
-    //[Header("Fire Light")]
-    //[SerializeField]
-    //private Light2D light;
-
-    [Header("Fire Light Intensity")]
-    [Range(0.1f, 1f), SerializeField]
-    private float           intensity_Increase = 0.2f;
-    [Range(0.1f, 1f), SerializeField]
-    private float           intensity_Decrease = 0.4f;
+    [Header("Fire Light power")]
+    [SerializeField]
+    private float           powerUp;
+    [SerializeField]
+    private float           powerDown;
 
     [Header("Fire Extinguish")]
     [SerializeField]
-    private Type_Extinguish type_Extinguish;
     public  bool            isExtinguish;
 
     [Header("Fire In BackDraft Room")]
     public  bool            isBackdraft = false;
 
-    private float           power_Fire = 1;
-    private float           powerMax_Fire;
+    public  float           power       { get; private set; }
+    public  float           maxPower    { get; private set; }
 
-    public enum Type_Extinguish { All, Down }
+    public  bool            debug;
 
-    //private void Awake()
-    //{
-        
-    //}
+    private PlayerEventType[] listenerTypes =
+    {
+        PlayerEventType.p_StartAttack, PlayerEventType.p_EndAttack, PlayerEventType.Debug_Fire
+    };
+
+    private void Awake()
+    {
+        Init_Fire();
+    }
+
+    private void Start()
+    {
+        EventAdd();
+    }
 
     public void Init_Fire()
     {
+        sController_Fire = new SController_Fire(this);
+        sController_Fire.Initialize(sController_Fire.state_Idle);
+
+        stageManager        = GameObject.Find("StageManager").GetComponent<StageManager>();
+
         if (isBackdraft) return;
 
-        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
+        power       = 
+        maxPower    = sO_Fire.randomPower;
+        transform.localScale = Vector2.one * maxPower;
 
-        transform.localScale = Vector2.one * UnityEngine.Random.Range(0.8f, 1.5f);
+        powerUp     = sO_Fire.power_Increase;
+        powerDown   = sO_Fire.power_Decrease;
 
-        powerMax_Fire = transform.localScale.x;
-        power_Fire = powerMax_Fire;
-
-        //light.intensity = 1f;
-
-        isExtinguish = false;
-
-        animator.speed =
-        UnityEngine.Random.Range(RandomSpeedRange.x, RandomSpeedRange.y);
-
+        animator.speed      = sO_Fire.randomSpeed;
         sprite.sortingOrder = 0;
+
+        debug = false;
     }
 
     public void Set_OrderInLayer(int orderNum = 0)
     {
-        sprite.sortingOrder = orderNum;
-        mask.frontSortingOrder = orderNum;
-        mask.backSortingOrder = orderNum - 1;
+        sprite.sortingOrder     = orderNum;
+        mask.frontSortingOrder  = orderNum;
+        mask.backSortingOrder   = orderNum - 1;
     }
+
+
+    public void Set_Power(float power) => this.power = power;
 
     private void Update()
     {
-        if (isBackdraft) return;
-        Check_Extinguished();
+        sController_Fire.Update();
     }
 
-    private void FixedUpdate()
+    
+
+
+
+
+
+    //--------------------이벤트 관련련--------------------//
+
+    /// <summary>
+    /// 이벤트 등록
+    /// </summary>
+    public void EventAdd()
     {
-        Fire_State();
-        Fire_Extinguished();
-    }
-
-    private void Fire_State()
-    {
-        switch (isExtinguish)
-        {
-            case true:
-                power_Fire -= intensity_Decrease * Time.deltaTime;
-                break;
-
-            case false:
-                power_Fire += intensity_Increase * Time.deltaTime;
-                break;
-        }
-
-        if (power_Fire >= powerMax_Fire) power_Fire = powerMax_Fire;
-    }
-
-    private void Fire_Extinguished()
-    {
-        switch (type_Extinguish)
-        {
-            case Type_Extinguish.All:
-                transform.localScale = Vector3.one * power_Fire;
-                break;
-
-            case Type_Extinguish.Down:
-                transform.localScale = new Vector2(powerMax_Fire, power_Fire);
-                break;
-        }
         
-        //light.intensity = power_Fire;
+        EventManager.instance.AddListener(this, listenerTypes);
+        //stageManager.player.PlayerAttackStart  += StartExtinguished;
+        //stageManager.player.PlayerAttackEnd    += EndExtinguished;
+    }
+    /// <summary>
+    /// 이벤트 등록 해제
+    /// </summary>
+    public void EventRemove()
+    {
+        EventManager.instance.RemoveListener(this, listenerTypes);
+        //stageManager.player.PlayerAttackStart  -= StartExtinguished;
+        //stageManager.player.PlayerAttackEnd    -= EndExtinguished;
+        
     }
 
-    private void Check_Extinguished()
+    /// <summary>
+    /// 이벤트 : 플레이어가 소화기 사용 시 진화 여부 검사
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="fire"></param>
+    private void StartExtinguished(object obj, Fire fire)
     {
-        if (isBackdraft)        return;
-        if (power_Fire > 0.1f)  return;
+        if (!isExtinguish && fire == this)
+            sController_Fire.ChangeState(sController_Fire.state_Extinguish);
+    }
 
-        stageManager.Discount_Fires(gameObject);
-        gameObject.SetActive(false);
+    /// <summary>
+    /// 이벤트 : 플레이어가 소화기 사용 마무리 시
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="e"></param>
+    private void EndExtinguished(object obj, EventArgs e)
+    {
+        if (isExtinguish)
+            sController_Fire.ChangeState(sController_Fire.state_Restore);
+    }
+
+    private void OnDestroy() => EventRemove();
+
+
+    public bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
+    {
+        switch (e_Type)
+        {
+            case PlayerEventType.p_StartAttack when args as Fire == this:
+                if (!isExtinguish)
+                    sController_Fire.ChangeState(sController_Fire.state_Extinguish);
+                return true;
+
+            case PlayerEventType.p_EndAttack:
+                if (isExtinguish)
+                    sController_Fire.ChangeState(sController_Fire.state_Restore);
+                return true;
+
+            case PlayerEventType.Debug_Fire:
+                debug = (bool)args;
+                sController_Fire.ChangeState(sController_Fire.state_Dead);
+                return true;
+        }
+
+        return false;
     }
 }

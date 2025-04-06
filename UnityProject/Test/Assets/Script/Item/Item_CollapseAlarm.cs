@@ -19,13 +19,23 @@ public class Item_CollapseAlarm: Item
         isUsed = false;
     }
 
+    private void Start()
+    {
+        EventManager.instance.AddListener(this, PlayerEventType.p_UseItem1);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.instance.RemoveListener(this, PlayerEventType.p_UseItem1);
+    }
+
     public override bool Use_Item()
     {
         if (!Check_isPossableUseItem()) return false;
 
-        stageManager.player.Active_NavigateToCollapseRoom();
-        stageManager.SetActive_UIRemainCollapseRoom(true);
-        isUsed = true;
+        //stageManager.player.Active_NavigateToCollapseRoom();
+        //stageManager.SetActive_UIRemainCollapseRoom(true);
+        //isUsed = true;
 
         return true;
     }
@@ -37,5 +47,21 @@ public class Item_CollapseAlarm: Item
         if (player.transform_CollapseRoom == null)  return  false;
 
         return true;
+    }
+
+    public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
+    {
+        if (e_Type == PlayerEventType.p_UseItem1 && Check_isPossableUseItem())
+        {
+            // StageManager, Player 수신
+            EventManager.instance.TriggerEvent(PlayerEventType.i_UseItem1, this, true);
+            
+            isUsed = true;
+
+            Debug.Log("사용 : CollapseAlarm");
+            return true;
+        }
+
+        return false;
     }
 }

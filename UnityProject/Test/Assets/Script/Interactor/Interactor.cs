@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.Rendering.Universal;
 using UnityEngine;
 
-public class Interactor : MonoBehaviour
+public class Interactor : MonoBehaviour, IEventListener
 {
     // Setting Component
     [Header("UI")]
@@ -24,14 +24,21 @@ public class Interactor : MonoBehaviour
 
     public      UIInteract      UIInteraction => show_Interaction;
 
+    private PlayerEventType[] listenerTypes =
+    {
+        PlayerEventType.d_Interact, PlayerEventType.p_Interact
+    };
+
     // Check
     protected   bool            isInteraction;
+
 
 
     protected virtual void Awake()
     {
         Init_Conmpnent();
         Init_Interact();
+        EventManager.instance.AddListener(this, listenerTypes);
     }
 
     protected void Init_Conmpnent()
@@ -64,6 +71,11 @@ public class Interactor : MonoBehaviour
         isInteraction = false;
     }
 
+    protected virtual void OnDestroy()
+    {
+        EventManager.instance.RemoveListener(this, listenerTypes);
+    }
+
     public virtual void Show_Interact()
     {
         isInteraction = false;
@@ -89,5 +101,22 @@ public class Interactor : MonoBehaviour
     public virtual void Done_Interact()
     {
         gameObject.SetActive(false);
+    }
+
+    public virtual bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
+    {
+        switch (e_Type)
+        {
+            case PlayerEventType.d_Interact:
+                if ((bool)args) Show_Interact();
+                else            Hide_Interact();
+                return true;
+
+            case PlayerEventType.p_Interact:
+                Start_Interact();
+                return true;
+        }
+
+        return false;
     }
 }

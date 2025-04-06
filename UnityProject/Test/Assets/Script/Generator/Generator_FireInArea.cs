@@ -40,6 +40,8 @@ public class ObjectSelectorEditor : Editor
 
 public class Generator_FireInArea : MonoBehaviour
 {
+    public static Generator_FireInArea instance;
+
     private StageManager    stageManager;
 
     [Header("Set Fires")]
@@ -57,6 +59,7 @@ public class Generator_FireInArea : MonoBehaviour
 
     private void Awake()
     {
+        if (instance = null) instance = this;
         stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
 
         Vector2 areaScale = GetComponent<BoxCollider2D>().size / 2;
@@ -66,12 +69,12 @@ public class Generator_FireInArea : MonoBehaviour
         Generate_Fire();
     }
 
-    private void Generate_Fire()
+    public void Generate_Fire()
     {
         for (int i = 0; i < SetCountGen; i++)
         {
             Fire fire = Instantiate(selectedFire, transform).GetComponent<Fire>();
-            fire.Init_Fire();
+            //fire.Init_Fire();
 
             Vector2 colliderSize    = fire.GetComponent<CapsuleCollider2D>().size / 2;
             Vector2 colliderOffset  = fire.GetComponent<CapsuleCollider2D>().offset;
@@ -89,7 +92,8 @@ public class Generator_FireInArea : MonoBehaviour
             fire.Set_OrderInLayer(i);
             fire.transform.position = firePos;
 
-            stageManager.Count_Fires(fire.gameObject);
+            //stageManager.Count_Fires();
+            EventManager.instance.TriggerEvent(PlayerEventType.f_Summon, null);
         }
     }
 }

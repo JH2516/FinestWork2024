@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Item : MonoBehaviour
+public class Item : MonoBehaviour, IEventListener
 {
     [SerializeField]
     protected   StageManager    stageManager;
@@ -21,6 +21,11 @@ public class Item : MonoBehaviour
     }
 
     public virtual bool Use_Item()
+    {
+        return false;
+    }
+
+    public virtual bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
         return false;
     }

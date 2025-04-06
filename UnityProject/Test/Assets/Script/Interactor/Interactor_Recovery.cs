@@ -32,7 +32,15 @@ public class Interactor_Recovery : Interactor
         show_Interaction.Init();
         isInteraction = false;
 
-        stageManager.Complete_EscapeSurvivor();
+        //stageManager.Complete_EscapeSurvivor();
         stageManager.Check_isGameClear();
+    }
+
+    public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
+    {
+        if ((sender as Interactor_Recovery) == this)
+            return base.OnEvent(e_Type, sender, args);
+
+        return false;
     }
 }

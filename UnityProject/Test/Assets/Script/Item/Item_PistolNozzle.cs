@@ -30,10 +30,20 @@ public class Item_PistolNozzle : Item
         text_CoolTime.gameObject.SetActive(false);
     }
 
+    private void Start()
+    {
+        EventManager.instance.AddListener(this, PlayerEventType.p_UseItem3);
+    }
+
     private void Update()
     {
         if (isCanUseItem) return;
         Timing();
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.instance.RemoveListener(this, PlayerEventType.p_UseItem1);
     }
 
     private void Timing()
@@ -72,5 +82,19 @@ public class Item_PistolNozzle : Item
         if (!isCanUseItem)  return false;
 
         return true;
+    }
+
+    public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
+    {
+        if (e_Type == PlayerEventType.p_UseItem3 && Check_isPossableUseItem())
+        {
+            player.SetActive_UsingPistolNozzle(true);
+            remainTime = coolTime;
+
+            Debug.Log("사용 : PistolNozzle");
+            return true;
+        }
+
+        return false;
     }
 }

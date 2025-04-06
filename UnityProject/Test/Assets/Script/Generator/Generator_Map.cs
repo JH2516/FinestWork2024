@@ -55,26 +55,33 @@ struct Wall
 
 public class Generator_Map : MonoBehaviour
 {
+    [Header("Wall")]
     public Transform all_walls;
     public Transform set_WallAreaPos;
     public GameObject pref_Wall;
-    public Vector2 areaPos;
 
+    [Header("Area")]
+    public Vector2 areaPos;
     Color areaColor = new Color(255, 0, 0, 0.2f);
     Matrix4x4 originalMatrix = Gizmos.matrix;
     Wall[] walls = new Wall[4];
 
-    public float areaScaleX = 0, areaScaleY = 0;
+    [Header("Area Transform")]
+    public float areaScaleX = 0;
+    public float areaScaleY = 0;
     public float areaCoordX = 0, areaCoordY = 0;
     public float areaRotateZ = 0;
 
-    public float wallScaleX = 0, wallScaleY = 0;
+    [Header("Wall Scale")]
+    public float wallScaleX = 0;
+    public float wallScaleY = 0;
 
     private Vector2 AREA_COORD;
 
-    public Vector2 areaCoord;
-    public Vector2 areaScale;
+    private Vector2 areaCoord;
+    private Vector2 areaScale;
 
+    [Header("Tool Active")]
     public bool isActive = true;
 
     private void Reset()
