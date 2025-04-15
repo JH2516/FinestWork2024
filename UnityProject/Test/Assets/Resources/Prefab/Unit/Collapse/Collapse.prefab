@@ -226,7 +226,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c5554afe191a4b98b728bc7290ba695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab_Interaction: {fileID: 5707025852399521374, guid: dd61aad09fd8e47108a261cdfc66578b, type: 3}
+  so_Interactor: {fileID: 11400000, guid: 2a4b7cf54da054850b1730bebe3deea2, type: 2}
+  prefab_Interaction: {fileID: 1920230843138116347, guid: dd61aad09fd8e47108a261cdfc66578b, type: 3}
   timeSec_Interaction: 8
   isPlayerDetect: 0
 --- !u!114 &2375635231168106760

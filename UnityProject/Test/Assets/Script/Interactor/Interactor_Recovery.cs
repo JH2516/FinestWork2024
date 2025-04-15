@@ -1,29 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Interactor_Recovery : Interactor
 {
+    //-----------------< MonoBehaviour. 게임 루프 >-----------------//
+
     protected override void Awake()
     {
-        Init_UIInteraction("UIInteract_Recovery");
+        Init_UIInteract(InteractorType.Recovery);
         base.Awake();
     }
 
-    public override void Show_Interact()
-    {
-        bool isClear = stageManager.Check_isGameClear();
-        if (isClear) return;
 
+
+
+
+    //-----------------< Interact. 상호작용 모음 >-----------------//
+
+    protected override void Show_Interact()
+    {
         base.Show_Interact();
         Start_Interact();
+    }
+
+    protected override void Hide_Interact()
+    {
+        base.Hide_Interact();
+        TriggerEvent(PlayerEventType.p_Recovery, this, false);
+        show_Interaction.Request_Stop();
     }
 
     public override void Start_Interact()
     {
         if (isInteraction) return;
-        
-        show_Interaction.Request_Start(true, stageManager.Player_HP / stageManager.Player_HPMax * 100);
+
+        TriggerEvent(PlayerEventType.p_Recovery, this, true);
+        show_Interaction.Request_Start(stageManager.Player_HP / stageManager.Player_HPMax * 100);
         isInteraction = true;
     }
 
@@ -32,9 +43,14 @@ public class Interactor_Recovery : Interactor
         show_Interaction.Init();
         isInteraction = false;
 
-        //stageManager.Complete_EscapeSurvivor();
-        stageManager.Check_isGameClear();
+        TriggerEvent(PlayerEventType.p_Recovery, this, false);
     }
+
+
+
+
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
 
     public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {

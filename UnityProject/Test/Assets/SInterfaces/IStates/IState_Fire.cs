@@ -117,7 +117,6 @@ public class FireState_Dead : IState
         if (!_fire.isBackdraft && !_fire.debug)
             EventManager.instance.TriggerEvent(PlayerEventType.f_Dead, null);
 
-        _fire.EventRemove();
         _fire.gameObject.SetActive(false);
 
         _fire.sController_Fire.TurnOffState();

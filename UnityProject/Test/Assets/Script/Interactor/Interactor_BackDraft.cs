@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.Rendering.Universal;
 using UnityEngine;
 
 public class Interactor_BackDraft : Interactor
@@ -22,11 +20,22 @@ public class Interactor_BackDraft : Interactor
     [Header("Room Option")]
     public  GameObject      door;
 
+    private bool            isPlayerUseItem;
+    private bool            isBreakWarning;
+
+
+
+
+
+    //-----------------< MonoBehaviour. 게임 루프 >-----------------//
+
     protected override void Awake()
     {
-        Init_UIInteraction("UIInteract_BackDraft");
+        Init_UIInteract(InteractorType.BackDraft);
         Init_BackDraft();
         base.Awake();
+
+        AddEvent(this, PlayerEventType.Try_UseItem3);
     }
 
     protected override void OnEnable()
@@ -34,94 +43,141 @@ public class Interactor_BackDraft : Interactor
         Init_BackDraft();
     }
 
+    protected override void OnDestroy()
+    {
+        RemoveEvent(this, PlayerEventType.Try_UseItem3);
+        base.OnDestroy();
+    }
+
+
+
+
+
+    //-----------------< Initialize. 초기화 모음 >-----------------//
+
     private void Init_BackDraft()
     {
         obj_Warning.SetActive(false);
         pos_Warning.SetActive(false);
         obj_Fires.SetActive(false);
         door.SetActive(true);
+        isPlayerUseItem = false;
+        isBreakWarning = false;
     }
 
-    private void Update()
-    {
-        if (!isInteraction) return;
-        if (!pos_Warning.activeSelf && !player.using_PistolNozzle) Break_BackDraft();
-    }
 
-    public override void Show_Interact()
+
+
+
+    //-----------------< Interact. 상호작용 모음 >-----------------//
+
+    protected override void Show_Interact()
     {
         base.Show_Interact();
-
-        player.SetActive_InFrontOfDoor(true);
-        player.target_BackDraft = gameObject;
-        EventManager.instance.TriggerEvent(PlayerEventType.UI_UseItem3, this, true);
+        TriggerEvent(PlayerEventType.UI_UseItem3, this, true);
     }
 
-    public override void Hide_Interact()
+    protected override void Hide_Interact()
     {
         base.Hide_Interact();
-
-        player.SetActive_InFrontOfDoor(false);
-        player.SetActive_UsingPistolNozzle(false);
-        EventManager.instance.TriggerEvent(PlayerEventType.UI_UseItem3, this, false);
-
-        if (!player.using_PistolNozzle)
-        player.target_BackDraft = null;
+        TriggerEvent(PlayerEventType.UI_UseItem3, this, false);
     }
 
     public override void Start_Interact()
     {
-        if (player.using_PistolNozzle && !isInteraction)
-        {
-            Start_InteractWithOutWarning();
-            base.Start_Interact();
-            return;
-        }
-
-        if (!isInteraction)
-        {
-            base.Start_Interact();
-
-            show_Interaction.Set_Position(pos_WarningUI.position);
-            stageManager.Button_ChangeToAttack();
-            obj_Warning.SetActive(true);
-            pos_Warning.SetActive(true);
-            obj_Fires.SetActive(true);
-            door.SetActive(false);
-        }
+        TriggerEvent(PlayerEventType.UI_UseItem3, this, false);
+        base.Start_Interact();
     }
 
-    public void Start_InteractWithOutWarning()
+    /// <summary>
+    /// Interact 시작 - Backdraft 위험 출현
+    /// </summary>
+    public void Start_InteractWithWarning()
     {
-        show_Interaction.Modify_GuageAmountUpPerSecond(3f);
+        Start_Interact();
+
+        show_Interaction.Set_Position(pos_WarningUI.position);
+        stageManager.Button_ChangeToAttack();
+        obj_Warning.SetActive(true);
+        pos_Warning.SetActive(true);
+        obj_Fires.SetActive(true);
+        door.SetActive(false);
+
+        StartCoroutine(CheckWarning());
+    }
+
+    /// <summary>
+    /// Interact 시작 - Backdraft 위험 없음
+    /// </summary>
+    public void Start_InteractWithoutWarning()
+    {
+        isPlayerUseItem = true;
+
+        show_Interaction.Set_GuageAmountUpPerSecond(3f);
         show_Interaction.Set_Position(door.transform.position);
+        Start_Interact();
     }
 
     public override void Done_Interact()
     {
-        if (player.using_PistolNozzle)
+        StopCoroutine(CheckWarning());
+
+        // Backdraft 진압 및 PistolNozzle 사용 후
+        if (isBreakWarning || isPlayerUseItem)
         {
             Done_InteractWithOutWarning();
-            return;
         }
 
-        if (stageManager.IsGamePlay)
+        // 플레이어가 Backdraft 미진압 시 게임 오버
+        else
         {
-            //stageManager.GameOver_CauseOfBackDraft();
+            TriggerEvent(PlayerEventType.g_GameOver, this, GameOverType.BackDraft);
             audio.GameoverByBackDraft(true);
         }
+
+        base.Done_Interact();
     }
 
+    /// <summary>
+    /// Interact 완료 - Backdraft 위험 없음
+    /// </summary>
     public void Done_InteractWithOutWarning()
     {
         door.SetActive(false);
         obj_Fires.SetActive(true);
-        player.SetActive_UsingPistolNozzle(false);
-        stageManager.UsedItem_PistolNozzle();
+        TriggerEvent(PlayerEventType.Try_UseItem3, this, false);
     }
 
+
+
+
+
+    //-----------------< Activity. 활동 모음 >-----------------//
+
+    /// <summary>
+    /// Backdraft 진행 중 플레이어의 진압 여부 검사
+    /// </summary>
+    private IEnumerator CheckWarning()
+    {
+        while (true)
+        {
+            if (!pos_Warning.activeSelf)
+            {
+                Break_BackDraft();
+                Done_Interact();
+                yield break;
+            }
+
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어로부터 Backdraft 진압
+    /// </summary>
     public void Break_BackDraft()
     {
+        isBreakWarning = true;
         show_Interaction.gameObject.SetActive(false);
         obj_Warning.SetActive(false);
         trigger_Interact.enabled = false;
@@ -130,11 +186,29 @@ public class Interactor_BackDraft : Interactor
         Debug.Log("Break_BackDraft");
     }
 
+
+
+
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
+
     public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
-        if ((sender as Interactor_BackDraft) == this)
-            return base.OnEvent(e_Type, sender, args);
+        switch (e_Type)
+        {
+            case PlayerEventType.Try_UseItem3:
+                Start_InteractWithoutWarning();
+                return true;
 
-        return false;
+            case PlayerEventType.p_Interact:
+                Start_InteractWithWarning();
+                return true;
+
+            default:
+                if ((sender as Interactor_BackDraft) == this)
+                    return base.OnEvent(e_Type, sender, args);
+
+                return false;
+        }
     }
 }

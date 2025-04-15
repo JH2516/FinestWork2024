@@ -1,13 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Item_PistolNozzle : Item
 {
-    public static Item_PistolNozzle item;
-
     public  TextMeshProUGUI text_CoolTime;
     public  Image           image_CoolTime;
 
@@ -15,86 +12,92 @@ public class Item_PistolNozzle : Item
     private float   coolTime;
     [SerializeField]
     private float   remainTime;
-    [SerializeField]
-    private bool    isCanUseItem;
 
-    protected override void Init()
+    private bool    isCanUseItem;
+    private bool    isUsingItem;
+
+
+
+
+
+    //-----------------< Initialize. 초기화 모음 >-----------------//
+
+    public override void Init_Item()
     {
-        base.Init();
+        base.Init_Item();
+
+        listenerTypes = new PlayerEventType[]
+        { PlayerEventType.a_UseItem3, PlayerEventType.p_UseItem3 };
 
         coolTime = 30f;
         remainTime = 0;
-        item = this;
 
         isCanUseItem = true;
         text_CoolTime.gameObject.SetActive(false);
     }
 
-    private void Start()
-    {
-        EventManager.instance.AddListener(this, PlayerEventType.p_UseItem3);
-    }
 
-    private void Update()
-    {
-        if (isCanUseItem) return;
-        Timing();
-    }
 
-    private void OnDestroy()
-    {
-        EventManager.instance.RemoveListener(this, PlayerEventType.p_UseItem1);
-    }
 
-    private void Timing()
-    {
-        remainTime -= Time.deltaTime;
-        text_CoolTime.text = $"{(int)remainTime}";
-        image_CoolTime.fillAmount = (coolTime - remainTime) / coolTime;
 
-        if (remainTime <= 0)
+    //-----------------< Activity. 활동 모음 >-----------------//
+
+    /// <summary>
+    /// 아이템 대기 시간 갱신
+    /// </summary>
+    private IEnumerator CoolTiming()
+    {
+        isCanUseItem = false;
+        remainTime = coolTime;
+        text_CoolTime.gameObject.SetActive(true);
+
+        while (true)
         {
-            text_CoolTime.gameObject.SetActive(false);
-            isCanUseItem = true;
+            remainTime -= Time.deltaTime;
+            text_CoolTime.text = $"{(int)remainTime}";
+            image_CoolTime.fillAmount = (coolTime - remainTime) / coolTime;
+
+            if (remainTime <= 0)
+            {
+                text_CoolTime.gameObject.SetActive(false);
+                isCanUseItem = true;
+                yield break;
+            }
+
+            yield return null;
         }
     }
 
-    public void Used_Item()
+    public override bool Check_isPossableUseItem()
     {
-        text_CoolTime.gameObject.SetActive(true);
-        isCanUseItem = false;
-    }
-
-    public override bool Use_Item()
-    {
-        if (!Check_isPossableUseItem()) return false;
-
-        player.SetActive_UsingPistolNozzle(true);
-        remainTime = coolTime;
-
-        return true;
-    }
-
-    private bool Check_isPossableUseItem()
-    {
-        if (!player.isInFrontOfDoor)                return false;
-        if (player.target_BackDraft == null)        return false;
         if (!isCanUseItem)  return false;
+        if (isUsingItem)    return false;
 
         return true;
     }
+
+
+
+
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
 
     public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
-        if (e_Type == PlayerEventType.p_UseItem3 && Check_isPossableUseItem())
+        switch (e_Type)
         {
-            player.SetActive_UsingPistolNozzle(true);
-            remainTime = coolTime;
+            case PlayerEventType.a_UseItem3 when Check_isPossableUseItem():
+                isUsingItem = false;
+                return true;
 
-            Debug.Log("사용 : PistolNozzle");
-            return true;
+            case PlayerEventType.p_UseItem3 when Check_isPossableUseItem():
+                TriggerEvent(PlayerEventType.Try_UseItem3, this, true);
+                StartCoroutine(CoolTiming());
+                isUsingItem = true;
+
+                Debug.Log("사용 : PistolNozzle");
+                return true;
         }
-
         return false;
     }
 }

@@ -1,44 +1,52 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class Interactor_Collapse : Interactor
 {
-    public  bool isPlayerDetect;
+    public  bool        isPlayerDetect;
 
-    private LayerMask layer_Player;
+    private LayerMask   layer_Player;
+
+
+
+
+
+    //-----------------< MonoBehaviour. 게임 루프 >-----------------//
 
     protected override void Awake()
     {
-        Init_UIInteraction("UIInteract_Collapse");
+        Init_UIInteract(InteractorType.Collapse);
         base.Awake();
 
         isPlayerDetect = false;
         layer_Player = LayerMask.GetMask("Player");
-        EventManager.instance.AddListener(this, PlayerEventType.i_UseItem2);
+
+        AddEvent(this, PlayerEventType.i_UseItem2);
         StartCoroutine(CheckPlayer());
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.instance.RemoveListener(this, PlayerEventType.i_UseItem2);
+        RemoveEvent(this, PlayerEventType.i_UseItem2);
     }
 
-    public override void Show_Interact()
+
+
+
+
+    //-----------------< Interact. 상호작용 모음 >-----------------//
+
+    protected override void Show_Interact()
     {
         base.Show_Interact();
-        player.target_Collapse = gameObject;
     }
 
-    public override void Hide_Interact()
+    protected override void Hide_Interact()
     {
         base.Hide_Interact();
-        player.target_Collapse = null;
-        player.SetActive_RemoveCollapse(false);
-        player.SetActive_UsingPortableLift(false);
-        EventManager.instance.TriggerEvent(PlayerEventType.UI_UseItem2, this, false);
+        TriggerEvent(PlayerEventType.UI_UseItem2, this, false);
+        TriggerEvent(PlayerEventType.Try_UseItem2, this, false);
 
         audio.RemoveCollapse(false);
     }
@@ -46,20 +54,25 @@ public class Interactor_Collapse : Interactor
     public override void Start_Interact()
     {
         base.Start_Interact();
-        player.SetActive_RemoveCollapse(true);
-        EventManager.instance.TriggerEvent(PlayerEventType.UI_UseItem2, this, true);
+        TriggerEvent(PlayerEventType.UI_UseItem2, this, true);
+        TriggerEvent(PlayerEventType.a_UseItem2, this, true);
     }
 
     public override void Done_Interact()
     {
         base.Done_Interact();
-        player.SetActive_RemoveCollapse(false);
-        player.SetActive_UsingPortableLift(false);
-        EventManager.instance.TriggerEvent(PlayerEventType.UI_UseItem2, this, false);
+        TriggerEvent(PlayerEventType.UI_UseItem2, this, false);
+        TriggerEvent(PlayerEventType.Try_UseItem2, this, false);
 
         audio.RemoveCollapse(true);
         audio.UsePortableLift(false);
     }
+
+
+
+
+
+    //-----------------< Activity. 활동 모음 >-----------------//
 
     /// <summary>
     /// 붕괴물 범위 내 플레이어 출현 감지
@@ -74,19 +87,25 @@ public class Interactor_Collapse : Interactor
             hit = Physics2D.OverlapCircleAll(transform.position, 7f, layer_Player);
             if (hit.Length > 0)
             {
-                EventManager.instance.TriggerEvent(PlayerEventType.d_Collapse, this);
+                TriggerEvent(PlayerEventType.d_Collapse, this);
                 yield break;
             }
             yield return wf;
         }
     }
 
+
+
+
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
+
     public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
         switch (e_Type)
         {
             case PlayerEventType.i_UseItem2 when (args as GameObject) == gameObject && isInteraction:
-                UIInteraction.Modify_GuageAmountUpPerSecond(4f);
+                UIInteraction.Set_GuageAmountUpPerSecond(4f);
                 return true;
 
             default:

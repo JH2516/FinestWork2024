@@ -259,7 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fc01b4be32e94d22824c689f2ef3a63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stageManager: {fileID: 0}
+  rect: {fileID: 401969891059680972}
   guage: {fileID: 5971714229258542970}
   text: {fileID: 7206039996964221897}
   time_Interact: 0

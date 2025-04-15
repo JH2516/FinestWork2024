@@ -176,7 +176,7 @@ MonoBehaviour:
   - {x: -1.0472016, y: -0.86323214, z: 0}
   m_ShapePathHash: -920876280
   m_Mesh: {fileID: 0}
-  m_InstanceId: 226082
+  m_InstanceId: 369410
   m_LocalBounds:
     m_Center: {x: -0.016073823, y: 0.003980279, z: 0}
     m_Extent: {x: 1.8406526, y: 1.1630331, z: 0}
@@ -301,15 +301,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8721bcc18debb44dabf2ef74fc5714c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab_Interaction: {fileID: 5707025852399521374, guid: 587a88b733528498ebb6771dd3ed9024, type: 3}
+  so_Interactor: {fileID: 11400000, guid: 2a4b7cf54da054850b1730bebe3deea2, type: 2}
+  prefab_Interaction: {fileID: 1920230843138116347, guid: 587a88b733528498ebb6771dd3ed9024, type: 3}
   timeSec_Interaction: 0
   time_Collapse: 30
   text_Collapse: {fileID: 0}
   isPlayerInside: 0
   obj_Collapse: {fileID: 2424359363962305774}
   pos_UIInteract: {fileID: 412031713114125018}
-  item_CollapseAlarm: {fileID: 5960350180236749736}
+  item_CollapseAlarm: {fileID: 662001303316989107}
   text_RemainCollapse: {fileID: 0}
+  isSurvivorInRoom: 0
 --- !u!1 &5960350180236749736
 GameObject:
   m_ObjectHideFlags: 0

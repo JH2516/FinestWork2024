@@ -3,6 +3,7 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 
+[DefaultExecutionOrder(5)]
 [CustomEditor(typeof(Generator_FireInArea))]
 public class ObjectSelectorEditor : Editor
 {
@@ -38,11 +39,10 @@ public class ObjectSelectorEditor : Editor
 }
 #endif
 
-public class Generator_FireInArea : MonoBehaviour
+
+public class Generator_FireInArea : MonoBehaviour, IEventTrigger
 {
     public static Generator_FireInArea instance;
-
-    private StageManager    stageManager;
 
     [Header("Set Fires")]
     public  GameObject[]    Fires;
@@ -57,10 +57,15 @@ public class Generator_FireInArea : MonoBehaviour
     private Vector2 areaPosMin;
     private Vector2 areaPosMax;
 
+
+
+
+
+    //-----------------< MonoBehaviour. 게임 루프 >-----------------//
+
     private void Awake()
     {
         if (instance = null) instance = this;
-        stageManager = GameObject.Find("StageManager").GetComponent<StageManager>();
 
         Vector2 areaScale = GetComponent<BoxCollider2D>().size / 2;
         areaPosMin = (Vector2)transform.position - areaScale;
@@ -69,6 +74,15 @@ public class Generator_FireInArea : MonoBehaviour
         Generate_Fire();
     }
 
+
+
+
+
+    //-----------------< Generate. 생성 작업 모음 >-----------------//
+
+    /// <summary>
+    /// 영역 내 불 생성
+    /// </summary>
     public void Generate_Fire()
     {
         for (int i = 0; i < SetCountGen; i++)
@@ -92,8 +106,19 @@ public class Generator_FireInArea : MonoBehaviour
             fire.Set_OrderInLayer(i);
             fire.transform.position = firePos;
 
-            //stageManager.Count_Fires();
-            EventManager.instance.TriggerEvent(PlayerEventType.f_Summon, null);
+            TriggerEvent(PlayerEventType.f_Summon, this);
         }
     }
+
+
+
+
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
+
+    public void TriggerEvent(PlayerEventType e_Type, Component sender, object args = null)
+    => EventManager.instance.TriggerEvent(e_Type, sender, args);
+
+    public void TriggerEventOneListener(PlayerEventType e_Type, Component sender, object args = null)
+    => EventManager.instance.TriggerEventForOneListener(e_Type, sender, args);
 }

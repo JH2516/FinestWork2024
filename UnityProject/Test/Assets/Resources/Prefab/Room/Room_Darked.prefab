@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 4870247816140763680}
   - component: {fileID: 1182663699603916074}
   - component: {fileID: 1153321159113173865}
+  - component: {fileID: 4203720288498022385}
   m_Layer: 0
   m_Name: Room_Darked
-  m_TagString: DarkedRoom
+  m_TagString: Interactor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -182,3 +183,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &4203720288498022385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6667685364957171528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aa30e2a916f340f28bbc90914ede67b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  so_Interactor: {fileID: 11400000, guid: 2a4b7cf54da054850b1730bebe3deea2, type: 2}
+  prefab_Interaction: {fileID: 0}
+  timeSec_Interaction: 0
+  mask: {fileID: 1182663699603916074}
+  sr: {fileID: 4870247816140763680}

@@ -5,8 +5,6 @@ using UnityEngine.Rendering.Universal;
 [CreateAssetMenu]
 public class SO_Player : ScriptableObject
 {
-    
-
     public readonly Vector2[] moveVecs =
     {
         new Vector2(-1, 1),
@@ -95,15 +93,27 @@ public class SO_Player : ScriptableObject
         _boost_changePower = 1.5f;
     }
 
+
+    /// <summary>
+    /// 어두운 방 내 플레이어 여부에 따른 전등 변화
+    /// </summary>
+    /// <param name="lightAround"> Light2D : 플레이어 주변 </param>
+    /// <param name="lightFOV"> Light2D : 플레이어 전방 </param>
+    /// <param name="isPlayerInRoom"> 플레이어 방 입장 여부 </param>
+    /// <param name="isBoost"> 대상 부스트 아이템 사용 여부 </param>
     public void SetLight_DarkedRoom(Light2D lightAround, Light2D lightFOV, bool isPlayerInRoom, bool isBoost = false)
     {
         if (isBoost)
         {
             lightAround.intensity
                 = isPlayerInRoom ? _intensity_Around / _boost_changePower : _intensity_Around;
+            lightAround.pointLightInnerRadius
+                = isPlayerInRoom ? _boost_radius_InnerAround / _boost_changePower : _boost_radius_InnerAround;
             lightAround.pointLightOuterRadius
                 = isPlayerInRoom ? _boost_radius_OuterAround / _boost_changePower : _boost_radius_OuterAround;
 
+            lightFOV.pointLightInnerRadius =
+                isPlayerInRoom ? _boost_radius_InnerFOV / _boost_changePower : _boost_radius_InnerFOV;
             lightFOV.pointLightOuterRadius =
                 isPlayerInRoom ? _boost_radius_OuterFOV / _boost_changePower : _boost_radius_OuterFOV;
             lightFOV.pointLightInnerAngle =
@@ -115,9 +125,13 @@ public class SO_Player : ScriptableObject
         {
             lightAround.intensity
                 = isPlayerInRoom ? _intensity_Around / _changePower : _intensity_Around;
+            lightAround.pointLightInnerRadius
+                = isPlayerInRoom ? _radius_InnerAround / _changePower : _boost_radius_InnerAround;
             lightAround.pointLightOuterRadius
                 = isPlayerInRoom ? _radius_OuterAround / _changePower : _radius_OuterAround;
 
+            lightFOV.pointLightInnerRadius =
+                isPlayerInRoom ? _radius_InnerFOV / _changePower : _boost_radius_InnerFOV;
             lightFOV.pointLightOuterRadius =
                 isPlayerInRoom ? _radius_OuterFOV / _changePower : _radius_OuterFOV;
             lightFOV.pointLightInnerAngle =

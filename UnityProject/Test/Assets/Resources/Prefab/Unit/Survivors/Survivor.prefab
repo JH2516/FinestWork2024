@@ -143,5 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ff86605d03d34ff5b3c326eaa99003e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab_Interaction: {fileID: 5359801371302639379, guid: 9f81258be68eb4637b7f406f13490bd5, type: 3}
+  so_Interactor: {fileID: 11400000, guid: 2a4b7cf54da054850b1730bebe3deea2, type: 2}
+  prefab_Interaction: {fileID: 1205277883767985290, guid: 9f81258be68eb4637b7f406f13490bd5, type: 3}
   timeSec_Interaction: 3

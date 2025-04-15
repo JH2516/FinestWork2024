@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -16,7 +15,7 @@ public class Interactor_CollapseRoom : Interactor
     [SerializeField]
     private Transform       pos_UIInteract;
 
-    public  GameObject      item_CollapseAlarm;
+    public  Transform       item_CollapseAlarm;
 
     [SerializeField]
     private TextMeshProUGUI text_RemainCollapse;
@@ -29,151 +28,28 @@ public class Interactor_CollapseRoom : Interactor
 
 
 
+
+
+    //-----------------< MonoBehaviour. 게임 루프 >-----------------//
+
     protected override void Awake()
     {
-        Init_UIInteraction("UIInteract_CollapseRoom");
+        Init_UIInteract(InteractorType.CollaspeRoom);
         base.Awake();
 
-        obj_Collapse.SetActive(false);
-        item_CollapseAlarm.SetActive(false);
-        text_Collapse = show_Interaction.transform.Find("Text_Interaction").GetComponent<TextMeshProUGUI>();
-        text_Collapse.text = $"Collapse\n{time_Collapse:N2}";
-
-        if (time_Collapse == 0) time_Collapse = 10;
-
-        isSurvivorInRoom = false;
-        isCollapsed = false;
-        isUsedCollapseAlarm = false;
-
-        Invoke("Waiting_Collapse", time_Collapse - 5f);
-
-        text_RemainCollapse = stageManager.text_CollapseRoomRemain;
+        Init_CollapseRoom();
+        AddEvent(this, PlayerEventType.i_UseItem1);
     }
 
-    private void Update()
+    private void Start()
     {
-        if (isCollapsed) return;
-
-        Timing();
-        Check_Collapse();
+        StartCoroutine(Timing());
     }
 
-    private void Timing()
+    protected override void OnDestroy()
     {
-        time_Collapse -= Time.deltaTime;
-        text_Collapse.text = $"붕괴까지\n{(int)time_Collapse}초";
-
-        if (isUsedCollapseAlarm)
-        Timing_RemainCollapseRoom();
-    }
-
-    private void Timing_RemainCollapseRoom()
-    {
-        if (time_Collapse <= 5f)
-        {
-            text_RemainCollapse.color = Color.red;
-            audio.AlertCollapseAlarm(true);
-        }
-
-        text_RemainCollapse.text = $"{time_Collapse:N2}";
-    }
-
-    public void SetActive_UseCollapseAlarm(bool isActive)
-    {
-        item_CollapseAlarm.SetActive(isActive);
-        isUsedCollapseAlarm = isActive;
-    }
-
-    private void Check_Collapse()
-    {
-        if (time_Collapse <= 0f)
-        Start_Collapse();
-    }
-
-    private void Start_Collapse()
-    {
-        EventManager.instance.TriggerEvent(PlayerEventType.e_CollapseDone, this);
-        audio.AlertCollapseAlarm(false);
-        audio.StartCollapse(false);
-
-        obj_Collapse.SetActive(true);
-        isCollapsed = true;
-
-        if (isPlayerInside)
-        {
-            EventManager.instance.TriggerEvent(PlayerEventType.g_GameOver, this, GameOverType.CollaspeRoom);
-            audio.GameoverByCollapse(true);
-        }
-        else if (isSurvivorInRoom)
-        {
-            EventManager.instance.TriggerEvent(PlayerEventType.g_GameOver, this, GameOverType.FailedSaveSurvivor);
-            audio.TriggerCollapse(true);
-        }
-        else
-        {
-            audio.TriggerCollapse(true);
-        }
-
-        text_Collapse.enabled = false;
-
-        stageManager.player.warning_Collapse = false;
-
-        //player.SetActive_NavigateToCollapseRoom(false);
-        stageManager.SetActive_UIRemainCollapseRoom(false);
-        SetActive_UseCollapseAlarm(false);
-    }
-
-    public override void Show_Interact()
-    {
-        if (!isInteraction)
-        {
-            StartCoroutine("FirstRemainTimeOfCollapse");
-            isInteraction = true;
-        }
-
-        isPlayerInside = true;
-
-        if (!player.using_CollapseAlarm)
-        player.transform_CollapseRoom = transform;
-
-        stageManager.Button_ChangeToAttack();
-
-        if (!stageManager.used_CollapseAlarm)
-        {
-            //stageManager.UIButton_IsActiveItemCollapseAlarm(true);
-        }
-    }
-
-    public override void Hide_Interact()
-    {
-        //base.Hide_Interact();
-        isPlayerInside = false;
-
-        if (!player.using_CollapseAlarm)
-        stageManager.player.transform_CollapseRoom = null;
-
-        if (!stageManager.used_CollapseAlarm)
-        {
-            //stageManager.UIButton_IsActiveItemCollapseAlarm(false);
-        }
-    }
-
-    private void Waiting_Collapse()
-    {
-        //stageManager.player.warning_Collapse = true;
-        EventManager.instance.TriggerEvent(PlayerEventType.e_CollapseSoon, this);
-        audio.StartCollapse(true);
-    }
-
-    IEnumerator FirstRemainTimeOfCollapse()
-    {
-        show_Interaction.Set_Interactor(gameObject);
-        show_Interaction.Set_Position(pos_UIInteract.position);
-        show_Interaction.gameObject.SetActive(true);
-
-        yield return new WaitForSeconds(3f);
-
-        show_Interaction.gameObject.SetActive(false);
+        RemoveEvent(this, PlayerEventType.i_UseItem1);
+        base.OnDestroy();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -186,10 +62,181 @@ public class Interactor_CollapseRoom : Interactor
         if (collision.name == "Survivor") isSurvivorInRoom = false;
     }
 
+
+
+
+
+    //-----------------< Initialize. 초기화 모음 >-----------------//
+
+    private void Init_CollapseRoom()
+    {
+        obj_Collapse.SetActive(false);
+        item_CollapseAlarm.gameObject.SetActive(false);
+        text_Collapse = show_Interaction.transform.Find("Text_Interaction").GetComponent<TextMeshProUGUI>();
+        text_Collapse.text = $"Collapse\n{time_Collapse:N2}";
+
+        if (time_Collapse == 0) time_Collapse = 10;
+
+        isSurvivorInRoom = false;
+        isCollapsed = false;
+        isUsedCollapseAlarm = false;
+
+        Invoke("CollapseSoon", time_Collapse - 5f);
+
+        text_RemainCollapse = UIManager.ui.text_CollapseRoomRemain;
+    }
+
+
+
+    //-----------------< Interact. 상호작용 모음 >-----------------//
+
+    protected override void Show_Interact()
+    {
+        if (!isInteraction)
+        {
+            StartCoroutine(FirstRemainTimeOfCollapse());
+            isInteraction = true;
+        }
+
+        isPlayerInside = true;
+
+        stageManager.Button_ChangeToAttack();
+
+        if (!isUsedCollapseAlarm)
+        {
+            TriggerEvent(PlayerEventType.UI_UseItem1, this, true);
+            TriggerEvent(PlayerEventType.a_UseItem1, this, true);
+        }
+    }
+
+    protected override void Hide_Interact()
+    {
+        isPlayerInside = false;
+
+        if (!isUsedCollapseAlarm)
+        {
+            TriggerEvent(PlayerEventType.UI_UseItem1, this, false);
+        }
+    }
+
+
+
+
+
+    //-----------------< Activity. 활동 모음 >-----------------//
+
+    /// <summary>
+    /// 붕괴까지 남은 시간 갱신
+    /// </summary>
+    private IEnumerator Timing()
+    {
+        while (true)
+        {
+            time_Collapse -= Time.deltaTime;
+            text_Collapse.text = $"붕괴까지\n{(int)time_Collapse}초";
+
+            text_RemainCollapse.text = $"{time_Collapse:N2}";
+
+            if (time_Collapse <= 0f)
+            {
+                CollapseDone();
+                yield break;
+            }  
+
+            yield return null;
+        }
+    }
+
+    /// <summary>
+    /// 플레이어의 붕괴 징조 초기 발견 시 3초간 붕괴 위험 안내
+    /// </summary>
+    IEnumerator FirstRemainTimeOfCollapse()
+    {
+        show_Interaction.Set_Interactor(this);
+        show_Interaction.Set_Position(pos_UIInteract.position);
+        show_Interaction.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(3f);
+
+        show_Interaction.gameObject.SetActive(false);
+    }
+
+
+    /// <summary>
+    /// 알람 경보 작동 시작
+    /// </summary>
+    private void TriggerAlert()
+    {
+        text_RemainCollapse.color = Color.red;
+        audio.AlertCollapseAlarm(true);
+    }
+
+    /// <summary>
+    /// 붕괴 위험 효과 발동
+    /// </summary>
+    private void CollapseSoon()
+    {
+        TriggerEvent(PlayerEventType.e_CollapseSoon, this);
+        audio.StartCollapse(true);
+    }
+
+    /// <summary>
+    /// 붕괴 현상 발동
+    /// </summary>
+    private void CollapseDone()
+    {
+        TriggerEvent(PlayerEventType.e_CollapseDone, this);
+        audio.AlertCollapseAlarm(false);
+        audio.StartCollapse(false);
+
+        obj_Collapse.SetActive(true);
+        isCollapsed = true;
+
+        if (isPlayerInside)
+        {
+            TriggerEvent(PlayerEventType.g_GameOver, this, GameOverType.CollaspeRoom);
+            audio.GameoverByCollapse(true);
+        }
+        else if (isSurvivorInRoom)
+        {
+            TriggerEvent(PlayerEventType.g_GameOver, this, GameOverType.FailedSaveSurvivor);
+            audio.TriggerCollapse(true);
+        }
+        else
+        {
+            audio.TriggerCollapse(true);
+        }
+
+        item_CollapseAlarm.gameObject.SetActive(false);
+        text_Collapse.enabled = false;
+    }
+
+
+
+
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
+
     public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
-        if ((sender as Interactor_CollapseRoom) == this)
-            return base.OnEvent(e_Type, sender, args);
+        if (isCollapsed) return false;
+
+        switch (e_Type)
+        {
+            // Player
+            case PlayerEventType.i_UseItem1:
+                // StageManager 송신
+                TriggerEvent(PlayerEventType.Try_UseItem1, item_CollapseAlarm, true);
+                Invoke("TriggerAlert", time_Collapse - 5f);
+                item_CollapseAlarm.gameObject.SetActive(true);
+                isUsedCollapseAlarm = true;
+                return true;
+
+            default:
+                if ((sender as Interactor_CollapseRoom) == this)
+                    return base.OnEvent(e_Type, sender, args);
+                break;
+        }
 
         return false;
     }

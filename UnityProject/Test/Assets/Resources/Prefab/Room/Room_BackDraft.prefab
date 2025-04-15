@@ -408,16 +408,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af2d58a2edbce4d3bb8fb490e4212b2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sO_Fire: {fileID: 0}
   animator: {fileID: 0}
   sprite: {fileID: 0}
-  RandomSpeedRange: {x: 0.3, y: 0.5}
   mask: {fileID: 0}
-  light: {fileID: 7521023779191377668}
-  intensity_Increase: 0
-  intensity_Decrease: 1
-  type_Extinguish: 0
+  powerUp: 0
+  powerDown: 0
   isExtinguish: 0
   isBackdraft: 1
+  debug: 0
 --- !u!1 &6814485123909648676
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,7 +741,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e16d18df180624a4a89ee25e66e989d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab_Interaction: {fileID: 5707025852399521374, guid: 9b1fe667cc6a14166ae3b82ebe079fc7, type: 3}
+  so_Interactor: {fileID: 11400000, guid: 2a4b7cf54da054850b1730bebe3deea2, type: 2}
+  prefab_Interaction: {fileID: 1920230843138116347, guid: 9b1fe667cc6a14166ae3b82ebe079fc7, type: 3}
   timeSec_Interaction: 1
   obj_Warning: {fileID: 8628595506532467746}
   pos_Warning: {fileID: 6364051034756063055}

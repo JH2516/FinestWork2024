@@ -21,4 +21,19 @@ public class SO_Stage : ScriptableObject
             { GameOverType.FailedSaveSurvivor,  "누군가 붕괴 속에서 피해를 입게 되었습니다." },
             { GameOverType.Debug,               "ZWxxanJtIDogYWt0ZGpxdHNtc2RrZGx0bXptZmxh" },
         };
+
+    public Dictionary<string, KeyCode> debugKeyList
+        = new Dictionary<string, KeyCode>
+        {
+            {"9",               KeyCode.Alpha9 },
+            {"0",               KeyCode.Alpha0 },
+            {"minus",           KeyCode.Minus },
+            {"equals",          KeyCode.Equals },
+            {"backspace",       KeyCode.Backspace },
+            {"o",               KeyCode.O },
+            {"p",               KeyCode.P },
+            {"leftBracket",     KeyCode.LeftBracket },
+            {"rightBracket",    KeyCode.RightBracket },
+            {"backslash",       KeyCode.Backslash },
+        };
 }

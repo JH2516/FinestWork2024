@@ -1,46 +1,57 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Interactor_Survivor : Interactor
 {
+    //-----------------< MonoBehaviour. 게임 루프 >-----------------//
+
     protected override void Awake()
     {
-        Init_UIInteraction("UIInteract_Survivor");
+        Init_UIInteract(InteractorType.Survivor);
         base.Awake();
-        EventManager.instance.AddListener(this, PlayerEventType.b_Save);
+        AddEvent(this, PlayerEventType.b_Save);
     }
 
     private void Start()
     {
-        EventManager.instance.TriggerEvent(PlayerEventType.s_Summon, this);
+        TriggerEvent(PlayerEventType.s_Summon, this);
     }
 
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        EventManager.instance.RemoveListener(this, PlayerEventType.b_Save);
+        RemoveEvent(this, PlayerEventType.b_Save, PlayerEventType.Debug_Survivor);
     }
+
+
+
+
+
+    //-----------------< Interact. 상호작용 모음 >-----------------//
 
     public override void Start_Interact()
     {
         base.Start_Interact();
-        EventManager.instance.TriggerEvent(PlayerEventType.s_Saved, this, false);
-        player.isSavingSurvivor = true;
+        TriggerEvent(PlayerEventType.s_Saved, this, false);
     }
 
     public override void Done_Interact()
     {
-        EventManager.instance.TriggerEvent(PlayerEventType.s_Saved, this, true);
-        player.isSavingSurvivor = false;
+        TriggerEvent(PlayerEventType.s_Saved, this, true);
         base.Done_Interact();
     }
+
+
+
+
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
 
     public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
         switch (e_Type)
         {
             case PlayerEventType.b_Save:
+            case PlayerEventType.Debug_Survivor:
                 gameObject.SetActive(false);
                 return true;
 

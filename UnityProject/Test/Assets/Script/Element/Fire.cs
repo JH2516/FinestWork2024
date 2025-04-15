@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Fire : MonoBehaviour, IEventListener
@@ -42,16 +39,26 @@ public class Fire : MonoBehaviour, IEventListener
         PlayerEventType.p_StartAttack, PlayerEventType.p_EndAttack, PlayerEventType.Debug_Fire
     };
 
-    private void Awake()
-    {
-        Init_Fire();
-    }
 
-    private void Start()
-    {
-        EventAdd();
-    }
 
+
+
+    //-----------------< MonoBehaviour. 게임 루프 >-----------------//
+
+    private void Awake()        => Init_Fire();
+    private void Start()        => AddEvent(this, listenerTypes);
+    private void Update()       => sController_Fire?.Update();
+    private void OnDestroy()    => RemoveEvent(this, listenerTypes);
+
+
+
+
+
+    //-----------------< Initialize. 초기화 모음 >-----------------//
+
+    /// <summary>
+    /// Fire 초기화
+    /// </summary>
     public void Init_Fire()
     {
         sController_Fire = new SController_Fire(this);
@@ -74,6 +81,16 @@ public class Fire : MonoBehaviour, IEventListener
         debug = false;
     }
 
+
+
+
+
+    //-----------------< Setting. 속성 설정 >-----------------//
+
+    /// <summary>
+    /// 불 Sprite Mask 정렬 속성 설정
+    /// </summary>
+    /// <param name="orderNum"> 정렬 번호 </param>
     public void Set_OrderInLayer(int orderNum = 0)
     {
         sprite.sortingOrder     = orderNum;
@@ -81,67 +98,17 @@ public class Fire : MonoBehaviour, IEventListener
         mask.backSortingOrder   = orderNum - 1;
     }
 
-
+    /// <summary>
+    /// 불 화력(오브젝트 크기) 설정
+    /// </summary>
+    /// <param name="power"> 화력 값 </param>
     public void Set_Power(float power) => this.power = power;
 
-    private void Update()
-    {
-        sController_Fire.Update();
-    }
-
-    
 
 
 
 
-
-    //--------------------이벤트 관련련--------------------//
-
-    /// <summary>
-    /// 이벤트 등록
-    /// </summary>
-    public void EventAdd()
-    {
-        
-        EventManager.instance.AddListener(this, listenerTypes);
-        //stageManager.player.PlayerAttackStart  += StartExtinguished;
-        //stageManager.player.PlayerAttackEnd    += EndExtinguished;
-    }
-    /// <summary>
-    /// 이벤트 등록 해제
-    /// </summary>
-    public void EventRemove()
-    {
-        EventManager.instance.RemoveListener(this, listenerTypes);
-        //stageManager.player.PlayerAttackStart  -= StartExtinguished;
-        //stageManager.player.PlayerAttackEnd    -= EndExtinguished;
-        
-    }
-
-    /// <summary>
-    /// 이벤트 : 플레이어가 소화기 사용 시 진화 여부 검사
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <param name="fire"></param>
-    private void StartExtinguished(object obj, Fire fire)
-    {
-        if (!isExtinguish && fire == this)
-            sController_Fire.ChangeState(sController_Fire.state_Extinguish);
-    }
-
-    /// <summary>
-    /// 이벤트 : 플레이어가 소화기 사용 마무리 시
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <param name="e"></param>
-    private void EndExtinguished(object obj, EventArgs e)
-    {
-        if (isExtinguish)
-            sController_Fire.ChangeState(sController_Fire.state_Restore);
-    }
-
-    private void OnDestroy() => EventRemove();
-
+    //-----------------< Event. 이벤트 모음 >-----------------//
 
     public bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
@@ -162,7 +129,12 @@ public class Fire : MonoBehaviour, IEventListener
                 sController_Fire.ChangeState(sController_Fire.state_Dead);
                 return true;
         }
-
         return false;
     }
+
+    public void AddEvent(IEventListener listener, params PlayerEventType[] types)
+    => EventManager.instance.AddListener(listener, types);
+
+    public void RemoveEvent(IEventListener listener, params PlayerEventType[] types)
+    => EventManager.instance.RemoveListener(listener, types);
 }

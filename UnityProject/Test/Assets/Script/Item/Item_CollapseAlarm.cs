@@ -1,67 +1,58 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Item_CollapseAlarm: Item
 {
-    public static Item_CollapseAlarm item;
-
     [SerializeField]
     private bool    isUsed;
 
-    public  bool    IsUsed => isUsed;
 
-    protected override void Init()
+
+
+
+    //-----------------< Initialize. 초기화 모음 >-----------------//
+
+    public override void Init_Item()
     {
-        base.Init();
+        base.Init_Item();
 
-        item = this;
-        isUsed = false;
+        listenerTypes = new PlayerEventType[]
+        { PlayerEventType.a_UseItem1, PlayerEventType.p_UseItem1 };
     }
 
-    private void Start()
-    {
-        EventManager.instance.AddListener(this, PlayerEventType.p_UseItem1);
-    }
 
-    private void OnDestroy()
-    {
-        EventManager.instance.RemoveListener(this, PlayerEventType.p_UseItem1);
-    }
 
-    public override bool Use_Item()
-    {
-        if (!Check_isPossableUseItem()) return false;
 
-        //stageManager.player.Active_NavigateToCollapseRoom();
-        //stageManager.SetActive_UIRemainCollapseRoom(true);
-        //isUsed = true;
+
+    //-----------------< Activity. 활동 모음 >-----------------//
+
+    public override bool Check_isPossableUseItem()
+    {
+        if (isUsed)         return  false;
 
         return true;
     }
 
-    private bool Check_isPossableUseItem()
-    {
-        if (isUsed)                                 return  false;
-        if (player.using_CollapseAlarm)             return  false;
-        if (player.transform_CollapseRoom == null)  return  false;
 
-        return true;
-    }
+
+
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
 
     public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
-        if (e_Type == PlayerEventType.p_UseItem1 && Check_isPossableUseItem())
+        switch (e_Type)
         {
-            // StageManager, Player 수신
-            EventManager.instance.TriggerEvent(PlayerEventType.i_UseItem1, this, true);
-            
-            isUsed = true;
+            case PlayerEventType.a_UseItem1:
+                isUsed = false;
+                return true;
 
-            Debug.Log("사용 : CollapseAlarm");
-            return true;
+            case PlayerEventType.p_UseItem1 when Check_isPossableUseItem():
+                TriggerEvent(PlayerEventType.i_UseItem1, this, true);
+                isUsed = true;
+
+                Debug.Log("사용 : CollapseAlarm");
+                return true;
         }
-
         return false;
     }
 }

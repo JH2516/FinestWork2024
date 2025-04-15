@@ -1,66 +1,59 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Item_PortableLift: Item
 {
-    public static Item_PortableLift item;
+    private bool isUsingItem;
 
-    protected override void Init()
+
+
+
+
+    //-----------------< Initialize. 초기화 모음 >-----------------//
+
+    public override void Init_Item()
     {
-        base.Init();
+        base.Init_Item();
 
-        item = this;
-        
+        listenerTypes = new PlayerEventType[]
+        { PlayerEventType.a_UseItem2, PlayerEventType.p_UseItem2 };
     }
 
-    public override bool Use_Item()
-    {
-        if (!Check_isPossableUseItem()) return false;
 
-        player.SetActive_UsingPortableLift(true);
-        audio.UsePortableLift(true);
+
+
+
+    //-----------------< Activity. 활동 모음 >-----------------//
+
+    public override bool Check_isPossableUseItem()
+    {
+        if (isUsingItem)    return false;
 
         return true;
     }
 
-    private bool Check_isPossableUseItem()
-    {
-        if (!player.isRemoveCollapse)       return false;
-        if (player.using_PortableLift)      return false;
-        if (player.target_Collapse == null) return false;
 
-        return true;
-    }
 
-    private void Start()
-    {
-        EventManager.instance.AddListener(this, PlayerEventType.p_UseItem2);
-    }
 
-    private void OnDestroy()
-    {
-        EventManager.instance.RemoveListener(this, PlayerEventType.p_UseItem1);
-    }
+
+    //-----------------< Event. 이벤트 모음 >-----------------//
 
     public override bool OnEvent(PlayerEventType e_Type, Component sender, object args = null)
     {
-        if (e_Type == PlayerEventType.p_UseItem2)
+        switch (e_Type)
         {
-            bool isCanUse = Check_isPossableUseItem();
-            EventManager.instance.TriggerEvent(PlayerEventType.Try_UseItem2, this, isCanUse);
+            case PlayerEventType.a_UseItem2:
+                isUsingItem = false;
+                return true;
 
-            if (isCanUse)
-            {
-                EventManager.instance.TriggerEvent(PlayerEventType.i_UseItem2, this, args);
+            case PlayerEventType.p_UseItem2 when Check_isPossableUseItem():
+                TriggerEvent(PlayerEventType.Try_UseItem2, this, true);
+                TriggerEvent(PlayerEventType.i_UseItem2, this, args);
                 audio.UsePortableLift(true);
+                isUsingItem = true;
 
                 Debug.Log("사용 : PortableLift");
-            }
-
-            return true;
+                return true;
         }
-
         return false;
     }
 }
